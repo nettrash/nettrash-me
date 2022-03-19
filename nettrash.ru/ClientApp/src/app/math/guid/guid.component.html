@@ -1,10 +1,19 @@
-<mat-grid-list cols="7" rowHeight="50px">
-    <mat-grid-tile colspan="1" rowspan="1">
-        <div class="container">
-            <button mat-raised-button color="primary">Get new Guid</button>
-        </div>
-    </mat-grid-tile>
-    <mat-grid-tile colspan="6" rowspan="6" style="margin: 5px;">
+<div class="container">
+    <div class="button-container">
+        <button mat-raised-button color="primary" (click)="doGenerateGuid()" style="width:100%;">New</button>
+        <button mat-raised-button (click)="clearGuid()" style="width:100%;margin-top:15px;">Clear</button>
+    </div>
+    <div class="table-container">
+        <table mat-table [dataSource]="guids" style="width:100%;">
+            <!-- Guid Column -->
+            <ng-container matColumnDef="value">
+                <th mat-header-cell *matHeaderCellDef> GUID </th>
+                <td mat-cell *matCellDef="let guid"> {{guid.value}} </td>
+            </ng-container>
 
-    </mat-grid-tile>
-</mat-grid-list>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <span *ngIf="(guids.length<1)" class="info">Click <code><font style="font-size:9pt">New</font></code> and generate new Guid value.</span>
+    </div>
+</div>

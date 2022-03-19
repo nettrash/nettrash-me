@@ -7,16 +7,20 @@ import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatInput, MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatGridListModule } from '@angular/material/grid-list';
+import { MatTableModule } from '@angular/material/table';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { MathComponent } from './math/math.component';
 import { GuidComponent } from './math/guid/guid.component';
+import { LuhnComponent } from './math/luhn/luhn.component';
+import { HashComponent } from './math/hash/hash.component';
 import { TextComponent } from './text/text.component';
 import { TimeComponent } from './time/time.component';
 
@@ -27,6 +31,8 @@ import { TimeComponent } from './time/time.component';
     HomeComponent,
     MathComponent,
     GuidComponent,
+    LuhnComponent,
+    HashComponent,
     TextComponent,
     TimeComponent
   ],
@@ -36,10 +42,12 @@ import { TimeComponent } from './time/time.component';
     FormsModule,
     BrowserAnimationsModule,
     MatTabsModule,
-    MatInputModule,
-    MatSelectModule,
     MatButtonModule,
-    MatGridListModule,
+    MatTableModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatSelectModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'math', component: MathComponent, pathMatch: 'full' },

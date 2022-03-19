@@ -1,0 +1,15 @@
+<div class="container">
+    <div class="button-container">
+        <button mat-raised-button color="primary" (click)="doCheckLuhn()" style="width:100%;">Check</button>
+        <button mat-raised-button (click)="clearResult()" style="width:100%;margin-top:15px;">Clear</button>
+    </div>
+    <div class="table-container">
+        <mat-form-field appearance="standard" style="width:100%;">
+            <mat-label>Sequence for verification</mat-label>
+            <input matInput placeholder="Please input only nmbers" (keydown.enter)="doEnterAction($event)" (input)="doChangeAction($event)">
+            <mat-icon matSuffix *ngIf="luhnResult.result && luhnResult.luhnResult">sentiment_very_satisfied</mat-icon>
+            <mat-icon matSuffix *ngIf="!(luhnResult.result && luhnResult.luhnResult)">sentiment_very_dissatisfied</mat-icon>
+            <mat-hint>{{ luhnResult.errorText }}</mat-hint>
+        </mat-form-field>
+    </div>
+</div>
