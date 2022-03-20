@@ -33,6 +33,9 @@
     <None Remove="Controllers\Request\" />
     <None Remove="ClientApp\src\app\time\unixtime\" />
     <None Remove="ed.txt" />
+    <None Remove="ClientApp\src\app\text\base64\" />
+    <None Remove="ClientApp\src\app\text\base64 %28copy%29\" />
+    <None Remove="ClientApp\src\app\text\url %28copy%29\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +49,9 @@
     <Folder Include="ClientApp\src\app\math\hash\" />
     <Folder Include="Controllers\Request\" />
     <Folder Include="ClientApp\src\app\time\unixtime\" />
+    <Folder Include="ClientApp\src\app\text\base64\" />
+    <Folder Include="ClientApp\src\app\text\url\" />
+    <Folder Include="ClientApp\src\app\text\hex\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ClientApp\src\assets\images\polecat.jpg">

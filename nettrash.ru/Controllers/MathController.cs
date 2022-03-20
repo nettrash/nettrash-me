@@ -10,13 +10,30 @@ namespace nettrash.ru.Controllers
 	[Route("[controller]")]
 	public class MathController : ControllerBase
 	{
+		#region Private properties
+
+
 
 		private readonly ILogger<MathController> _logger;
+
+
+
+		#endregion
+		#region Public constructors
+
+
 
 		public MathController(ILogger<MathController> logger)
 		{
 			_logger = logger;
 		}
+
+
+
+		#endregion
+		#region Public methods
+
+
 
 		[HttpGet("guid")]
 #pragma warning disable CA1720 // Identifier contains type name
@@ -85,5 +102,9 @@ namespace nettrash.ru.Controllers
 			}
 
 		}
+
+
+
+		#endregion
 	}
 }

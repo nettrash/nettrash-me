@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,13 +10,30 @@ namespace nettrash.ru.Controllers
 	[Route("[controller]")]
 	public class TimeController : ControllerBase
 	{
+		#region Private properties
+
+
 
 		private readonly ILogger<TimeController> _logger;
+
+
+
+		#endregion
+		#region Public constructors
+
+
 
 		public TimeController(ILogger<TimeController> logger)
 		{
 			_logger = logger;
 		}
+
+
+
+		#endregion
+		#region Public methods
+
+
 
 		[HttpGet("unixtime")]
 		public Response.Unixtime Unixtime(string source)
@@ -41,5 +57,9 @@ namespace nettrash.ru.Controllers
 				return new Response.Unixtime { Result = false, Value = ex.Message };
 			}
 		}
+
+
+
+		#endregion
 	}
 }

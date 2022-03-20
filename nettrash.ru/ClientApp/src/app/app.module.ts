@@ -24,6 +24,9 @@ import { HashComponent } from './math/hash/hash.component';
 import { TextComponent } from './text/text.component';
 import { TimeComponent } from './time/time.component';
 import { UnixtimeComponent } from './time/unixtime/unixtime.component';
+import { Base64Component } from './text/base64/base64.component';
+import { UrlComponent } from './text/url/url.component';
+import { HexComponent } from './text/hex/hex.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +39,10 @@ import { UnixtimeComponent } from './time/unixtime/unixtime.component';
     HashComponent,
     TextComponent,
     TimeComponent,
-    UnixtimeComponent
+    UnixtimeComponent,
+    Base64Component,
+    UrlComponent,
+    HexComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
