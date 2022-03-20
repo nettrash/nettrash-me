@@ -1,0 +1,17 @@
+<div class="container">
+    <div class="button-container">
+        <button mat-raised-button color="primary" (click)="doConvert()" style="width:100%;">Convert</button>
+        <button mat-raised-button (click)="clearResult()" style="width:100%;margin-top:15px;">Clear</button>
+    </div>
+    <div class="table-container">
+        <mat-form-field appearance="fill" style="width:100%;margin-top:10px;height:100%;">
+            <mat-label>Source</mat-label>
+            <input matInput #sourceData [(ngModel)]="sourceText" (keydown.enter)="doEnterAction($event)" />
+            <mat-hint>Please input date like <code>yyyy-MM-dd HH:mm:ss zzz</code> or unixtime value. Example: <code>0001-01-01 00:00:00 +00:00</code>.</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="fill" style="width:100%;margin-top:10px;height:100%;">
+            <mat-label>Result</mat-label>
+            <input matInput #resultValue disabled [(ngModel)]="result.value" />
+        </mat-form-field>
+    </div>
+</div>

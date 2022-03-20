@@ -31,6 +31,8 @@
     <None Remove="ClientApp\src\app\math\luhn\" />
     <None Remove="ClientApp\src\app\math\hash\" />
     <None Remove="Controllers\Request\" />
+    <None Remove="ClientApp\src\app\time\unixtime\" />
+    <None Remove="ed.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +45,7 @@
     <Folder Include="ClientApp\src\app\math\luhn\" />
     <Folder Include="ClientApp\src\app\math\hash\" />
     <Folder Include="Controllers\Request\" />
+    <Folder Include="ClientApp\src\app\time\unixtime\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ClientApp\src\assets\images\polecat.jpg">

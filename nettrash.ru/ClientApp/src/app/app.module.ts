@@ -23,6 +23,7 @@ import { LuhnComponent } from './math/luhn/luhn.component';
 import { HashComponent } from './math/hash/hash.component';
 import { TextComponent } from './text/text.component';
 import { TimeComponent } from './time/time.component';
+import { UnixtimeComponent } from './time/unixtime/unixtime.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { TimeComponent } from './time/time.component';
     LuhnComponent,
     HashComponent,
     TextComponent,
-    TimeComponent
+    TimeComponent,
+    UnixtimeComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
