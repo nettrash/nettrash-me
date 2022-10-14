@@ -1,3 +1,3 @@
-# nettrash-ru
+# nettrash-me
 
-![build & test](https://github.com/nettrash/nettrash-ru/actions/workflows/dotnet.yml/badge.svg)
+![build & test](https://github.com/nettrash/nettrash-me/actions/workflows/dotnet.yml/badge.svg)
