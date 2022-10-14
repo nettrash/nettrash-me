@@ -1,0 +1,28 @@
+﻿namespace nettrash.Controllers.Response
+{
+	public class Unixtime
+	{
+		#region Public properties
+
+
+
+		public bool Result { get; set; }
+
+		public string Value { get; set; }
+
+
+
+		#endregion
+		#region Public constructors
+
+
+
+		public Unixtime()
+		{
+		}
+
+
+
+		#endregion
+	}
+}
