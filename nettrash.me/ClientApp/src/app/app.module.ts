@@ -6,6 +6,8 @@ import { RouterModule } from '@angular/router';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import { AgmCoreModule } from '@agm/core';
+
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
@@ -13,10 +15,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import {MatCardModule} from '@angular/material/card';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
+import { ClientInfoComponent } from './home/info/info.component';
 import { MathComponent } from './math/math.component';
 import { GuidComponent } from './math/guid/guid.component';
 import { LuhnComponent } from './math/luhn/luhn.component';
@@ -33,6 +37,7 @@ import { HexComponent } from './text/hex/hex.component';
     AppComponent,
     NavMenuComponent,
     HomeComponent,
+    ClientInfoComponent,
     MathComponent,
     GuidComponent,
     LuhnComponent,
@@ -49,6 +54,7 @@ import { HexComponent } from './text/hex/hex.component';
     HttpClientModule,
     FormsModule,
     BrowserAnimationsModule,
+    AgmCoreModule.forRoot({apiKey:'AIzaSyC0jvdham6G17Agi-BOnq0QAMH2NgCvepw'}),
     MatTabsModule,
     MatButtonModule,
     MatTableModule,
@@ -56,6 +62,7 @@ import { HexComponent } from './text/hex/hex.component';
     MatFormFieldModule,
     MatIconModule,
     MatSelectModule,
+    MatCardModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'math', component: MathComponent, pathMatch: 'full' },

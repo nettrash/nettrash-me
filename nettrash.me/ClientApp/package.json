@@ -1,14 +1,14 @@
 {
   "name": "nettrash.me",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "build:ssr": "ng run nettrash.me:server:dev",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+    "start": "export NODE_OPTIONS=--openssl-legacy-provider && ng serve",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider && ng build",
+    "build:ssr": "export NODE_OPTIONS=--openssl-legacy-provider && ng run nettrash.me:server:dev",
+    "test": "export NODE_OPTIONS=--openssl-legacy-provider && ng test",
+    "lint": "export NODE_OPTIONS=--openssl-legacy-provider && ng lint",
+    "e2e": "export NODE_OPTIONS=--openssl-legacy-provider && ng e2e"
   },
   "private": true,
   "dependencies": {
@@ -32,7 +32,8 @@
     "oidc-client": "^1.9.1",
     "popper.js": "^1.16.0",
     "rxjs": "^6.5.3",
-    "zone.js": "0.9.1"
+    "zone.js": "0.9.1",
+    "@agm/core": "1.1.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.803.26",

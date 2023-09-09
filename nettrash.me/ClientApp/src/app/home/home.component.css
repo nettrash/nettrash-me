@@ -3,3 +3,20 @@
     right: 0;
     text-align: center;
 }
+
+.bottomtext {
+    padding-top: 20px;
+    width: 100%;
+    text-align: right;
+  }
+  
+    .bottomtext p {
+      font-size: 10pt;
+    }
+  
+    .bottomtext figcaption {
+      font-size: 8pt;
+      padding-top: 0;
+      margin-top: -10px;
+    }
+  
