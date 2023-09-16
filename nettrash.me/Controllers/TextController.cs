@@ -106,6 +106,24 @@ namespace nettrash.Controllers
 			}
 		}
 
+		[HttpPost("regex")]
+		public Response.Regex Regex(Request.Regex request)
+		{
+			try
+			{
+				bool bMatched = System.Text.RegularExpressions.Regex.IsMatch(request.Text, request.Source);
+				return new Response.Regex
+				{
+					Result = bMatched,
+					Value = $"Is Matched: {bMatched}.\nMatches:\n{string.Join("\n", System.Text.RegularExpressions.Regex.Matches(request.Text, request.Source).Select(m => m.Value).ToArray())}."
+				};
+			}
+			catch (Exception ex)
+			{
+				return new Response.Regex { Result = false, Value = ex.Message };
+			}
+		}
+
 
 
 		#endregion
