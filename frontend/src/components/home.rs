@@ -3,6 +3,40 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use yew::prelude::*;
 
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = ["google", "maps"], js_name = Map)]
+    type JsMap;
+
+    #[wasm_bindgen(constructor, js_namespace = ["google", "maps"], js_class = "Map")]
+    fn new(element: &web_sys::HtmlElement, options: &JsValue) -> JsMap;
+
+    #[wasm_bindgen(js_namespace = ["google", "maps"], js_name = Marker)]
+    type JsMarker;
+
+    #[wasm_bindgen(constructor, js_namespace = ["google", "maps"], js_class = "Marker")]
+    fn new_marker(options: &JsValue) -> JsMarker;
+}
+
+fn init_map(element: &web_sys::HtmlElement, lat: f64, lng: f64) {
+    let options = js_sys::Object::new();
+    let center = js_sys::Object::new();
+    js_sys::Reflect::set(&center, &"lat".into(), &JsValue::from_f64(lat)).unwrap();
+    js_sys::Reflect::set(&center, &"lng".into(), &JsValue::from_f64(lng)).unwrap();
+    js_sys::Reflect::set(&options, &"center".into(), &center).unwrap();
+    js_sys::Reflect::set(&options, &"zoom".into(), &JsValue::from_f64(12.0)).unwrap();
+
+    let map = JsMap::new(element, &options);
+
+    let marker_opts = js_sys::Object::new();
+    let position = js_sys::Object::new();
+    js_sys::Reflect::set(&position, &"lat".into(), &JsValue::from_f64(lat)).unwrap();
+    js_sys::Reflect::set(&position, &"lng".into(), &JsValue::from_f64(lng)).unwrap();
+    js_sys::Reflect::set(&marker_opts, &"position".into(), &position).unwrap();
+    js_sys::Reflect::set(&marker_opts, &"map".into(), &map).unwrap();
+    let _ = JsMarker::new_marker(&marker_opts);
+}
+
 #[function_component(Home)]
 pub fn home() -> Html {
     let ip_address = use_state(String::new);
@@ -10,6 +44,9 @@ pub fn home() -> Html {
     let client_time = use_state(String::new);
     let client_utc = use_state(String::new);
     let location = use_state(|| "Detecting...".to_string());
+    let latitude = use_state(|| 0.0_f64);
+    let longitude = use_state(|| 0.0_f64);
+    let map_ref = use_node_ref();
 
     // Fetch client IP using public API (no server-side endpoint needed)
     {
@@ -50,11 +87,15 @@ pub fn home() -> Html {
     // Geolocation
     {
         let location = location.clone();
+        let latitude = latitude.clone();
+        let longitude = longitude.clone();
         use_effect_with((), move |_: &()| {
             let window = web_sys::window().unwrap();
             let navigator = window.navigator();
             if let Ok(geo) = navigator.geolocation() {
                 let loc_ok = location.clone();
+                let lat_ok = latitude.clone();
+                let lng_ok = longitude.clone();
                 let loc_err = location.clone();
 
                 let success_cb = Closure::wrap(Box::new(move |pos: JsValue| {
@@ -68,6 +109,8 @@ pub fn home() -> Html {
                             .and_then(|v| v.as_f64())
                             .unwrap_or(0.0);
                         loc_ok.set(format!("{:.6}, {:.6}", lat, lng));
+                        lat_ok.set(lat);
+                        lng_ok.set(lng);
                     }
                 }) as Box<dyn FnMut(JsValue)>);
 
@@ -83,6 +126,21 @@ pub fn home() -> Html {
                 error_cb.forget();
             } else {
                 location.set("Geolocation not available".to_string());
+            }
+            || ()
+        });
+    }
+
+    // Google Map
+    {
+        let map_ref = map_ref.clone();
+        let lat = *latitude;
+        let lng = *longitude;
+        use_effect_with((lat, lng), move |_| {
+            if lat != 0.0 || lng != 0.0 {
+                if let Some(element) = map_ref.cast::<web_sys::HtmlElement>() {
+                    init_map(&element, lat, lng);
+                }
             }
             || ()
         });
@@ -124,6 +182,7 @@ pub fn home() -> Html {
                     </div>
                 </div>
             </div>
+            <div ref={map_ref} class="google-map"></div>
             <div class="bottomtext">
                 <figure class="text-end">
                     <blockquote class="blockquote">

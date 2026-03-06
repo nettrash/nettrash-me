@@ -48,6 +48,80 @@ html {
     margin: 0 auto;
 }
 
+/* Material-like tab styling (deeppurple-amber theme) */
+.nav-tabs {
+    border-bottom: none;
+}
+
+.nav-tabs .nav-link {
+    color: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.nav-tabs .nav-link:hover {
+    border-bottom-color: rgba(103, 58, 183, 0.4);
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.nav-tabs .nav-link.active {
+    color: #673AB7;
+    border-bottom-color: #673AB7;
+    background-color: transparent;
+}
+
+/* Material-like form fields */
+.form-control, .form-select {
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+    border-radius: 0;
+    background-color: #f5f5f5;
+    padding: 0.75rem 0.75rem 0.25rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-bottom: 2px solid #673AB7;
+    box-shadow: none;
+    background-color: #ececec;
+}
+
+.form-label {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 12px;
+    margin-bottom: 0;
+}
+
+/* Material-like buttons */
+.btn-primary {
+    background-color: #673AB7;
+    border-color: #673AB7;
+}
+
+.btn-primary:hover {
+    background-color: #5E35B1;
+    border-color: #5E35B1;
+}
+
+.btn-warning {
+    background-color: #FFC107;
+    border-color: #FFC107;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+/* Material-like card */
+.card {
+    border: none;
+    box-shadow: 0 2px 1px -1px rgba(0,0,0,.2),
+                0 1px 1px 0 rgba(0,0,0,.14),
+                0 1px 3px 0 rgba(0,0,0,.12);
+    border-radius: 4px;
+}
+
 .tool-container {
     display: flex;
     flex-wrap: wrap;
@@ -66,6 +140,12 @@ html {
     flex: 1;
     padding-left: 20px;
     min-width: 200px;
+}
+
+.google-map {
+    height: 300px;
+    width: 100%;
+    margin-top: 15px;
 }
 
 .bottomtext {

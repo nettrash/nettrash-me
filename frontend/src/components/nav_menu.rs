@@ -20,6 +20,7 @@ pub fn nav_menu() -> Html {
         <header>
             <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm mb-3">
                 <div class="container">
+                    <img border="0" src="polecat.jpg" height="40" style="margin-right: 5px;" />
                     <Link<Route> to={Route::Home} classes="navbar-brand">
                         { "nettrash.me" }
                     </Link<Route>>
@@ -32,7 +33,7 @@ pub fn nav_menu() -> Html {
                         "d-sm-inline-flex", "justify-content-end",
                         collapse_class
                     )}>
-                        <ul class="navbar-nav flex-grow-1">
+                        <ul class="navbar-nav flex-grow-1 justify-content-end">
                             <li class="nav-item">
                                 <Link<Route> to={Route::Home} classes="nav-link text-dark">
                                     { "Home" }
