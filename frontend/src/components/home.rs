@@ -11,18 +11,18 @@ pub fn home() -> Html {
     let client_utc = use_state(String::new);
     let location = use_state(|| "Detecting...".to_string());
 
-    // Fetch client IP from nginx endpoint
+    // Fetch client IP using public API (no server-side endpoint needed)
     {
         let ip_address = ip_address.clone();
         use_effect_with((), move |_: &()| {
             wasm_bindgen_futures::spawn_local(async move {
-                match gloo_net::http::Request::get("/api/ip").send().await {
-                    Ok(resp) => {
+                match gloo_net::http::Request::get("https://api.ipify.org").send().await {
+                    Ok(resp) if resp.ok() => {
                         if let Ok(text) = resp.text().await {
                             ip_address.set(text.trim().to_string());
                         }
                     }
-                    Err(e) => log::error!("Failed to fetch client info: {}", e),
+                    _ => ip_address.set("Unavailable".to_string()),
                 }
             });
             || ()
