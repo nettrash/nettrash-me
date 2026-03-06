@@ -129,3 +129,74 @@ fn unixtime_tool() -> Html {
         </div>
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use wasm_bindgen_test::*;
+
+    #[wasm_bindgen_test]
+    fn unixtime_empty_input() {
+        assert_eq!(convert_unixtime(""), Err("Empty input".to_string()));
+    }
+
+    #[wasm_bindgen_test]
+    fn unixtime_whitespace_only() {
+        assert_eq!(convert_unixtime("   "), Err("Empty input".to_string()));
+    }
+
+    #[wasm_bindgen_test]
+    fn unixtime_epoch_zero() {
+        assert_eq!(
+            convert_unixtime("0"),
+            Ok("1970-01-01 00:00:00 +00:00".to_string())
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn unixtime_positive_timestamp() {
+        assert_eq!(
+            convert_unixtime("1609459200"),
+            Ok("2021-01-01 00:00:00 +00:00".to_string())
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn unixtime_negative_timestamp() {
+        // Before epoch
+        let result = convert_unixtime("-86400");
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), "1969-12-31 00:00:00 +00:00");
+    }
+
+    #[wasm_bindgen_test]
+    fn unixtime_date_to_timestamp() {
+        assert_eq!(
+            convert_unixtime("2021-01-01 00:00:00 +00:00"),
+            Ok("1609459200".to_string())
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn unixtime_date_with_timezone() {
+        // 2021-01-01 03:00:00 +03:00 == 2021-01-01 00:00:00 UTC == 1609459200
+        assert_eq!(
+            convert_unixtime("2021-01-01 03:00:00 +03:00"),
+            Ok("1609459200".to_string())
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn unixtime_invalid_date_string() {
+        let result = convert_unixtime("not-a-date");
+        assert!(result.is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn unixtime_roundtrip() {
+        let ts = "1700000000";
+        let date = convert_unixtime(ts).unwrap();
+        let back = convert_unixtime(&date).unwrap();
+        assert_eq!(back, ts);
+    }
+}
