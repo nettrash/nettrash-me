@@ -1,0 +1,30 @@
+[package]
+name = "nettrash-me-frontend"
+version = "1.0.0"
+edition = "2021"
+authors = ["nettrash"]
+
+[dependencies]
+yew = { version = "0.21", features = ["csr"] }
+yew-router = "0.18"
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3", features = [
+    "Window", "Navigator", "Geolocation", "Document",
+    "HtmlInputElement", "HtmlTextAreaElement", "HtmlSelectElement",
+] }
+js-sys = "0.3"
+gloo-net = { version = "0.5", features = ["http"] }
+gloo-timers = "0.3"
+base64 = "0.22"
+hex = "0.4"
+uuid = { version = "1", features = ["v4", "js"] }
+md5 = { version = "0.10", package = "md-5" }
+sha1 = "0.10"
+sha2 = "0.10"
+digest = "0.10"
+regex = "1"
+chrono = "0.4"
+urlencoding = "2"
+log = "0.4"
+wasm-logger = "0.2"
