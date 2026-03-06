@@ -134,7 +134,11 @@ fn hash_tool() -> Html {
         let result = result.clone();
         let algorithm = algorithm.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlTextAreaElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlTextAreaElement>()
+                .value();
             source.set(val.clone());
             if val.is_empty() {
                 result.set(String::new());
@@ -149,7 +153,11 @@ fn hash_tool() -> Html {
         let source = source.clone();
         let result = result.clone();
         Callback::from(move |e: Event| {
-            let algo = e.target().unwrap().unchecked_into::<HtmlSelectElement>().value();
+            let algo = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
             algorithm.set(algo.clone());
             let src = (*source).clone();
             if !src.is_empty() {
@@ -226,7 +234,11 @@ fn luhn_tool() -> Html {
         let result_text = result_text.clone();
         let is_valid = is_valid.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             source.set(val.clone());
             if val.trim().is_empty() {
                 result_text.set(String::new());

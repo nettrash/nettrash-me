@@ -88,7 +88,11 @@ fn base64_tool() -> Html {
     let on_source_input = {
         let source = source.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlTextAreaElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlTextAreaElement>()
+                .value();
             source.set(val);
         })
     };
@@ -97,9 +101,7 @@ fn base64_tool() -> Html {
         let source = source.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
-            result.set(
-                base64::engine::general_purpose::STANDARD.encode(source.as_bytes()),
-            );
+            result.set(base64::engine::general_purpose::STANDARD.encode(source.as_bytes()));
         })
     };
 
@@ -161,7 +163,11 @@ fn url_tool() -> Html {
     let on_source_input = {
         let source = source.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlTextAreaElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlTextAreaElement>()
+                .value();
             source.set(val);
         })
     };
@@ -177,11 +183,9 @@ fn url_tool() -> Html {
     let on_decode = {
         let source = source.clone();
         let result = result.clone();
-        Callback::from(move |_: MouseEvent| {
-            match urlencoding::decode(&source) {
-                Ok(s) => result.set(s.into_owned()),
-                Err(e) => result.set(e.to_string()),
-            }
+        Callback::from(move |_: MouseEvent| match urlencoding::decode(&source) {
+            Ok(s) => result.set(s.into_owned()),
+            Err(e) => result.set(e.to_string()),
         })
     };
 
@@ -229,7 +233,11 @@ fn hex_tool() -> Html {
     let on_source_input = {
         let source = source.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlTextAreaElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlTextAreaElement>()
+                .value();
             source.set(val);
         })
     };
@@ -305,7 +313,11 @@ fn regex_tool() -> Html {
     let on_pattern_input = {
         let pattern = pattern.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             pattern.set(val);
         })
     };
@@ -313,7 +325,11 @@ fn regex_tool() -> Html {
     let on_text_input = {
         let text = text.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlTextAreaElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlTextAreaElement>()
+                .value();
             text.set(val);
         })
     };
@@ -322,20 +338,20 @@ fn regex_tool() -> Html {
         let pattern = pattern.clone();
         let text = text.clone();
         let result = result.clone();
-        Callback::from(move |_: MouseEvent| {
-            match regex::Regex::new(&pattern) {
-                Ok(re) => {
-                    let is_matched = re.is_match(&text);
-                    let matches: Vec<String> =
-                        re.find_iter(&text).map(|m| m.as_str().to_string()).collect();
-                    result.set(format!(
-                        "Is Matched: {}.\nMatches:\n{}.",
-                        is_matched,
-                        matches.join("\n")
-                    ));
-                }
-                Err(e) => result.set(e.to_string()),
+        Callback::from(move |_: MouseEvent| match regex::Regex::new(&pattern) {
+            Ok(re) => {
+                let is_matched = re.is_match(&text);
+                let matches: Vec<String> = re
+                    .find_iter(&text)
+                    .map(|m| m.as_str().to_string())
+                    .collect();
+                result.set(format!(
+                    "Is Matched: {}.\nMatches:\n{}.",
+                    is_matched,
+                    matches.join("\n")
+                ));
             }
+            Err(e) => result.set(e.to_string()),
         })
     };
 

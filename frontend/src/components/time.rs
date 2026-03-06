@@ -60,7 +60,11 @@ fn unixtime_tool() -> Html {
     let on_input = {
         let source = source.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             source.set(val);
         })
     };
@@ -68,11 +72,9 @@ fn unixtime_tool() -> Html {
     let on_convert = {
         let source = source.clone();
         let result = result.clone();
-        Callback::from(move |_: MouseEvent| {
-            match convert_unixtime(&source) {
-                Ok(v) => result.set(v),
-                Err(e) => result.set(e),
-            }
+        Callback::from(move |_: MouseEvent| match convert_unixtime(&source) {
+            Ok(v) => result.set(v),
+            Err(e) => result.set(e),
         })
     };
 

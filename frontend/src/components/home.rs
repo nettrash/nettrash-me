@@ -53,7 +53,10 @@ pub fn home() -> Html {
         let ip_address = ip_address.clone();
         use_effect_with((), move |_: &()| {
             wasm_bindgen_futures::spawn_local(async move {
-                match gloo_net::http::Request::get("https://api.ipify.org").send().await {
+                match gloo_net::http::Request::get("https://api.ipify.org")
+                    .send()
+                    .await
+                {
                     Ok(resp) if resp.ok() => {
                         if let Ok(text) = resp.text().await {
                             ip_address.set(text.trim().to_string());
