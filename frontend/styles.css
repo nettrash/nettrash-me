@@ -75,19 +75,20 @@ html {
     background-color: transparent;
 }
 
-/* Material-like form fields */
+/* Material-like form fields (fill appearance) */
 .form-control, .form-select {
     border: none;
     border-bottom: 1px solid rgba(0, 0, 0, 0.42);
-    border-radius: 0;
-    background-color: #f5f5f5;
-    padding: 0.75rem 0.75rem 0.25rem;
+    border-radius: 4px 4px 0 0;
+    background-color: rgba(0, 0, 0, 0.04);
+    padding: 1.25rem 0.75rem 0.25rem;
+    color: rgba(0, 0, 0, 0.87);
 }
 
 .form-control:focus, .form-select:focus {
     border-bottom: 2px solid #673AB7;
     box-shadow: none;
-    background-color: #ececec;
+    background-color: rgba(0, 0, 0, 0.07);
 }
 
 .form-label {
@@ -96,21 +97,54 @@ html {
     margin-bottom: 0;
 }
 
-/* Material-like buttons */
+/* Material-like buttons (deeppurple-amber) */
 .btn-primary {
     background-color: #673AB7;
     border-color: #673AB7;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),
+                0 2px 2px 0 rgba(0,0,0,.14),
+                0 1px 5px 0 rgba(0,0,0,.12);
 }
 
 .btn-primary:hover {
     background-color: #5E35B1;
     border-color: #5E35B1;
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,.2),
+                0 4px 5px 0 rgba(0,0,0,.14),
+                0 1px 10px 0 rgba(0,0,0,.12);
+}
+
+.btn-secondary {
+    background-color: #e0e0e0;
+    border-color: #e0e0e0;
+    color: rgba(0, 0, 0, 0.87);
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),
+                0 2px 2px 0 rgba(0,0,0,.14),
+                0 1px 5px 0 rgba(0,0,0,.12);
+}
+
+.btn-secondary:hover {
+    background-color: #d5d5d5;
+    border-color: #d5d5d5;
+    color: rgba(0, 0, 0, 0.87);
 }
 
 .btn-warning {
     background-color: #FFC107;
     border-color: #FFC107;
     color: rgba(0, 0, 0, 0.87);
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),
+                0 2px 2px 0 rgba(0,0,0,.14),
+                0 1px 5px 0 rgba(0,0,0,.12);
 }
 
 /* Material-like card */
@@ -156,6 +190,12 @@ html {
 
 .bottomtext p {
     font-size: 10pt;
+}
+
+.bottomtext figcaption {
+    font-size: 8pt;
+    padding-top: 0;
+    margin-top: -10px;
 }
 
 .bottomtext figcaption {
