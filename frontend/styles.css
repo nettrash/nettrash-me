@@ -207,3 +207,10 @@ html {
 code {
     color: #e01a76;
 }
+
+/* Active nav link highlight */
+.navbar-nav .nav-link.active {
+    color: #673AB7 !important;
+    font-weight: 500;
+    border-bottom: 2px solid #673AB7;
+}

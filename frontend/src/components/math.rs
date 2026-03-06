@@ -354,3 +354,108 @@ fn guid_tool() -> Html {
         </div>
     }
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use wasm_bindgen_test::*;
+
+    // ---- compute_hash_value tests ----
+
+    #[wasm_bindgen_test]
+    fn hash_md5_empty() {
+        assert_eq!(
+            compute_hash_value("", "md5"),
+            "D41D8CD98F00B204E9800998ECF8427E"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn hash_md5_hello() {
+        assert_eq!(
+            compute_hash_value("hello", "md5"),
+            "5D41402ABC4B2A76B9719D911017C592"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn hash_sha1_hello() {
+        assert_eq!(
+            compute_hash_value("hello", "sha1"),
+            "AAF4C61DDCC5E8A2DABEDE0F3B482CD9AEA9434D"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn hash_sha256_hello() {
+        assert_eq!(
+            compute_hash_value("hello", "sha256"),
+            "2CF24DBA5FB0A30E26E83B2AC5B9E29E1B161E5C1FA7425E73043362938B9824"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn hash_sha384_hello() {
+        let result = compute_hash_value("hello", "sha384");
+        assert_eq!(result.len(), 96);
+        assert!(result.chars().all(|c| c.is_ascii_hexdigit()));
+    }
+
+    #[wasm_bindgen_test]
+    fn hash_sha512_hello() {
+        let result = compute_hash_value("hello", "sha512");
+        assert_eq!(result.len(), 128);
+        assert!(result.chars().all(|c| c.is_ascii_hexdigit()));
+    }
+
+    #[wasm_bindgen_test]
+    fn hash_unsupported_algorithm() {
+        assert_eq!(
+            compute_hash_value("hello", "blake2"),
+            "Unsupported algorithm"
+        );
+    }
+
+    // ---- check_luhn tests ----
+
+    #[wasm_bindgen_test]
+    fn luhn_empty_input() {
+        let (valid, msg) = check_luhn("");
+        assert!(!valid);
+        assert_eq!(msg, "it's not a number");
+    }
+
+    #[wasm_bindgen_test]
+    fn luhn_non_numeric() {
+        let (valid, msg) = check_luhn("abc123");
+        assert!(!valid);
+        assert_eq!(msg, "it's not a number");
+    }
+
+    #[wasm_bindgen_test]
+    fn luhn_valid_card() {
+        // "18": index 0 → 1*2=2, index 1 → 8, sum=10, 10%10==0 → valid
+        let (valid, msg) = check_luhn("18");
+        assert!(valid);
+        assert_eq!(msg, "valid");
+    }
+
+    #[wasm_bindgen_test]
+    fn luhn_invalid_card() {
+        let (valid, msg) = check_luhn("79927398710");
+        assert!(!valid);
+        assert_eq!(msg, "not valid");
+    }
+
+    #[wasm_bindgen_test]
+    fn luhn_single_zero() {
+        let (valid, _) = check_luhn("0");
+        assert!(valid);
+    }
+
+    #[wasm_bindgen_test]
+    fn luhn_whitespace_trimmed() {
+        let (valid, msg) = check_luhn("  ");
+        assert!(!valid);
+        assert_eq!(msg, "it's not a number");
+    }
+}

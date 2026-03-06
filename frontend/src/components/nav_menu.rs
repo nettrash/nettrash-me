@@ -6,6 +6,7 @@ use crate::Route;
 #[function_component(NavMenu)]
 pub fn nav_menu() -> Html {
     let is_expanded = use_state(|| false);
+    let route = use_route::<Route>().unwrap_or(Route::Home);
 
     let toggle = {
         let is_expanded = is_expanded.clone();
@@ -35,22 +36,22 @@ pub fn nav_menu() -> Html {
                     )}>
                         <ul class="navbar-nav flex-grow-1 justify-content-end">
                             <li class="nav-item">
-                                <Link<Route> to={Route::Home} classes="nav-link text-dark">
+                                <Link<Route> to={Route::Home} classes={classes!("nav-link", "text-dark", (route == Route::Home).then_some("active"))}>
                                     { "Home" }
                                 </Link<Route>>
                             </li>
                             <li class="nav-item">
-                                <Link<Route> to={Route::Math} classes="nav-link text-dark">
+                                <Link<Route> to={Route::Math} classes={classes!("nav-link", "text-dark", (route == Route::Math).then_some("active"))}>
                                     { "Math" }
                                 </Link<Route>>
                             </li>
                             <li class="nav-item">
-                                <Link<Route> to={Route::Text} classes="nav-link text-dark">
+                                <Link<Route> to={Route::Text} classes={classes!("nav-link", "text-dark", (route == Route::Text).then_some("active"))}>
                                     { "Text" }
                                 </Link<Route>>
                             </li>
                             <li class="nav-item">
-                                <Link<Route> to={Route::Time} classes="nav-link text-dark">
+                                <Link<Route> to={Route::Time} classes={classes!("nav-link", "text-dark", (route == Route::Time).then_some("active"))}>
                                     { "Time" }
                                 </Link<Route>>
                             </li>
