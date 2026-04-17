@@ -62,6 +62,7 @@ enum MathTab {
     Hash,
     Luhn,
     Guid,
+    Plot,
 }
 
 // ---------------------------------------------------------------------------
@@ -102,12 +103,17 @@ pub fn math() -> Html {
                     <a class={tab_class(&MathTab::Guid)} href="#"
                        onclick={set_tab(MathTab::Guid)}>{ "Guid" }</a>
                 </li>
+                <li class="nav-item">
+                    <a class={tab_class(&MathTab::Plot)} href="#"
+                       onclick={set_tab(MathTab::Plot)}>{ "Plot" }</a>
+                </li>
             </ul>
             <div class="tab-content">
                 { match *active_tab {
                     MathTab::Hash => html! { <HashTool /> },
                     MathTab::Luhn => html! { <LuhnTool /> },
                     MathTab::Guid => html! { <GuidTool /> },
+                    MathTab::Plot => html! { <PlotTool /> },
                 }}
             </div>
             <div class="bottomtext">
@@ -388,6 +394,350 @@ fn guid_tool() -> Html {
         </div>
     }
 }
+// ---------------------------------------------------------------------------
+// Helper: download SVG file
+// ---------------------------------------------------------------------------
+fn download_svg(svg_data: &str, filename: &str) {
+    let window = web_sys::window().unwrap();
+    let document = window.document().unwrap();
+    let blob_parts = js_sys::Array::new();
+    blob_parts.push(&wasm_bindgen::JsValue::from_str(svg_data));
+    let options = web_sys::BlobPropertyBag::new();
+    options.set_type("image/svg+xml");
+    let blob = web_sys::Blob::new_with_str_sequence_and_options(&blob_parts, &options).unwrap();
+    let url = web_sys::Url::create_object_url_with_blob(&blob).unwrap();
+    let a = document.create_element("a").unwrap();
+    a.set_attribute("href", &url).unwrap();
+    a.set_attribute("download", filename).unwrap();
+    a.unchecked_ref::<web_sys::HtmlElement>().click();
+    web_sys::Url::revoke_object_url(&url).unwrap();
+}
+
+// ---------------------------------------------------------------------------
+// Helper: render function plot to SVG
+// ---------------------------------------------------------------------------
+fn render_plot_svg(
+    expr_str: &str,
+    x_min: f64,
+    x_max: f64,
+    y_min: f64,
+    y_max: f64,
+) -> Result<String, String> {
+    let expr: meval::Expr = expr_str.parse().map_err(|e: meval::Error| format!("Parse error: {}", e))?;
+    let func = expr.bind("x").map_err(|e| format!("Bind error: {}", e))?;
+
+    let svg_w: f64 = 600.0;
+    let svg_h: f64 = 400.0;
+    let margin: f64 = 40.0;
+    let plot_w = svg_w - 2.0 * margin;
+    let plot_h = svg_h - 2.0 * margin;
+    let x_range = x_max - x_min;
+    let y_range = y_max - y_min;
+
+    if x_range <= 0.0 || y_range <= 0.0 {
+        return Err("Invalid range: max must be greater than min".to_string());
+    }
+
+    let to_sx = |x: f64| -> f64 { margin + (x - x_min) / x_range * plot_w };
+    let to_sy = |y: f64| -> f64 { margin + (y_max - y) / y_range * plot_h };
+
+    let mut svg = String::new();
+    svg.push_str(&format!(
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {} {}\" width=\"{}\" height=\"{}\" \
+         style=\"background:white\">",
+        svg_w, svg_h, svg_w, svg_h
+    ));
+
+    // Grid lines
+    svg.push_str("<g stroke=\"#e0e0e0\" stroke-width=\"0.5\">");
+    let x_step = nice_step(x_range);
+    let y_step = nice_step(y_range);
+    let mut gx = (x_min / x_step).ceil() * x_step;
+    while gx <= x_max {
+        let sx = to_sx(gx);
+        svg.push_str(&format!(
+            "<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\"/>",
+            sx, margin, sx, margin + plot_h
+        ));
+        gx += x_step;
+    }
+    let mut gy = (y_min / y_step).ceil() * y_step;
+    while gy <= y_max {
+        let sy = to_sy(gy);
+        svg.push_str(&format!(
+            "<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\"/>",
+            margin, sy, margin + plot_w, sy
+        ));
+        gy += y_step;
+    }
+    svg.push_str("</g>");
+
+    // Axes (if visible)
+    svg.push_str("<g stroke=\"#999\" stroke-width=\"1\">");
+    if y_min <= 0.0 && y_max >= 0.0 {
+        let sy = to_sy(0.0);
+        svg.push_str(&format!(
+            "<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\"/>",
+            margin, sy, margin + plot_w, sy
+        ));
+    }
+    if x_min <= 0.0 && x_max >= 0.0 {
+        let sx = to_sx(0.0);
+        svg.push_str(&format!(
+            "<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\"/>",
+            sx, margin, sx, margin + plot_h
+        ));
+    }
+    svg.push_str("</g>");
+
+    // Axis labels
+    svg.push_str("<g font-size=\"10\" fill=\"#666\" font-family=\"sans-serif\">");
+    let mut gx = (x_min / x_step).ceil() * x_step;
+    while gx <= x_max {
+        let sx = to_sx(gx);
+        svg.push_str(&format!(
+            "<text x=\"{:.1}\" y=\"{:.1}\" text-anchor=\"middle\">{}</text>",
+            sx, margin + plot_h + 15.0, format_label(gx)
+        ));
+        gx += x_step;
+    }
+    let mut gy = (y_min / y_step).ceil() * y_step;
+    while gy <= y_max {
+        let sy = to_sy(gy);
+        svg.push_str(&format!(
+            "<text x=\"{:.1}\" y=\"{:.1}\" text-anchor=\"end\" dominant-baseline=\"middle\">{}</text>",
+            margin - 5.0, sy, format_label(gy)
+        ));
+        gy += y_step;
+    }
+    svg.push_str("</g>");
+
+    // Plot border
+    svg.push_str(&format!(
+        "<rect x=\"{:.1}\" y=\"{:.1}\" width=\"{:.1}\" height=\"{:.1}\" \
+         fill=\"none\" stroke=\"#ccc\" stroke-width=\"1\"/>",
+        margin, margin, plot_w, plot_h
+    ));
+
+    // Function curve
+    let steps = 1000usize;
+    let mut points = String::new();
+    let mut first = true;
+    for i in 0..=steps {
+        let x = x_min + (i as f64) / (steps as f64) * x_range;
+        let y = func(x);
+        if y.is_finite() && y >= y_min && y <= y_max {
+            let sx = to_sx(x);
+            let sy = to_sy(y);
+            if first {
+                points.push_str(&format!("{:.2},{:.2}", sx, sy));
+                first = false;
+            } else {
+                points.push_str(&format!(" {:.2},{:.2}", sx, sy));
+            }
+        } else if !first {
+            // Break the polyline at discontinuities
+            svg.push_str(&format!(
+                "<polyline points=\"{}\" fill=\"none\" stroke=\"#673AB7\" stroke-width=\"2\"/>",
+                points
+            ));
+            points.clear();
+            first = true;
+        }
+    }
+    if !points.is_empty() {
+        svg.push_str(&format!(
+            "<polyline points=\"{}\" fill=\"none\" stroke=\"#673AB7\" stroke-width=\"2\"/>",
+            points
+        ));
+    }
+
+    svg.push_str("</svg>");
+    Ok(svg)
+}
+
+fn nice_step(range: f64) -> f64 {
+    let rough = range / 8.0;
+    let mag = 10f64.powf(rough.log10().floor());
+    let norm = rough / mag;
+    let step = if norm <= 1.5 {
+        1.0
+    } else if norm <= 3.0 {
+        2.0
+    } else if norm <= 7.0 {
+        5.0
+    } else {
+        10.0
+    };
+    step * mag
+}
+
+fn format_label(val: f64) -> String {
+    if val == 0.0 {
+        "0".to_string()
+    } else if val.abs() >= 1000.0 || val.abs() < 0.01 {
+        format!("{:.1e}", val)
+    } else if (val - val.round()).abs() < 1e-9 {
+        format!("{}", val as i64)
+    } else {
+        format!("{:.2}", val)
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Plot tool
+// ---------------------------------------------------------------------------
+#[function_component(PlotTool)]
+fn plot_tool() -> Html {
+    let expr = use_state(|| storage::get("plot_expr").unwrap_or_else(|| "sin(x)".to_string()));
+    let x_min_s = use_state(|| storage::get("plot_xmin").unwrap_or_else(|| "-10".to_string()));
+    let x_max_s = use_state(|| storage::get("plot_xmax").unwrap_or_else(|| "10".to_string()));
+    let y_min_s = use_state(|| storage::get("plot_ymin").unwrap_or_else(|| "-2".to_string()));
+    let y_max_s = use_state(|| storage::get("plot_ymax").unwrap_or_else(|| "2".to_string()));
+    let svg_output = use_state(String::new);
+
+    let on_expr_input = {
+        let expr = expr.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            storage::set("plot_expr", &val);
+            expr.set(val);
+        })
+    };
+    let on_xmin_input = {
+        let x_min_s = x_min_s.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            storage::set("plot_xmin", &val);
+            x_min_s.set(val);
+        })
+    };
+    let on_xmax_input = {
+        let x_max_s = x_max_s.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            storage::set("plot_xmax", &val);
+            x_max_s.set(val);
+        })
+    };
+    let on_ymin_input = {
+        let y_min_s = y_min_s.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            storage::set("plot_ymin", &val);
+            y_min_s.set(val);
+        })
+    };
+    let on_ymax_input = {
+        let y_max_s = y_max_s.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            storage::set("plot_ymax", &val);
+            y_max_s.set(val);
+        })
+    };
+
+    let on_plot = {
+        let expr = expr.clone();
+        let x_min_s = x_min_s.clone();
+        let x_max_s = x_max_s.clone();
+        let y_min_s = y_min_s.clone();
+        let y_max_s = y_max_s.clone();
+        let svg_output = svg_output.clone();
+        Callback::from(move |_: MouseEvent| {
+            let x_min = x_min_s.parse::<f64>().unwrap_or(-10.0);
+            let x_max = x_max_s.parse::<f64>().unwrap_or(10.0);
+            let y_min = y_min_s.parse::<f64>().unwrap_or(-2.0);
+            let y_max = y_max_s.parse::<f64>().unwrap_or(2.0);
+            match render_plot_svg(&expr, x_min, x_max, y_min, y_max) {
+                Ok(svg) => svg_output.set(svg),
+                Err(e) => svg_output.set(format!("Error: {}", e)),
+            }
+        })
+    };
+
+    let on_download = {
+        let svg_output = svg_output.clone();
+        Callback::from(move |_: MouseEvent| {
+            if !svg_output.is_empty() && svg_output.starts_with('<') {
+                download_svg(&svg_output, "plot.svg");
+            }
+        })
+    };
+
+    let on_clear = {
+        let expr = expr.clone();
+        let x_min_s = x_min_s.clone();
+        let x_max_s = x_max_s.clone();
+        let y_min_s = y_min_s.clone();
+        let y_max_s = y_max_s.clone();
+        let svg_output = svg_output.clone();
+        Callback::from(move |_: MouseEvent| {
+            storage::remove("plot_expr");
+            storage::remove("plot_xmin");
+            storage::remove("plot_xmax");
+            storage::remove("plot_ymin");
+            storage::remove("plot_ymax");
+            expr.set("sin(x)".to_string());
+            x_min_s.set("-10".to_string());
+            x_max_s.set("10".to_string());
+            y_min_s.set("-2".to_string());
+            y_max_s.set("2".to_string());
+            svg_output.set(String::new());
+        })
+    };
+
+    html! {
+        <div class="tool-container">
+            <div class="button-column">
+                <button class="btn btn-primary w-100 mb-2" onclick={on_plot}>{ "Plot" }</button>
+                <button class="btn btn-outline-primary w-100 mb-2" onclick={on_download}
+                        disabled={svg_output.is_empty() || !svg_output.starts_with('<')}>{ "Download" }</button>
+                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
+            </div>
+            <div class="content-column">
+                <div class="mb-3">
+                    <label class="form-label">{ "f(x) =" }</label>
+                    <input type="text" class="form-control"
+                           placeholder="sin(x)"
+                           value={(*expr).clone()}
+                           oninput={on_expr_input} />
+                    <small class="text-muted">{ "Supported: +, -, *, /, ^, sin, cos, tan, asin, acos, atan, sqrt, abs, exp, ln, log2, log10, floor, ceil, pi, e" }</small>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <label class="form-label">{ "X min" }</label>
+                        <input type="text" class="form-control" value={(*x_min_s).clone()} oninput={on_xmin_input} />
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label">{ "X max" }</label>
+                        <input type="text" class="form-control" value={(*x_max_s).clone()} oninput={on_xmax_input} />
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label">{ "Y min" }</label>
+                        <input type="text" class="form-control" value={(*y_min_s).clone()} oninput={on_ymin_input} />
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label">{ "Y max" }</label>
+                        <input type="text" class="form-control" value={(*y_max_s).clone()} oninput={on_ymax_input} />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    if !svg_output.is_empty() && svg_output.starts_with('<') {
+                        <div class="text-center" style="border:1px solid #ddd; border-radius:4px; padding:8px; background:#fafafa;">
+                            <div style="max-width:100%; overflow-x:auto;">
+                                {Html::from_html_unchecked(AttrValue::from((*svg_output).clone()))}
+                            </div>
+                        </div>
+                    } else if !svg_output.is_empty() {
+                        <div class="alert alert-danger">{ &*svg_output }</div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

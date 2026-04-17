@@ -3,6 +3,14 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use yew::prelude::*;
 
+use crate::storage;
+
+#[derive(Clone, PartialEq)]
+enum HomeTab {
+    Info,
+    GitHub,
+}
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["google", "maps"], js_name = Map)]
@@ -39,6 +47,34 @@ fn init_map(element: &web_sys::HtmlElement, lat: f64, lng: f64) {
 
 #[function_component(Home)]
 pub fn home() -> Html {
+    let active_tab = use_state(|| {
+        match storage::get("home_tab").as_deref() {
+            Some("github") => HomeTab::GitHub,
+            _ => HomeTab::Info,
+        }
+    });
+
+    let tab_class = |tab: &HomeTab| -> &'static str {
+        if *active_tab == *tab {
+            "nav-link active"
+        } else {
+            "nav-link"
+        }
+    };
+
+    let set_tab = |tab: HomeTab| {
+        let active_tab = active_tab.clone();
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
+            let key = match &tab {
+                HomeTab::Info => "info",
+                HomeTab::GitHub => "github",
+            };
+            storage::set("home_tab", key);
+            active_tab.set(tab.clone());
+        })
+    };
+
     let ip_address = use_state(String::new);
     let client_date = use_state(String::new);
     let client_time = use_state(String::new);
@@ -172,43 +208,59 @@ pub fn home() -> Html {
         <>
             <ul class="nav nav-tabs justify-content-end mb-3">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">{ "Info" }</a>
+                    <a class={tab_class(&HomeTab::Info)} href="#"
+                       onclick={set_tab(HomeTab::Info)}>{ "Info" }</a>
+                </li>
+                <li class="nav-item">
+                    <a class={tab_class(&HomeTab::GitHub)} href="#"
+                       onclick={set_tab(HomeTab::GitHub)}>{ "GitHub" }</a>
                 </li>
             </ul>
-            <div class="card">
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">{ "Local Date" }</label>
-                        <input type="text" class="form-control" readonly=true
-                               value={(*client_date).clone()} />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">{ "Local Time" }</label>
-                        <input type="text" class="form-control" readonly=true
-                               value={(*client_time).clone()} />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">{ "UTC" }</label>
-                        <input type="text" class="form-control" readonly=true
-                               value={(*client_utc).clone()} />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">{ "IP Address" }</label>
-                        <input type="text" class="form-control" readonly=true
-                               value={(*ip_address).clone()} />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">{ "Location" }</label>
-                        <input type="text" class="form-control" readonly=true
-                               value={(*location).clone()} />
-                    </div>
-                </div>
-            </div>
-            { if !*location_denied {
-                html! { <div ref={map_ref} class="google-map"></div> }
-            } else {
-                html! {}
-            }}
+            {
+                match *active_tab {
+                    HomeTab::Info => html! {
+                        <>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">{ "Local Date" }</label>
+                                        <input type="text" class="form-control" readonly=true
+                                               value={(*client_date).clone()} />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{ "Local Time" }</label>
+                                        <input type="text" class="form-control" readonly=true
+                                               value={(*client_time).clone()} />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{ "UTC" }</label>
+                                        <input type="text" class="form-control" readonly=true
+                                               value={(*client_utc).clone()} />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{ "IP Address" }</label>
+                                        <input type="text" class="form-control" readonly=true
+                                               value={(*ip_address).clone()} />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">{ "Location" }</label>
+                                        <input type="text" class="form-control" readonly=true
+                                               value={(*location).clone()} />
+                                    </div>
+                                </div>
+                            </div>
+                            { if !*location_denied {
+                                html! { <div ref={map_ref} class="google-map"></div> }
+                            } else {
+                                html! {}
+                            }}
+                        </>
+                    },
+                    HomeTab::GitHub => html! {
+                        <GitHubTab />
+                    },
+                }
+            }
             <div class="bottomtext">
                 <figure class="text-end">
                     <blockquote class="blockquote">
@@ -220,5 +272,122 @@ pub fn home() -> Html {
                 </figure>
             </div>
         </>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// GitHub tab
+// ---------------------------------------------------------------------------
+#[function_component(GitHubTab)]
+fn github_tab() -> Html {
+    html! {
+        <div class="tool-container">
+            <div class="content-column" style="max-width:100%;flex:1;">
+                // Profile card
+                <div class="card mb-4">
+                    <div class="card-body d-flex align-items-center">
+                        <img src="https://avatars.githubusercontent.com/u/6607118?v=4"
+                             alt="nettrash" class="rounded-circle me-3"
+                             style="width:64px;height:64px;" />
+                        <div>
+                            <h5 class="card-title mb-1">
+                                <a href="https://github.com/nettrash" target="_blank"
+                                   rel="noopener noreferrer" class="text-decoration-none">
+                                    { "nettrash" }
+                                </a>
+                            </h5>
+                            <p class="text-muted mb-0">{ "London, UK" }</p>
+                            <a href="https://nettrash.me" target="_blank"
+                               rel="noopener noreferrer" class="text-muted small">
+                                { "nettrash.me" }
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                // Highlighted projects
+                <h6 class="mb-3">{ "Highlighted Projects" }</h6>
+
+                // pgc
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">
+                            <a href="https://github.com/nettrash/pgc" target="_blank"
+                               rel="noopener noreferrer" class="text-decoration-none">
+                                { "pgc" }
+                            </a>
+                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Rust" }</span>
+                        </h6>
+                        <p class="card-text mb-2">
+                            { "PostgreSQL Database Comparer — a CLI tool for comparing two PostgreSQL database schemas and generating delta SQL scripts. Supports schema dumps, structure comparison with DROP/CREATE/ALTER, clear (drop-all) scripts, SSL, configurable connection pooling, and single-transaction output." }
+                        </p>
+                        <div class="d-flex gap-3 text-muted small">
+                            <span>{ "⭐ 2" }</span>
+                            <span>{ "🍴 2" }</span>
+                            <span>
+                                <a href="https://github.com/nettrash/pgc/releases/tag/v1.0.15"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "v1.0.15" }
+                                </a>
+                            </span>
+                            <span class="badge bg-light text-dark">{ "MIT" }</span>
+                        </div>
+                    </div>
+                </div>
+
+                // pg_dbms_job
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">
+                            <a href="https://github.com/nettrash/pg_dbms_job" target="_blank"
+                               rel="noopener noreferrer" class="text-decoration-none">
+                                { "pg_dbms_job" }
+                            </a>
+                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Rust" }</span>
+                        </h6>
+                        <p class="card-text mb-2">
+                            { "PostgreSQL extension providing full compatibility with Oracle's DBMS_JOB module. Manages scheduled and asynchronous jobs via a dedicated scheduler daemon. Rust fork with enhanced features." }
+                        </p>
+                        <div class="d-flex gap-3 text-muted small">
+                            <span>{ "⭐ 4" }</span>
+                            <span>
+                                <a href="https://github.com/nettrash/pg_dbms_job/releases/tag/v1.5.8-rust"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "v1.5.8-rust" }
+                                </a>
+                            </span>
+                            <span class="badge bg-light text-dark">{ "PostgreSQL" }</span>
+                        </div>
+                    </div>
+                </div>
+
+                // nettrash.me
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">
+                            <a href="https://github.com/nettrash/nettrash-me" target="_blank"
+                               rel="noopener noreferrer" class="text-decoration-none">
+                                { "nettrash.me" }
+                            </a>
+                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Rust / WASM" }</span>
+                        </h6>
+                        <p class="card-text mb-2">
+                            { "This website — a collection of useful developer tools built entirely in Rust with Yew (WebAssembly). Includes converters, encryption, math utilities, text processing, and more, all running client-side in the browser." }
+                        </p>
+                        <div class="d-flex gap-3 text-muted small">
+                            <span>
+                                <a href="https://nettrash.me" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "nettrash.me" }
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     }
 }
