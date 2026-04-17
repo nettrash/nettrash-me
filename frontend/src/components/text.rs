@@ -5,6 +5,12 @@ use yew::prelude::*;
 
 use crate::storage;
 
+fn random_bytes(len: usize) -> Vec<u8> {
+    let mut buf = vec![0u8; len];
+    getrandom::getrandom(&mut buf).expect("getrandom failed");
+    buf
+}
+
 // ---------------------------------------------------------------------------
 // Tab enum
 // ---------------------------------------------------------------------------
@@ -14,6 +20,7 @@ enum TextTab {
     Url,
     Hex,
     RegEx,
+    Password,
 }
 
 // ---------------------------------------------------------------------------
@@ -58,13 +65,18 @@ pub fn text() -> Html {
                     <a class={tab_class(&TextTab::RegEx)} href="#"
                        onclick={set_tab(TextTab::RegEx)}>{ "RegEx" }</a>
                 </li>
+                <li class="nav-item">
+                    <a class={tab_class(&TextTab::Password)} href="#"
+                       onclick={set_tab(TextTab::Password)}>{ "Password" }</a>
+                </li>
             </ul>
             <div class="tab-content">
                 { match *active_tab {
-                    TextTab::Base64 => html! { <Base64Tool /> },
-                    TextTab::Url    => html! { <UrlTool /> },
-                    TextTab::Hex    => html! { <HexTool /> },
-                    TextTab::RegEx  => html! { <RegExTool /> },
+                    TextTab::Base64   => html! { <Base64Tool /> },
+                    TextTab::Url      => html! { <UrlTool /> },
+                    TextTab::Hex      => html! { <HexTool /> },
+                    TextTab::RegEx    => html! { <RegExTool /> },
+                    TextTab::Password => html! { <PasswordTool /> },
                 }}
             </div>
             <div class="bottomtext">
@@ -422,6 +434,121 @@ fn regex_tool() -> Html {
                 <div class="mb-3">
                     <label class="form-label">{ "Result value" }</label>
                     <textarea class="form-control" rows="3" readonly=true
+                              value={(*result).clone()}></textarea>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Password generator tool
+// ---------------------------------------------------------------------------
+#[function_component(PasswordTool)]
+fn password_tool() -> Html {
+    let length = use_state(|| storage::get("pwd_length").and_then(|s| s.parse::<usize>().ok()).unwrap_or(16));
+    let use_upper = use_state(|| storage::get("pwd_upper").map(|s| s == "true").unwrap_or(true));
+    let use_lower = use_state(|| storage::get("pwd_lower").map(|s| s == "true").unwrap_or(true));
+    let use_digits = use_state(|| storage::get("pwd_digits").map(|s| s == "true").unwrap_or(true));
+    let use_special = use_state(|| storage::get("pwd_special").map(|s| s == "true").unwrap_or(true));
+    let result = use_state(|| storage::get("pwd_result").unwrap_or_default());
+
+    let on_length_input = {
+        let length = length.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            if let Ok(n) = val.parse::<usize>() {
+                let n = n.clamp(1, 128);
+                storage::set("pwd_length", &n.to_string());
+                length.set(n);
+            }
+        })
+    };
+
+    let toggle_cb = |state: UseStateHandle<bool>, key: &'static str| {
+        Callback::from(move |e: Event| {
+            let checked = e.target().unwrap().unchecked_into::<HtmlInputElement>().checked();
+            storage::set(key, if checked { "true" } else { "false" });
+            state.set(checked);
+        })
+    };
+
+    let on_upper = toggle_cb(use_upper.clone(), "pwd_upper");
+    let on_lower = toggle_cb(use_lower.clone(), "pwd_lower");
+    let on_digits = toggle_cb(use_digits.clone(), "pwd_digits");
+    let on_special = toggle_cb(use_special.clone(), "pwd_special");
+
+    let on_generate = {
+        let length = length.clone();
+        let use_upper = use_upper.clone();
+        let use_lower = use_lower.clone();
+        let use_digits = use_digits.clone();
+        let use_special = use_special.clone();
+        let result = result.clone();
+        Callback::from(move |_: MouseEvent| {
+            let mut charset = String::new();
+            if *use_upper { charset.push_str("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); }
+            if *use_lower { charset.push_str("abcdefghijklmnopqrstuvwxyz"); }
+            if *use_digits { charset.push_str("0123456789"); }
+            if *use_special { charset.push_str("!@#$%^&*()-_=+[]{}|;:,.<>?"); }
+            if charset.is_empty() {
+                result.set("Select at least one character set.".to_string());
+                return;
+            }
+            let chars: Vec<char> = charset.chars().collect();
+            let bytes = random_bytes(*length);
+            let pwd: String = bytes.iter().map(|b| chars[*b as usize % chars.len()]).collect();
+            storage::set("pwd_result", &pwd);
+            result.set(pwd);
+        })
+    };
+
+    let on_clear = {
+        let result = result.clone();
+        Callback::from(move |_: MouseEvent| {
+            storage::remove("pwd_result");
+            result.set(String::new());
+        })
+    };
+
+    html! {
+        <div class="tool-container">
+            <div class="button-column">
+                <button class="btn btn-primary w-100 mb-2" onclick={on_generate}>{ "Generate" }</button>
+                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
+            </div>
+            <div class="content-column">
+                <div class="mb-3">
+                    <label class="form-label">{ "Length" }</label>
+                    <input type="number" class="form-control" min="1" max="128"
+                           value={length.to_string()}
+                           oninput={on_length_input} />
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="pwd-upper"
+                               checked={*use_upper} onchange={on_upper} />
+                        <label class="form-check-label" for="pwd-upper">{ "A-Z" }</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="pwd-lower"
+                               checked={*use_lower} onchange={on_lower} />
+                        <label class="form-check-label" for="pwd-lower">{ "a-z" }</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="pwd-digits"
+                               checked={*use_digits} onchange={on_digits} />
+                        <label class="form-check-label" for="pwd-digits">{ "0-9" }</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="pwd-special"
+                               checked={*use_special} onchange={on_special} />
+                        <label class="form-check-label" for="pwd-special">{ "!@#$..." }</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Password" }</label>
+                    <textarea class="form-control" rows="2" readonly=true
                               value={(*result).clone()}></textarea>
                 </div>
             </div>

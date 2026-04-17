@@ -1,4 +1,5 @@
 use aes::{Aes128, Aes192, Aes256};
+use base64::Engine;
 use blowfish::Blowfish;
 use cbc::cipher::{block_padding::Pkcs7, BlockDecryptMut, BlockEncryptMut, KeyIvInit};
 use des::{Des, TdesEde3};
@@ -262,6 +263,7 @@ fn decrypt_data(algorithm: &str, key_hex: &str, ciphertext_hex: &str) -> Result<
 enum EncryptionTab {
     Symmetric,
     Asymmetric,
+    JwtDecoder,
 }
 
 // ---------------------------------------------------------------------------
@@ -298,11 +300,16 @@ pub fn encryption() -> Html {
                     <a class={tab_class(&EncryptionTab::Asymmetric)} href="#"
                        onclick={set_tab(EncryptionTab::Asymmetric)}>{ "Asymmetric" }</a>
                 </li>
+                <li class="nav-item">
+                    <a class={tab_class(&EncryptionTab::JwtDecoder)} href="#"
+                       onclick={set_tab(EncryptionTab::JwtDecoder)}>{ "JWT Decoder" }</a>
+                </li>
             </ul>
             <div class="tab-content">
                 { match *active_tab {
                     EncryptionTab::Symmetric  => html! { <SymmetricTool /> },
                     EncryptionTab::Asymmetric => html! { <AsymmetricTool /> },
+                    EncryptionTab::JwtDecoder => html! { <JwtDecoderTool /> },
                 }}
             </div>
             <div class="bottomtext">
@@ -2012,5 +2019,174 @@ fn x25519_tool() -> Html {
             </div>
         </div>
         </>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// JWT Helpers
+// ---------------------------------------------------------------------------
+fn decode_jwt_part(part: &str) -> Result<String, String> {
+    let padded = match part.len() % 4 {
+        2 => format!("{}==", part),
+        3 => format!("{}=", part),
+        0 => part.to_string(),
+        _ => return Err("Invalid base64url segment".to_string()),
+    };
+    let replaced = padded.replace('-', "+").replace('_', "/");
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(replaced.as_bytes())
+        .map_err(|e| format!("Base64 decode error: {}", e))?;
+    let json_str =
+        String::from_utf8(bytes).map_err(|e| format!("UTF-8 error: {}", e))?;
+    match js_sys::JSON::parse(&json_str) {
+        Ok(obj) => match js_sys::JSON::stringify_with_replacer_and_space(
+            &obj,
+            &wasm_bindgen::JsValue::NULL,
+            &wasm_bindgen::JsValue::from_f64(2.0),
+        ) {
+            Ok(s) => Ok(s.as_string().unwrap_or(json_str)),
+            Err(_) => Ok(json_str),
+        },
+        Err(_) => Ok(json_str),
+    }
+}
+
+fn format_timestamp(val: &js_sys::JsString) -> Option<String> {
+    let json_str = val.as_string()?;
+    let parsed: Result<serde_json::Value, _> = serde_json::from_str(&json_str);
+    if let Ok(serde_json::Value::Object(map)) = parsed {
+        let time_fields = ["iat", "exp", "nbf", "auth_time"];
+        let mut notes = Vec::new();
+        for field in &time_fields {
+            if let Some(serde_json::Value::Number(n)) = map.get(*field) {
+                if let Some(ts) = n.as_i64() {
+                    let dt = chrono::DateTime::from_timestamp(ts, 0);
+                    if let Some(dt) = dt {
+                        notes.push(format!("  {} = {}", field, dt.format("%Y-%m-%d %H:%M:%S UTC")));
+                    }
+                }
+            }
+        }
+        if !notes.is_empty() {
+            return Some(notes.join("\n"));
+        }
+    }
+    None
+}
+
+// ---------------------------------------------------------------------------
+// JWT Decoder tool
+// ---------------------------------------------------------------------------
+#[function_component(JwtDecoderTool)]
+fn jwt_decoder_tool() -> Html {
+    let source = use_state(|| storage::get("jwt_source").unwrap_or_default());
+    let header = use_state(|| storage::get("jwt_header").unwrap_or_default());
+    let payload = use_state(|| storage::get("jwt_payload").unwrap_or_default());
+    let signature = use_state(|| storage::get("jwt_signature").unwrap_or_default());
+
+    let on_source_input = {
+        let source = source.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlTextAreaElement>()
+                .value();
+            storage::set("jwt_source", &val);
+            source.set(val);
+        })
+    };
+
+    let on_decode = {
+        let source = source.clone();
+        let header = header.clone();
+        let payload = payload.clone();
+        let signature = signature.clone();
+        Callback::from(move |_: MouseEvent| {
+            let token = source.trim().to_string();
+            let parts: Vec<&str> = token.split('.').collect();
+            if parts.len() != 3 {
+                header.set("Error: JWT must have 3 parts separated by dots.".to_string());
+                payload.set(String::new());
+                signature.set(String::new());
+                return;
+            }
+
+            let h = match decode_jwt_part(parts[0]) {
+                Ok(s) => s,
+                Err(e) => format!("Header error: {}", e),
+            };
+            storage::set("jwt_header", &h);
+            header.set(h);
+
+            let p = match decode_jwt_part(parts[1]) {
+                Ok(s) => {
+                    let annotations = format_timestamp(
+                        &js_sys::JsString::from(s.as_str()),
+                    );
+                    match annotations {
+                        Some(notes) => format!("{}\n\n// Timestamps:\n{}", s, notes),
+                        None => s,
+                    }
+                }
+                Err(e) => format!("Payload error: {}", e),
+            };
+            storage::set("jwt_payload", &p);
+            payload.set(p);
+
+            let sig = parts[2].to_string();
+            storage::set("jwt_signature", &sig);
+            signature.set(sig);
+        })
+    };
+
+    let on_clear = {
+        let source = source.clone();
+        let header = header.clone();
+        let payload = payload.clone();
+        let signature = signature.clone();
+        Callback::from(move |_: MouseEvent| {
+            storage::remove("jwt_source");
+            storage::remove("jwt_header");
+            storage::remove("jwt_payload");
+            storage::remove("jwt_signature");
+            source.set(String::new());
+            header.set(String::new());
+            payload.set(String::new());
+            signature.set(String::new());
+        })
+    };
+
+    html! {
+        <div class="tool-container">
+            <div class="button-column">
+                <button class="btn btn-primary w-100 mb-2" onclick={on_decode}>{ "Decode" }</button>
+                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
+            </div>
+            <div class="content-column">
+                <div class="mb-3">
+                    <label class="form-label">{ "JWT Token" }</label>
+                    <textarea class="form-control" rows="4"
+                              placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                              value={(*source).clone()}
+                              oninput={on_source_input}></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Header" }</label>
+                    <textarea class="form-control" rows="4" readonly=true
+                              value={(*header).clone()}></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Payload" }</label>
+                    <textarea class="form-control" rows="8" readonly=true
+                              value={(*payload).clone()}></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Signature (base64url)" }</label>
+                    <textarea class="form-control" rows="2" readonly=true
+                              value={(*signature).clone()}></textarea>
+                </div>
+            </div>
+        </div>
     }
 }

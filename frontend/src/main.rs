@@ -4,12 +4,12 @@ mod storage;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
+use components::converters::Converters;
 use components::encryption::Encryption;
 use components::home::Home;
 use components::math::Math;
 use components::nav_menu::NavMenu;
 use components::text::Text;
-use components::time::Time;
 
 #[derive(Clone, Debug, Routable, PartialEq)]
 pub enum Route {
@@ -19,8 +19,8 @@ pub enum Route {
     Math,
     #[at("/text")]
     Text,
-    #[at("/time")]
-    Time,
+    #[at("/converters")]
+    Converters,
     #[at("/encryption")]
     Encryption,
     #[not_found]
@@ -33,7 +33,7 @@ fn switch(route: Route) -> Html {
         Route::Home => html! { <Home /> },
         Route::Math => html! { <Math /> },
         Route::Text => html! { <Text /> },
-        Route::Time => html! { <Time /> },
+        Route::Converters => html! { <Converters /> },
         Route::Encryption => html! { <Encryption /> },
         Route::NotFound => html! { <h1>{ "404 — Not Found" }</h1> },
     }

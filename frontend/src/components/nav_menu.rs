@@ -51,8 +51,8 @@ pub fn nav_menu() -> Html {
                                 </Link<Route>>
                             </li>
                             <li class="nav-item">
-                                <Link<Route> to={Route::Time} classes={classes!("nav-link", "text-dark", (route == Route::Time).then_some("active"))}>
-                                    { "Time" }
+                                <Link<Route> to={Route::Converters} classes={classes!("nav-link", "text-dark", (route == Route::Converters).then_some("active"))}>
+                                    { "Converters" }
                                 </Link<Route>>
                             </li>
                             <li class="nav-item">
