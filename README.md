@@ -1,6 +1,6 @@
 # nettrash.me
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue)
+![Version](https://img.shields.io/badge/version-1.1.2-blue)
 
 A developer utility toolkit built with **Rust** + **WebAssembly** (Yew framework), served by **nginx**.
 

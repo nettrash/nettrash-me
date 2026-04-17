@@ -347,6 +347,7 @@ fn guid_tool() -> Html {
         Callback::from(move |_: MouseEvent| {
             let mut list = (*guids).clone();
             list.insert(0, uuid::Uuid::new_v4().to_string());
+            list.truncate(10);
             storage::set("guid_list", &list.join("\n"));
             guids.set(list);
         })

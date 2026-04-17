@@ -46,6 +46,7 @@ pub fn home() -> Html {
     let location = use_state(|| "Detecting...".to_string());
     let latitude = use_state(|| 0.0_f64);
     let longitude = use_state(|| 0.0_f64);
+    let location_denied = use_state(|| false);
     let map_ref = use_node_ref();
 
     // Fetch client IP using public API (no server-side endpoint needed)
@@ -92,6 +93,7 @@ pub fn home() -> Html {
         let location = location.clone();
         let latitude = latitude.clone();
         let longitude = longitude.clone();
+        let location_denied = location_denied.clone();
         use_effect_with((), move |_: &()| {
             let window = web_sys::window().unwrap();
             let navigator = window.navigator();
@@ -100,6 +102,7 @@ pub fn home() -> Html {
                 let lat_ok = latitude.clone();
                 let lng_ok = longitude.clone();
                 let loc_err = location.clone();
+                let denied = location_denied.clone();
 
                 let success_cb = Closure::wrap(Box::new(move |pos: JsValue| {
                     if let Ok(coords) = js_sys::Reflect::get(&pos, &"coords".into()) {
@@ -117,8 +120,24 @@ pub fn home() -> Html {
                     }
                 }) as Box<dyn FnMut(JsValue)>);
 
-                let error_cb = Closure::wrap(Box::new(move |_: JsValue| {
-                    loc_err.set("Access to the Location service is not allowed.".to_string());
+                let error_cb = Closure::wrap(Box::new(move |err: JsValue| {
+                    let code = js_sys::Reflect::get(&err, &"code".into())
+                        .ok()
+                        .and_then(|v| v.as_f64())
+                        .unwrap_or(0.0) as u32;
+                    let message = js_sys::Reflect::get(&err, &"message".into())
+                        .ok()
+                        .and_then(|v| v.as_string())
+                        .unwrap_or_default();
+                    match code {
+                        1 => {
+                            loc_err.set("Permission denied.".to_string());
+                            denied.set(true);
+                        }
+                        2 => loc_err.set(format!("Position unavailable: {message}")),
+                        3 => loc_err.set("Location request timed out.".to_string()),
+                        _ => loc_err.set(format!("Location error: {message}")),
+                    }
                 }) as Box<dyn FnMut(JsValue)>);
 
                 let _ = geo.get_current_position_with_error_callback(
@@ -185,7 +204,11 @@ pub fn home() -> Html {
                     </div>
                 </div>
             </div>
-            <div ref={map_ref} class="google-map"></div>
+            { if !*location_denied {
+                html! { <div ref={map_ref} class="google-map"></div> }
+            } else {
+                html! {}
+            }}
             <div class="bottomtext">
                 <figure class="text-end">
                     <blockquote class="blockquote">
