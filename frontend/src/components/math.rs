@@ -3,6 +3,8 @@ use wasm_bindgen::JsCast;
 use web_sys::{HtmlInputElement, HtmlSelectElement, HtmlTextAreaElement};
 use yew::prelude::*;
 
+use crate::storage;
+
 // ---------------------------------------------------------------------------
 // Hash helper
 // ---------------------------------------------------------------------------
@@ -111,7 +113,7 @@ pub fn math() -> Html {
             <div class="bottomtext">
                 <figure class="text-end">
                     <blockquote class="blockquote">
-                        <p>{ "A most useful online kit of math tools." }</p>
+                        <p>{ "Just useful tools." }</p>
                     </blockquote>
                     <figcaption class="blockquote-footer">{ "nettrash" }</figcaption>
                 </figure>
@@ -125,9 +127,10 @@ pub fn math() -> Html {
 // ---------------------------------------------------------------------------
 #[function_component(HashTool)]
 fn hash_tool() -> Html {
-    let source = use_state(String::new);
-    let result = use_state(String::new);
-    let algorithm = use_state(|| "md5".to_string());
+    let source = use_state(|| storage::get("hash_source").unwrap_or_default());
+    let result = use_state(|| storage::get("hash_result").unwrap_or_default());
+    let algorithm =
+        use_state(|| storage::get("hash_algorithm").unwrap_or_else(|| "md5".to_string()));
 
     let on_source_input = {
         let source = source.clone();
@@ -139,11 +142,15 @@ fn hash_tool() -> Html {
                 .unwrap()
                 .unchecked_into::<HtmlTextAreaElement>()
                 .value();
+            storage::set("hash_source", &val);
             source.set(val.clone());
             if val.is_empty() {
+                storage::set("hash_result", "");
                 result.set(String::new());
             } else {
-                result.set(compute_hash_value(&val, &algorithm));
+                let r = compute_hash_value(&val, &algorithm);
+                storage::set("hash_result", &r);
+                result.set(r);
             }
         })
     };
@@ -158,10 +165,13 @@ fn hash_tool() -> Html {
                 .unwrap()
                 .unchecked_into::<HtmlSelectElement>()
                 .value();
+            storage::set("hash_algorithm", &algo);
             algorithm.set(algo.clone());
             let src = (*source).clone();
             if !src.is_empty() {
-                result.set(compute_hash_value(&src, &algo));
+                let r = compute_hash_value(&src, &algo);
+                storage::set("hash_result", &r);
+                result.set(r);
             }
         })
     };
@@ -173,7 +183,9 @@ fn hash_tool() -> Html {
         Callback::from(move |_: MouseEvent| {
             let src = (*source).clone();
             if !src.is_empty() {
-                result.set(compute_hash_value(&src, &algorithm));
+                let r = compute_hash_value(&src, &algorithm);
+                storage::set("hash_result", &r);
+                result.set(r);
             }
         })
     };
@@ -182,6 +194,8 @@ fn hash_tool() -> Html {
         let source = source.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
+            storage::remove("hash_source");
+            storage::remove("hash_result");
             source.set(String::new());
             result.set(String::new());
         })
@@ -225,9 +239,19 @@ fn hash_tool() -> Html {
 // ---------------------------------------------------------------------------
 #[function_component(LuhnTool)]
 fn luhn_tool() -> Html {
-    let source = use_state(String::new);
-    let result_text = use_state(String::new);
-    let is_valid = use_state(|| true);
+    let source = use_state(|| storage::get("luhn_source").unwrap_or_default());
+    let result_text = use_state(|| {
+        storage::get("luhn_source")
+            .filter(|s| !s.trim().is_empty())
+            .map(|s| check_luhn(&s).1)
+            .unwrap_or_default()
+    });
+    let is_valid = use_state(|| {
+        storage::get("luhn_source")
+            .filter(|s| !s.trim().is_empty())
+            .map(|s| check_luhn(&s).0)
+            .unwrap_or(true)
+    });
 
     let on_input = {
         let source = source.clone();
@@ -239,6 +263,7 @@ fn luhn_tool() -> Html {
                 .unwrap()
                 .unchecked_into::<HtmlInputElement>()
                 .value();
+            storage::set("luhn_source", &val);
             source.set(val.clone());
             if val.trim().is_empty() {
                 result_text.set(String::new());
@@ -267,6 +292,7 @@ fn luhn_tool() -> Html {
         let result_text = result_text.clone();
         let is_valid = is_valid.clone();
         Callback::from(move |_: MouseEvent| {
+            storage::remove("luhn_source");
             source.set(String::new());
             result_text.set(String::new());
             is_valid.set(true);
@@ -309,13 +335,19 @@ fn luhn_tool() -> Html {
 // ---------------------------------------------------------------------------
 #[function_component(GuidTool)]
 fn guid_tool() -> Html {
-    let guids = use_state(Vec::<String>::new);
+    let guids = use_state(|| {
+        storage::get("guid_list")
+            .filter(|s| !s.is_empty())
+            .map(|s| s.lines().map(String::from).collect::<Vec<_>>())
+            .unwrap_or_default()
+    });
 
     let on_generate = {
         let guids = guids.clone();
         Callback::from(move |_: MouseEvent| {
             let mut list = (*guids).clone();
             list.insert(0, uuid::Uuid::new_v4().to_string());
+            storage::set("guid_list", &list.join("\n"));
             guids.set(list);
         })
     };
@@ -323,6 +355,7 @@ fn guid_tool() -> Html {
     let on_clear = {
         let guids = guids.clone();
         Callback::from(move |_: MouseEvent| {
+            storage::remove("guid_list");
             guids.set(Vec::new());
         })
     };

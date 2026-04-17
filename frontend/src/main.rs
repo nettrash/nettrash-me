@@ -1,8 +1,10 @@
 mod components;
+mod storage;
 
 use yew::prelude::*;
 use yew_router::prelude::*;
 
+use components::encryption::Encryption;
 use components::home::Home;
 use components::math::Math;
 use components::nav_menu::NavMenu;
@@ -19,6 +21,8 @@ pub enum Route {
     Text,
     #[at("/time")]
     Time,
+    #[at("/encryption")]
+    Encryption,
     #[not_found]
     #[at("/404")]
     NotFound,
@@ -30,6 +34,7 @@ fn switch(route: Route) -> Html {
         Route::Math => html! { <Math /> },
         Route::Text => html! { <Text /> },
         Route::Time => html! { <Time /> },
+        Route::Encryption => html! { <Encryption /> },
         Route::NotFound => html! { <h1>{ "404 — Not Found" }</h1> },
     }
 }

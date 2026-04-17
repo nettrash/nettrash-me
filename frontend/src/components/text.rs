@@ -3,6 +3,8 @@ use wasm_bindgen::JsCast;
 use web_sys::{HtmlInputElement, HtmlTextAreaElement};
 use yew::prelude::*;
 
+use crate::storage;
+
 // ---------------------------------------------------------------------------
 // Tab enum
 // ---------------------------------------------------------------------------
@@ -68,7 +70,7 @@ pub fn text() -> Html {
             <div class="bottomtext">
                 <figure class="text-end">
                     <blockquote class="blockquote">
-                        <p>{ "A most useful online kit of text tools." }</p>
+                        <p>{ "Just useful tools." }</p>
                     </blockquote>
                     <figcaption class="blockquote-footer">{ "nettrash" }</figcaption>
                 </figure>
@@ -82,8 +84,8 @@ pub fn text() -> Html {
 // ---------------------------------------------------------------------------
 #[function_component(Base64Tool)]
 fn base64_tool() -> Html {
-    let source = use_state(String::new);
-    let result = use_state(String::new);
+    let source = use_state(|| storage::get("base64_source").unwrap_or_default());
+    let result = use_state(|| storage::get("base64_result").unwrap_or_default());
 
     let on_source_input = {
         let source = source.clone();
@@ -93,6 +95,7 @@ fn base64_tool() -> Html {
                 .unwrap()
                 .unchecked_into::<HtmlTextAreaElement>()
                 .value();
+            storage::set("base64_source", &val);
             source.set(val);
         })
     };
@@ -101,7 +104,9 @@ fn base64_tool() -> Html {
         let source = source.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
-            result.set(base64::engine::general_purpose::STANDARD.encode(source.as_bytes()));
+            let r = base64::engine::general_purpose::STANDARD.encode(source.as_bytes());
+            storage::set("base64_result", &r);
+            result.set(r);
         })
     };
 
@@ -109,13 +114,15 @@ fn base64_tool() -> Html {
         let source = source.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
-            match base64::engine::general_purpose::STANDARD.decode(source.as_bytes()) {
+            let r = match base64::engine::general_purpose::STANDARD.decode(source.as_bytes()) {
                 Ok(bytes) => match String::from_utf8(bytes) {
-                    Ok(s) => result.set(s),
-                    Err(e) => result.set(e.to_string()),
+                    Ok(s) => s,
+                    Err(e) => e.to_string(),
                 },
-                Err(e) => result.set(e.to_string()),
-            }
+                Err(e) => e.to_string(),
+            };
+            storage::set("base64_result", &r);
+            result.set(r);
         })
     };
 
@@ -123,6 +130,8 @@ fn base64_tool() -> Html {
         let source = source.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
+            storage::remove("base64_source");
+            storage::remove("base64_result");
             source.set(String::new());
             result.set(String::new());
         })
@@ -157,8 +166,8 @@ fn base64_tool() -> Html {
 // ---------------------------------------------------------------------------
 #[function_component(UrlTool)]
 fn url_tool() -> Html {
-    let source = use_state(String::new);
-    let result = use_state(String::new);
+    let source = use_state(|| storage::get("url_source").unwrap_or_default());
+    let result = use_state(|| storage::get("url_result").unwrap_or_default());
 
     let on_source_input = {
         let source = source.clone();
@@ -168,6 +177,7 @@ fn url_tool() -> Html {
                 .unwrap()
                 .unchecked_into::<HtmlTextAreaElement>()
                 .value();
+            storage::set("url_source", &val);
             source.set(val);
         })
     };
@@ -176,16 +186,22 @@ fn url_tool() -> Html {
         let source = source.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
-            result.set(urlencoding::encode(&source).into_owned());
+            let r = urlencoding::encode(&source).into_owned();
+            storage::set("url_result", &r);
+            result.set(r);
         })
     };
 
     let on_decode = {
         let source = source.clone();
         let result = result.clone();
-        Callback::from(move |_: MouseEvent| match urlencoding::decode(&source) {
-            Ok(s) => result.set(s.into_owned()),
-            Err(e) => result.set(e.to_string()),
+        Callback::from(move |_: MouseEvent| {
+            let r = match urlencoding::decode(&source) {
+                Ok(s) => s.into_owned(),
+                Err(e) => e.to_string(),
+            };
+            storage::set("url_result", &r);
+            result.set(r);
         })
     };
 
@@ -193,6 +209,8 @@ fn url_tool() -> Html {
         let source = source.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
+            storage::remove("url_source");
+            storage::remove("url_result");
             source.set(String::new());
             result.set(String::new());
         })
@@ -227,8 +245,8 @@ fn url_tool() -> Html {
 // ---------------------------------------------------------------------------
 #[function_component(HexTool)]
 fn hex_tool() -> Html {
-    let source = use_state(String::new);
-    let result = use_state(String::new);
+    let source = use_state(|| storage::get("hex_source").unwrap_or_default());
+    let result = use_state(|| storage::get("hex_result").unwrap_or_default());
 
     let on_source_input = {
         let source = source.clone();
@@ -238,6 +256,7 @@ fn hex_tool() -> Html {
                 .unwrap()
                 .unchecked_into::<HtmlTextAreaElement>()
                 .value();
+            storage::set("hex_source", &val);
             source.set(val);
         })
     };
@@ -246,7 +265,9 @@ fn hex_tool() -> Html {
         let source = source.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
-            result.set(hex::encode_upper(source.as_bytes()));
+            let r = hex::encode_upper(source.as_bytes());
+            storage::set("hex_result", &r);
+            result.set(r);
         })
     };
 
@@ -258,13 +279,15 @@ fn hex_tool() -> Html {
                 .chars()
                 .filter(|c| !c.is_whitespace() && *c != '-')
                 .collect();
-            match hex::decode(&clean) {
+            let r = match hex::decode(&clean) {
                 Ok(bytes) => match String::from_utf8(bytes) {
-                    Ok(s) => result.set(s),
-                    Err(e) => result.set(e.to_string()),
+                    Ok(s) => s,
+                    Err(e) => e.to_string(),
                 },
-                Err(e) => result.set(e.to_string()),
-            }
+                Err(e) => e.to_string(),
+            };
+            storage::set("hex_result", &r);
+            result.set(r);
         })
     };
 
@@ -272,6 +295,8 @@ fn hex_tool() -> Html {
         let source = source.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
+            storage::remove("hex_source");
+            storage::remove("hex_result");
             source.set(String::new());
             result.set(String::new());
         })
@@ -306,9 +331,9 @@ fn hex_tool() -> Html {
 // ---------------------------------------------------------------------------
 #[function_component(RegExTool)]
 fn regex_tool() -> Html {
-    let pattern = use_state(String::new);
-    let text = use_state(String::new);
-    let result = use_state(String::new);
+    let pattern = use_state(|| storage::get("regex_pattern").unwrap_or_default());
+    let text = use_state(|| storage::get("regex_text").unwrap_or_default());
+    let result = use_state(|| storage::get("regex_result").unwrap_or_default());
 
     let on_pattern_input = {
         let pattern = pattern.clone();
@@ -318,6 +343,7 @@ fn regex_tool() -> Html {
                 .unwrap()
                 .unchecked_into::<HtmlInputElement>()
                 .value();
+            storage::set("regex_pattern", &val);
             pattern.set(val);
         })
     };
@@ -330,6 +356,7 @@ fn regex_tool() -> Html {
                 .unwrap()
                 .unchecked_into::<HtmlTextAreaElement>()
                 .value();
+            storage::set("regex_text", &val);
             text.set(val);
         })
     };
@@ -338,20 +365,24 @@ fn regex_tool() -> Html {
         let pattern = pattern.clone();
         let text = text.clone();
         let result = result.clone();
-        Callback::from(move |_: MouseEvent| match regex::Regex::new(&pattern) {
-            Ok(re) => {
-                let is_matched = re.is_match(&text);
-                let matches: Vec<String> = re
-                    .find_iter(&text)
-                    .map(|m| m.as_str().to_string())
-                    .collect();
-                result.set(format!(
-                    "Is Matched: {}.\nMatches:\n{}.",
-                    is_matched,
-                    matches.join("\n")
-                ));
-            }
-            Err(e) => result.set(e.to_string()),
+        Callback::from(move |_: MouseEvent| {
+            let r = match regex::Regex::new(&pattern) {
+                Ok(re) => {
+                    let is_matched = re.is_match(&text);
+                    let matches: Vec<String> = re
+                        .find_iter(&text)
+                        .map(|m| m.as_str().to_string())
+                        .collect();
+                    format!(
+                        "Is Matched: {}.\nMatches:\n{}.",
+                        is_matched,
+                        matches.join("\n")
+                    )
+                }
+                Err(e) => e.to_string(),
+            };
+            storage::set("regex_result", &r);
+            result.set(r);
         })
     };
 
@@ -360,6 +391,9 @@ fn regex_tool() -> Html {
         let text = text.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
+            storage::remove("regex_pattern");
+            storage::remove("regex_text");
+            storage::remove("regex_result");
             pattern.set(String::new());
             text.set(String::new());
             result.set(String::new());

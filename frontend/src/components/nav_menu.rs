@@ -55,6 +55,11 @@ pub fn nav_menu() -> Html {
                                     { "Time" }
                                 </Link<Route>>
                             </li>
+                            <li class="nav-item">
+                                <Link<Route> to={Route::Encryption} classes={classes!("nav-link", "text-dark", (route == Route::Encryption).then_some("active"))}>
+                                    { "Encryption" }
+                                </Link<Route>>
+                            </li>
                         </ul>
                     </div>
                 </div>

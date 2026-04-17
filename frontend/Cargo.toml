@@ -1,6 +1,6 @@
 [package]
 name = "nettrash-me-frontend"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2021"
 authors = ["nettrash"]
 
@@ -12,6 +12,8 @@ wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3", features = [
     "Window", "Navigator", "Geolocation", "Document",
     "HtmlInputElement", "HtmlTextAreaElement", "HtmlSelectElement",
+    "Storage",
+    "Crypto", "SubtleCrypto", "CryptoKey", "CryptoKeyPair",
 ] }
 js-sys = "0.3"
 gloo-net = { version = "0.5", features = ["http"] }
@@ -28,6 +30,21 @@ chrono = "0.4"
 urlencoding = "2"
 log = "0.4"
 wasm-logger = "0.2"
+aes = "0.8"
+des = "0.8"
+blowfish = "0.9"
+twofish = "0.7"
+cbc = { version = "0.1", features = ["alloc"] }
+getrandom = { version = "0.2", features = ["js"] }
+rsa = { version = "0.9", features = ["sha2"] }
+rand = "0.8"
+pkcs8 = { version = "0.10", features = ["pem"] }
+p256 = { version = "0.13", features = ["ecdsa", "ecdh", "pem"] }
+p384 = { version = "0.13", features = ["ecdsa", "ecdh", "pem"] }
+ed25519-dalek = { version = "2", features = ["rand_core", "pem"] }
+x25519-dalek = { version = "2", features = ["static_secrets"] }
+ecdsa = { version = "0.16", features = ["signing", "verifying", "pem"] }
+elliptic-curve = { version = "0.13", features = ["ecdh", "sec1"] }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"

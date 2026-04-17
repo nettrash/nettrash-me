@@ -189,7 +189,7 @@ pub fn home() -> Html {
             <div class="bottomtext">
                 <figure class="text-end">
                     <blockquote class="blockquote">
-                        <p>{ "A most useful online kit of tools." }</p>
+                        <p>{ "Just useful tools." }</p>
                     </blockquote>
                     <figcaption class="blockquote-footer">
                         { "nettrash" }

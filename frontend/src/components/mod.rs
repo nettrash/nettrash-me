@@ -1,3 +1,4 @@
+pub mod encryption;
 pub mod home;
 pub mod math;
 pub mod nav_menu;

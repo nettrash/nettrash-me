@@ -3,6 +3,8 @@ use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 
+use crate::storage;
+
 // ---------------------------------------------------------------------------
 // Unixtime conversion helper
 // ---------------------------------------------------------------------------
@@ -40,7 +42,7 @@ pub fn time() -> Html {
             <div class="bottomtext">
                 <figure class="text-end">
                     <blockquote class="blockquote">
-                        <p>{ "A most useful online kit of time tools." }</p>
+                        <p>{ "Just useful tools." }</p>
                     </blockquote>
                     <figcaption class="blockquote-footer">{ "nettrash" }</figcaption>
                 </figure>
@@ -54,8 +56,8 @@ pub fn time() -> Html {
 // ---------------------------------------------------------------------------
 #[function_component(UnixtimeTool)]
 fn unixtime_tool() -> Html {
-    let source = use_state(String::new);
-    let result = use_state(String::new);
+    let source = use_state(|| storage::get("unixtime_source").unwrap_or_default());
+    let result = use_state(|| storage::get("unixtime_result").unwrap_or_default());
 
     let on_input = {
         let source = source.clone();
@@ -65,6 +67,7 @@ fn unixtime_tool() -> Html {
                 .unwrap()
                 .unchecked_into::<HtmlInputElement>()
                 .value();
+            storage::set("unixtime_source", &val);
             source.set(val);
         })
     };
@@ -72,9 +75,13 @@ fn unixtime_tool() -> Html {
     let on_convert = {
         let source = source.clone();
         let result = result.clone();
-        Callback::from(move |_: MouseEvent| match convert_unixtime(&source) {
-            Ok(v) => result.set(v),
-            Err(e) => result.set(e),
+        Callback::from(move |_: MouseEvent| {
+            let r = match convert_unixtime(&source) {
+                Ok(v) => v,
+                Err(e) => e,
+            };
+            storage::set("unixtime_result", &r);
+            result.set(r);
         })
     };
 
@@ -83,10 +90,12 @@ fn unixtime_tool() -> Html {
         let result = result.clone();
         Callback::from(move |e: KeyboardEvent| {
             if e.key() == "Enter" {
-                match convert_unixtime(&source) {
-                    Ok(v) => result.set(v),
-                    Err(e) => result.set(e),
-                }
+                let r = match convert_unixtime(&source) {
+                    Ok(v) => v,
+                    Err(e) => e,
+                };
+                storage::set("unixtime_result", &r);
+                result.set(r);
             }
         })
     };
@@ -95,6 +104,8 @@ fn unixtime_tool() -> Html {
         let source = source.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
+            storage::remove("unixtime_source");
+            storage::remove("unixtime_result");
             source.set(String::new());
             result.set(String::new());
         })
