@@ -423,8 +423,21 @@ fn render_plot_svg(
     y_min: f64,
     y_max: f64,
 ) -> Result<String, String> {
-    let expr: meval::Expr = expr_str.parse().map_err(|e: meval::Error| format!("Parse error: {}", e))?;
-    let func = expr.bind("x").map_err(|e| format!("Bind error: {}", e))?;
+    let precompiled = evalexpr::build_operator_tree(expr_str)
+        .map_err(|e| format!("Parse error: {}", e))?;
+    let eval = |x: f64| -> Option<f64> {
+        let mut context = evalexpr::HashMapContext::new();
+        evalexpr::ContextWithMutableVariables::set_value(
+            &mut context,
+            "x".into(),
+            evalexpr::Value::Float(x),
+        ).ok()?;
+        match precompiled.eval_with_context(&context) {
+            Ok(evalexpr::Value::Float(v)) => Some(v),
+            Ok(evalexpr::Value::<evalexpr::DefaultNumericTypes>::Int(v)) => Some(v as f64),
+            _ => None,
+        }
+    };
 
     let svg_w: f64 = 600.0;
     let svg_h: f64 = 400.0;
@@ -525,18 +538,26 @@ fn render_plot_svg(
     let mut first = true;
     for i in 0..=steps {
         let x = x_min + (i as f64) / (steps as f64) * x_range;
-        let y = func(x);
-        if y.is_finite() && y >= y_min && y <= y_max {
-            let sx = to_sx(x);
-            let sy = to_sy(y);
-            if first {
-                points.push_str(&format!("{:.2},{:.2}", sx, sy));
-                first = false;
-            } else {
-                points.push_str(&format!(" {:.2},{:.2}", sx, sy));
+        let y_opt = eval(x);
+        if let Some(y) = y_opt {
+            if y.is_finite() && y >= y_min && y <= y_max {
+                let sx = to_sx(x);
+                let sy = to_sy(y);
+                if first {
+                    points.push_str(&format!("{:.2},{:.2}", sx, sy));
+                    first = false;
+                } else {
+                    points.push_str(&format!(" {:.2},{:.2}", sx, sy));
+                }
+            } else if !first {
+                svg.push_str(&format!(
+                    "<polyline points=\"{}\" fill=\"none\" stroke=\"#673AB7\" stroke-width=\"2\"/>",
+                    points
+                ));
+                points.clear();
+                first = true;
             }
         } else if !first {
-            // Break the polyline at discontinuities
             svg.push_str(&format!(
                 "<polyline points=\"{}\" fill=\"none\" stroke=\"#673AB7\" stroke-width=\"2\"/>",
                 points
