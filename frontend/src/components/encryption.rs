@@ -18,6 +18,10 @@ use yew::prelude::*;
 
 use crate::storage;
 
+// Re-export for HMAC/TOTP
+use sha1;
+use sha2;
+
 type Aes128CbcEnc = cbc::Encryptor<Aes128>;
 type Aes128CbcDec = cbc::Decryptor<Aes128>;
 type Aes192CbcEnc = cbc::Encryptor<Aes192>;
@@ -264,6 +268,8 @@ enum EncryptionTab {
     Symmetric,
     Asymmetric,
     JwtDecoder,
+    Hmac,
+    Totp,
 }
 
 // ---------------------------------------------------------------------------
@@ -304,12 +310,22 @@ pub fn encryption() -> Html {
                     <a class={tab_class(&EncryptionTab::JwtDecoder)} href="#"
                        onclick={set_tab(EncryptionTab::JwtDecoder)}>{ "JWT Decoder" }</a>
                 </li>
+                <li class="nav-item">
+                    <a class={tab_class(&EncryptionTab::Hmac)} href="#"
+                       onclick={set_tab(EncryptionTab::Hmac)}>{ "HMAC" }</a>
+                </li>
+                <li class="nav-item">
+                    <a class={tab_class(&EncryptionTab::Totp)} href="#"
+                       onclick={set_tab(EncryptionTab::Totp)}>{ "TOTP/HOTP" }</a>
+                </li>
             </ul>
             <div class="tab-content">
                 { match *active_tab {
                     EncryptionTab::Symmetric  => html! { <SymmetricTool /> },
                     EncryptionTab::Asymmetric => html! { <AsymmetricTool /> },
                     EncryptionTab::JwtDecoder => html! { <JwtDecoderTool /> },
+                    EncryptionTab::Hmac       => html! { <HmacTool /> },
+                    EncryptionTab::Totp       => html! { <TotpTool /> },
                 }}
             </div>
             <div class="bottomtext">
@@ -2185,6 +2201,487 @@ fn jwt_decoder_tool() -> Html {
                     <label class="form-label">{ "Signature (base64url)" }</label>
                     <textarea class="form-control" rows="2" readonly=true
                               value={(*signature).clone()}></textarea>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// HMAC Generator tool
+// ---------------------------------------------------------------------------
+fn compute_hmac(algorithm: &str, key_hex: &str, message: &str) -> Result<String, String> {
+    use hmac::{Hmac, Mac};
+
+    let key = hex::decode(key_hex.trim()).map_err(|e| format!("Invalid key hex: {}", e))?;
+    let data = message.as_bytes();
+
+    match algorithm {
+        "sha256" => {
+            type HmacSha256 = Hmac<sha2::Sha256>;
+            let mut mac =
+                HmacSha256::new_from_slice(&key).map_err(|e| format!("Key error: {}", e))?;
+            mac.update(data);
+            Ok(hex::encode_upper(mac.finalize().into_bytes()))
+        }
+        "sha384" => {
+            type HmacSha384 = Hmac<sha2::Sha384>;
+            let mut mac =
+                HmacSha384::new_from_slice(&key).map_err(|e| format!("Key error: {}", e))?;
+            mac.update(data);
+            Ok(hex::encode_upper(mac.finalize().into_bytes()))
+        }
+        "sha512" => {
+            type HmacSha512 = Hmac<sha2::Sha512>;
+            let mut mac =
+                HmacSha512::new_from_slice(&key).map_err(|e| format!("Key error: {}", e))?;
+            mac.update(data);
+            Ok(hex::encode_upper(mac.finalize().into_bytes()))
+        }
+        "sha1" => {
+            type HmacSha1 = Hmac<sha1::Sha1>;
+            let mut mac =
+                HmacSha1::new_from_slice(&key).map_err(|e| format!("Key error: {}", e))?;
+            mac.update(data);
+            Ok(hex::encode_upper(mac.finalize().into_bytes()))
+        }
+        _ => Err("Unknown algorithm".to_string()),
+    }
+}
+
+#[function_component(HmacTool)]
+fn hmac_tool() -> Html {
+    let algorithm =
+        use_state(|| storage::get("hmac_algorithm").unwrap_or_else(|| "sha256".to_string()));
+    let key = use_state(|| storage::get("hmac_key").unwrap_or_default());
+    let message = use_state(|| storage::get("hmac_message").unwrap_or_default());
+    let result = use_state(|| storage::get("hmac_result").unwrap_or_default());
+
+    let on_algo_change = {
+        let algorithm = algorithm.clone();
+        Callback::from(move |e: Event| {
+            let algo = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
+            storage::set("hmac_algorithm", &algo);
+            algorithm.set(algo);
+        })
+    };
+
+    let on_key_input = {
+        let key = key.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlTextAreaElement>()
+                .value();
+            storage::set("hmac_key", &val);
+            key.set(val);
+        })
+    };
+
+    let on_generate_key = {
+        let key = key.clone();
+        Callback::from(move |_: MouseEvent| {
+            let k = hex::encode_upper(random_bytes(32));
+            storage::set("hmac_key", &k);
+            key.set(k);
+        })
+    };
+
+    let on_message_input = {
+        let message = message.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlTextAreaElement>()
+                .value();
+            storage::set("hmac_message", &val);
+            message.set(val);
+        })
+    };
+
+    let on_compute = {
+        let algorithm = algorithm.clone();
+        let key = key.clone();
+        let message = message.clone();
+        let result = result.clone();
+        Callback::from(move |_: MouseEvent| {
+            let r = match compute_hmac(&algorithm, &key, &message) {
+                Ok(v) => v,
+                Err(e) => e,
+            };
+            storage::set("hmac_result", &r);
+            result.set(r);
+        })
+    };
+
+    let on_clear = {
+        let key = key.clone();
+        let message = message.clone();
+        let result = result.clone();
+        Callback::from(move |_: MouseEvent| {
+            storage::remove("hmac_key");
+            storage::remove("hmac_message");
+            storage::remove("hmac_result");
+            key.set(String::new());
+            message.set(String::new());
+            result.set(String::new());
+        })
+    };
+
+    html! {
+        <div class="tool-container">
+            <div class="button-column">
+                <button class="btn btn-primary w-100 mb-2" onclick={on_compute}>{ "Compute HMAC" }</button>
+                <button class="btn btn-success w-100 mb-2" onclick={on_generate_key}>{ "Generate Key" }</button>
+                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
+            </div>
+            <div class="content-column">
+                <div class="mb-3">
+                    <label class="form-label">{ "Algorithm" }</label>
+                    <select class="form-select" onchange={on_algo_change}>
+                        <option value="sha256" selected={*algorithm == "sha256"}>{ "HMAC-SHA256" }</option>
+                        <option value="sha384" selected={*algorithm == "sha384"}>{ "HMAC-SHA384" }</option>
+                        <option value="sha512" selected={*algorithm == "sha512"}>{ "HMAC-SHA512" }</option>
+                        <option value="sha1" selected={*algorithm == "sha1"}>{ "HMAC-SHA1" }</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Key (hex)" }</label>
+                    <textarea class="form-control" rows="2"
+                              value={(*key).clone()}
+                              oninput={on_key_input}></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Message" }</label>
+                    <textarea class="form-control" rows="4"
+                              value={(*message).clone()}
+                              oninput={on_message_input}></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "HMAC (hex)" }</label>
+                    <textarea class="form-control" rows="2" readonly=true
+                              value={(*result).clone()}></textarea>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// TOTP/HOTP Generator tool
+// ---------------------------------------------------------------------------
+fn decode_base32(input: &str) -> Result<Vec<u8>, String> {
+    let input = input.trim().replace(' ', "").to_uppercase();
+    let alphabet = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+    let mut bits: Vec<u8> = Vec::new();
+    for c in input.bytes() {
+        if c == b'=' {
+            break;
+        }
+        let val = alphabet
+            .iter()
+            .position(|&b| b == c)
+            .ok_or_else(|| format!("Invalid base32 character: {}", c as char))?;
+        for i in (0..5).rev() {
+            bits.push(((val >> i) & 1) as u8);
+        }
+    }
+    let bytes: Vec<u8> = bits
+        .chunks(8)
+        .filter(|chunk| chunk.len() == 8)
+        .map(|chunk| {
+            chunk
+                .iter()
+                .fold(0u8, |acc, &bit| (acc << 1) | bit)
+        })
+        .collect();
+    Ok(bytes)
+}
+
+fn generate_totp(secret_b32: &str, time_step: u64, digits: u32, algorithm: &str) -> Result<String, String> {
+    let key = decode_base32(secret_b32)?;
+    let now = js_sys::Date::now() as u64 / 1000;
+    let counter = now / time_step;
+    generate_hotp_code(&key, counter, digits, algorithm)
+}
+
+fn generate_hotp(secret_b32: &str, counter: u64, digits: u32, algorithm: &str) -> Result<String, String> {
+    let key = decode_base32(secret_b32)?;
+    generate_hotp_code(&key, counter, digits, algorithm)
+}
+
+fn generate_hotp_code(key: &[u8], counter: u64, digits: u32, algorithm: &str) -> Result<String, String> {
+    use hmac::{Hmac, Mac};
+
+    let counter_bytes = counter.to_be_bytes();
+    let hash = match algorithm {
+        "sha1" => {
+            type HmacSha1 = Hmac<sha1::Sha1>;
+            let mut mac = HmacSha1::new_from_slice(key).map_err(|e| e.to_string())?;
+            mac.update(&counter_bytes);
+            mac.finalize().into_bytes().to_vec()
+        }
+        "sha256" => {
+            type HmacSha256 = Hmac<sha2::Sha256>;
+            let mut mac = HmacSha256::new_from_slice(key).map_err(|e| e.to_string())?;
+            mac.update(&counter_bytes);
+            mac.finalize().into_bytes().to_vec()
+        }
+        "sha512" => {
+            type HmacSha512 = Hmac<sha2::Sha512>;
+            let mut mac = HmacSha512::new_from_slice(key).map_err(|e| e.to_string())?;
+            mac.update(&counter_bytes);
+            mac.finalize().into_bytes().to_vec()
+        }
+        _ => return Err("Unknown algorithm".to_string()),
+    };
+
+    // Dynamic truncation (RFC 4226)
+    let offset = (hash[hash.len() - 1] & 0x0f) as usize;
+    let code = ((hash[offset] as u32 & 0x7f) << 24)
+        | ((hash[offset + 1] as u32) << 16)
+        | ((hash[offset + 2] as u32) << 8)
+        | (hash[offset + 3] as u32);
+    let otp = code % 10u32.pow(digits);
+    Ok(format!("{:0>width$}", otp, width = digits as usize))
+}
+
+fn encode_base32(data: &[u8]) -> String {
+    let alphabet = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+    let mut bits: Vec<u8> = Vec::new();
+    for &byte in data {
+        for i in (0..8).rev() {
+            bits.push((byte >> i) & 1);
+        }
+    }
+    let mut result = String::new();
+    for chunk in bits.chunks(5) {
+        let mut val: u8 = 0;
+        for (i, &bit) in chunk.iter().enumerate() {
+            val |= bit << (4 - i);
+        }
+        result.push(alphabet[val as usize] as char);
+    }
+    // Pad to multiple of 8
+    while result.len() % 8 != 0 {
+        result.push('=');
+    }
+    result
+}
+
+#[function_component(TotpTool)]
+fn totp_tool() -> Html {
+    let mode = use_state(|| storage::get("totp_mode").unwrap_or_else(|| "totp".to_string()));
+    let secret = use_state(|| storage::get("totp_secret").unwrap_or_default());
+    let algorithm =
+        use_state(|| storage::get("totp_algorithm").unwrap_or_else(|| "sha1".to_string()));
+    let digits = use_state(|| storage::get("totp_digits").unwrap_or_else(|| "6".to_string()));
+    let period = use_state(|| storage::get("totp_period").unwrap_or_else(|| "30".to_string()));
+    let counter_str = use_state(|| storage::get("totp_counter").unwrap_or_else(|| "0".to_string()));
+    let result = use_state(|| storage::get("totp_result").unwrap_or_default());
+    let remaining = use_state(|| 0u64);
+
+    let on_mode_change = {
+        let mode = mode.clone();
+        Callback::from(move |e: Event| {
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
+            storage::set("totp_mode", &val);
+            mode.set(val);
+        })
+    };
+
+    let on_secret_input = {
+        let secret = secret.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlTextAreaElement>()
+                .value();
+            storage::set("totp_secret", &val);
+            secret.set(val);
+        })
+    };
+
+    let on_generate_secret = {
+        let secret = secret.clone();
+        Callback::from(move |_: MouseEvent| {
+            let bytes = random_bytes(20);
+            let b32 = encode_base32(&bytes);
+            storage::set("totp_secret", &b32);
+            secret.set(b32);
+        })
+    };
+
+    let on_algo_change = {
+        let algorithm = algorithm.clone();
+        Callback::from(move |e: Event| {
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
+            storage::set("totp_algorithm", &val);
+            algorithm.set(val);
+        })
+    };
+
+    let on_digits_change = {
+        let digits = digits.clone();
+        Callback::from(move |e: Event| {
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
+            storage::set("totp_digits", &val);
+            digits.set(val);
+        })
+    };
+
+    let on_period_input = {
+        let period = period.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<web_sys::HtmlInputElement>()
+                .value();
+            storage::set("totp_period", &val);
+            period.set(val);
+        })
+    };
+
+    let on_counter_input = {
+        let counter_str = counter_str.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<web_sys::HtmlInputElement>()
+                .value();
+            storage::set("totp_counter", &val);
+            counter_str.set(val);
+        })
+    };
+
+    let on_generate = {
+        let mode = mode.clone();
+        let secret = secret.clone();
+        let algorithm = algorithm.clone();
+        let digits = digits.clone();
+        let period = period.clone();
+        let counter_str = counter_str.clone();
+        let result = result.clone();
+        let remaining = remaining.clone();
+        Callback::from(move |_: MouseEvent| {
+            let d = digits.parse::<u32>().unwrap_or(6);
+            let r = if *mode == "totp" {
+                let step = period.parse::<u64>().unwrap_or(30);
+                let now = js_sys::Date::now() as u64 / 1000;
+                remaining.set(step - (now % step));
+                generate_totp(&secret, step, d, &algorithm)
+            } else {
+                let c = counter_str.parse::<u64>().unwrap_or(0);
+                generate_hotp(&secret, c, d, &algorithm)
+            };
+            let r = match r {
+                Ok(v) => v,
+                Err(e) => e,
+            };
+            storage::set("totp_result", &r);
+            result.set(r);
+        })
+    };
+
+    let on_clear = {
+        let secret = secret.clone();
+        let result = result.clone();
+        let counter_str = counter_str.clone();
+        Callback::from(move |_: MouseEvent| {
+            storage::remove("totp_secret");
+            storage::remove("totp_result");
+            storage::remove("totp_counter");
+            secret.set(String::new());
+            result.set(String::new());
+            counter_str.set("0".to_string());
+        })
+    };
+
+    let is_totp = *mode == "totp";
+
+    html! {
+        <div class="tool-container">
+            <div class="button-column">
+                <button class="btn btn-primary w-100 mb-2" onclick={on_generate}>{ "Generate" }</button>
+                <button class="btn btn-success w-100 mb-2" onclick={on_generate_secret}>{ "Random Secret" }</button>
+                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
+            </div>
+            <div class="content-column">
+                <div class="mb-3">
+                    <label class="form-label">{ "Mode" }</label>
+                    <select class="form-select" onchange={on_mode_change}>
+                        <option value="totp" selected={*mode == "totp"}>{ "TOTP (Time-based)" }</option>
+                        <option value="hotp" selected={*mode == "hotp"}>{ "HOTP (Counter-based)" }</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Secret (Base32)" }</label>
+                    <textarea class="form-control" rows="2"
+                              placeholder="JBSWY3DPEHPK3PXP"
+                              value={(*secret).clone()}
+                              oninput={on_secret_input}></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Algorithm" }</label>
+                    <select class="form-select" onchange={on_algo_change}>
+                        <option value="sha1" selected={*algorithm == "sha1"}>{ "SHA-1 (default)" }</option>
+                        <option value="sha256" selected={*algorithm == "sha256"}>{ "SHA-256" }</option>
+                        <option value="sha512" selected={*algorithm == "sha512"}>{ "SHA-512" }</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Digits" }</label>
+                    <select class="form-select" onchange={on_digits_change}>
+                        <option value="6" selected={*digits == "6"}>{ "6" }</option>
+                        <option value="7" selected={*digits == "7"}>{ "7" }</option>
+                        <option value="8" selected={*digits == "8"}>{ "8" }</option>
+                    </select>
+                </div>
+                if is_totp {
+                    <div class="mb-3">
+                        <label class="form-label">{ "Period (seconds)" }</label>
+                        <input type="number" class="form-control"
+                               value={(*period).clone()}
+                               oninput={on_period_input} />
+                    </div>
+                } else {
+                    <div class="mb-3">
+                        <label class="form-label">{ "Counter" }</label>
+                        <input type="number" class="form-control"
+                               value={(*counter_str).clone()}
+                               oninput={on_counter_input} />
+                    </div>
+                }
+                <div class="mb-3">
+                    <label class="form-label">{ "OTP Code" }</label>
+                    <input type="text" class="form-control otp-result" readonly=true
+                           value={(*result).clone()} />
+                    if is_totp && *remaining > 0 {
+                        <div class="form-text">
+                            { format!("Expires in ~{} seconds", *remaining) }
+                        </div>
+                    }
                 </div>
             </div>
         </div>
