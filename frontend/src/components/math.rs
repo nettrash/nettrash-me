@@ -414,6 +414,32 @@ fn download_svg(svg_data: &str, filename: &str) {
 }
 
 // ---------------------------------------------------------------------------
+// Helper: preprocess expression to add math:: prefix for evalexpr 12
+// ---------------------------------------------------------------------------
+fn preprocess_math_expr(expr: &str) -> String {
+    let fns = [
+        "asinh", "acosh", "atanh",
+        "asin", "acos", "atan2", "atan",
+        "sinh", "cosh", "tanh",
+        "sin", "cos", "tan",
+        "sqrt", "cbrt", "abs",
+        "exp2", "exp",
+        "log10", "log2", "ln",
+        "floor", "ceil", "round",
+        "pow", "hypot",
+    ];
+    let mut s = expr.to_string();
+    // Strip any existing math:: prefix to normalize
+    for f in &fns {
+        s = s.replace(&format!("math::{}", f), *f);
+    }
+    // Add math:: prefix to bare function calls
+    let pattern = fns.join("|");
+    let re = regex::Regex::new(&format!(r"\b({})\s*(\()", &pattern)).unwrap();
+    re.replace_all(&s, "math::$1$2").to_string()
+}
+
+// ---------------------------------------------------------------------------
 // Helper: render function plot to SVG
 // ---------------------------------------------------------------------------
 fn render_plot_svg(
@@ -423,7 +449,8 @@ fn render_plot_svg(
     y_min: f64,
     y_max: f64,
 ) -> Result<String, String> {
-    let precompiled = evalexpr::build_operator_tree(expr_str)
+    let processed_expr = preprocess_math_expr(expr_str);
+    let precompiled = evalexpr::build_operator_tree(&processed_expr)
         .map_err(|e| format!("Parse error: {}", e))?;
     let eval = |x: f64| -> Option<f64> {
         let mut context = evalexpr::HashMapContext::new();
@@ -431,6 +458,16 @@ fn render_plot_svg(
             &mut context,
             "x".into(),
             evalexpr::Value::Float(x),
+        ).ok()?;
+        evalexpr::ContextWithMutableVariables::set_value(
+            &mut context,
+            "pi".into(),
+            evalexpr::Value::Float(std::f64::consts::PI),
+        ).ok()?;
+        evalexpr::ContextWithMutableVariables::set_value(
+            &mut context,
+            "e".into(),
+            evalexpr::Value::Float(std::f64::consts::E),
         ).ok()?;
         match precompiled.eval_with_context(&context) {
             Ok(evalexpr::Value::Float(v)) => Some(v),
