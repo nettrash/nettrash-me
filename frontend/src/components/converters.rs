@@ -1,4 +1,6 @@
-use chrono::DateTime;
+use chrono::{DateTime, Utc};
+use std::net::IpAddr;
+use std::str::FromStr;
 use wasm_bindgen::JsCast;
 use web_sys::{HtmlInputElement, HtmlSelectElement, HtmlTextAreaElement};
 use yew::prelude::*;
@@ -40,6 +42,9 @@ enum ConvertersTab {
     JsonSchema,
     Markdown,
     Diff,
+    Cron,
+    Cidr,
+    Color,
 }
 
 // ---------------------------------------------------------------------------
@@ -117,6 +122,18 @@ pub fn converters() -> Html {
                     <a class={tab_class(&ConvertersTab::Diff)} href="#"
                        onclick={set_tab(ConvertersTab::Diff)}>{ "Diff" }</a>
                 </li>
+                <li class="nav-item">
+                    <a class={tab_class(&ConvertersTab::Cron)} href="#"
+                       onclick={set_tab(ConvertersTab::Cron)}>{ "Cron" }</a>
+                </li>
+                <li class="nav-item">
+                    <a class={tab_class(&ConvertersTab::Cidr)} href="#"
+                       onclick={set_tab(ConvertersTab::Cidr)}>{ "CIDR" }</a>
+                </li>
+                <li class="nav-item">
+                    <a class={tab_class(&ConvertersTab::Color)} href="#"
+                       onclick={set_tab(ConvertersTab::Color)}>{ "Color" }</a>
+                </li>
             </ul>
             <div class="tab-content">
                 { match *active_tab {
@@ -127,6 +144,9 @@ pub fn converters() -> Html {
                     ConvertersTab::JsonSchema => html! { <JsonSchemaValidatorTool /> },
                     ConvertersTab::Markdown => html! { <MarkdownPreviewTool /> },
                     ConvertersTab::Diff => html! { <DiffTool /> },
+                    ConvertersTab::Cron => html! { <CronTool /> },
+                    ConvertersTab::Cidr => html! { <CidrTool /> },
+                    ConvertersTab::Color => html! { <ColorTool /> },
                 }}
             </div>
             <div class="bottomtext">
@@ -1111,6 +1131,663 @@ fn diff_tool() -> Html {
                 <div class="mb-3">
                     <label class="form-label">{ "Diff Result" }</label>
                     { Html::from_html_unchecked(AttrValue::from((*diff_html).clone())) }
+                </div>
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Cron explainer helpers
+// ---------------------------------------------------------------------------
+fn explain_cron_field(field: &str, labels: &[&str], offset: usize, is_names: bool) -> String {
+    let field = field.trim();
+    if field == "*" {
+        return "every".to_string();
+    }
+    if let Some(rest) = field.strip_prefix("*/") {
+        return format!("every {}", rest);
+    }
+    if field.contains(',') {
+        let parts: Vec<String> = field
+            .split(',')
+            .map(|p| single_cron_part(p, labels, offset, is_names))
+            .collect();
+        return parts.join(", ");
+    }
+    single_cron_part(field, labels, offset, is_names)
+}
+
+fn single_cron_part(part: &str, labels: &[&str], offset: usize, is_names: bool) -> String {
+    let part = part.trim();
+    if let Some((range, step)) = part.split_once('/') {
+        return format!("every {} of {}", step, single_cron_part(range, labels, offset, is_names));
+    }
+    if let Some((a, b)) = part.split_once('-') {
+        return format!(
+            "{}–{}",
+            label_for(a, labels, offset, is_names),
+            label_for(b, labels, offset, is_names)
+        );
+    }
+    label_for(part, labels, offset, is_names)
+}
+
+fn label_for(value: &str, labels: &[&str], offset: usize, is_names: bool) -> String {
+    if value == "*" {
+        return "any".to_string();
+    }
+    if is_names {
+        if let Ok(n) = value.parse::<usize>() {
+            if n >= offset && (n - offset) < labels.len() {
+                return labels[n - offset].to_string();
+            }
+        }
+    }
+    value.to_string()
+}
+
+fn describe_cron(expr: &str) -> String {
+    let parts: Vec<&str> = expr.split_whitespace().collect();
+    if parts.len() != 5 {
+        return format!("Expected 5 fields (min hour dom mon dow), got {}", parts.len());
+    }
+    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    format!(
+        "Minute: {}\nHour:   {}\nDay:    {}\nMonth:  {}\nDOW:    {}",
+        explain_cron_field(parts[0], &[], 0, false),
+        explain_cron_field(parts[1], &[], 0, false),
+        explain_cron_field(parts[2], &[], 0, false),
+        explain_cron_field(parts[3], &months, 1, true),
+        explain_cron_field(parts[4], &days, 0, true),
+    )
+}
+
+fn next_cron_runs(expr: &str, count: usize) -> Result<Vec<String>, String> {
+    let parts: Vec<&str> = expr.split_whitespace().collect();
+    if parts.len() != 5 {
+        return Err("Expected 5 fields".to_string());
+    }
+    let with_seconds = format!("0 {} *", expr);
+    let schedule = cron::Schedule::from_str(&with_seconds).map_err(|e| e.to_string())?;
+    let mut out = Vec::new();
+    for dt in schedule.upcoming(Utc).take(count) {
+        out.push(dt.format("%Y-%m-%d %H:%M:%S UTC").to_string());
+    }
+    Ok(out)
+}
+
+// ---------------------------------------------------------------------------
+// Cron explainer tool
+// ---------------------------------------------------------------------------
+#[function_component(CronTool)]
+fn cron_tool() -> Html {
+    let source = use_state(|| storage::get("cron_source").unwrap_or_else(|| "*/5 * * * *".to_string()));
+    let description = use_state(|| storage::get("cron_description").unwrap_or_default());
+    let runs = use_state(|| storage::get("cron_runs").unwrap_or_default());
+
+    let compute = {
+        let description = description.clone();
+        let runs = runs.clone();
+        move |src: &str| {
+            let d = describe_cron(src);
+            storage::set("cron_description", &d);
+            description.set(d);
+            let r = match next_cron_runs(src, 8) {
+                Ok(list) => list.join("\n"),
+                Err(e) => e,
+            };
+            storage::set("cron_runs", &r);
+            runs.set(r);
+        }
+    };
+
+    let on_input = {
+        let source = source.clone();
+        let compute = compute.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            storage::set("cron_source", &val);
+            source.set(val.clone());
+            compute(&val);
+        })
+    };
+
+    let on_explain = {
+        let source = source.clone();
+        let compute = compute.clone();
+        Callback::from(move |_: MouseEvent| {
+            compute(&source);
+        })
+    };
+
+    let on_clear = {
+        let source = source.clone();
+        let description = description.clone();
+        let runs = runs.clone();
+        Callback::from(move |_: MouseEvent| {
+            storage::remove("cron_source");
+            storage::remove("cron_description");
+            storage::remove("cron_runs");
+            source.set(String::new());
+            description.set(String::new());
+            runs.set(String::new());
+        })
+    };
+
+    html! {
+        <div class="tool-container">
+            <div class="button-column">
+                <button class="btn btn-primary w-100 mb-2" onclick={on_explain}>{ "Explain" }</button>
+                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
+            </div>
+            <div class="content-column">
+                <div class="mb-3">
+                    <label class="form-label">{ "Cron (5 fields: min hour dom mon dow)" }</label>
+                    <input type="text" class="form-control"
+                           value={(*source).clone()}
+                           oninput={on_input} />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Description" }</label>
+                    <textarea class="form-control" rows="6" readonly=true
+                              style="font-family: monospace;"
+                              value={(*description).clone()}></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Next 8 runs (UTC)" }</label>
+                    <textarea class="form-control" rows="8" readonly=true
+                              style="font-family: monospace;"
+                              value={(*runs).clone()}></textarea>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CIDR / subnet calc helpers
+// ---------------------------------------------------------------------------
+fn describe_cidr(input: &str) -> Result<String, String> {
+    let src = input.trim();
+    if src.is_empty() {
+        return Err("Empty input".to_string());
+    }
+    let net: ipnet::IpNet = src.parse().map_err(|e: ipnet::AddrParseError| e.to_string())?;
+    let mut out = String::new();
+    out.push_str(&format!("Network:    {}\n", net.network()));
+    out.push_str(&format!("Prefix:     /{}\n", net.prefix_len()));
+    out.push_str(&format!("Netmask:    {}\n", net.netmask()));
+    out.push_str(&format!("Hostmask:   {}\n", net.hostmask()));
+    out.push_str(&format!("Broadcast:  {}\n", net.broadcast()));
+    match &net {
+        ipnet::IpNet::V4(v4) => {
+            let size: u64 = if v4.prefix_len() >= 32 {
+                1
+            } else {
+                1u64 << (32 - v4.prefix_len())
+            };
+            let usable = if size > 2 { size - 2 } else { size };
+            out.push_str(&format!("Addresses:  {}\n", size));
+            out.push_str(&format!("Usable:     {}\n", usable));
+            let hosts = v4.hosts();
+            out.push_str(&format!("First:      {}\n", hosts.clone().next().map(|a| a.to_string()).unwrap_or_else(|| "-".to_string())));
+            out.push_str(&format!("Last:       {}\n", hosts.last().map(|a| a.to_string()).unwrap_or_else(|| "-".to_string())));
+            let a = v4.addr();
+            out.push_str(&format!("Is private: {}\n", a.is_private()));
+            out.push_str(&format!("Is loopback:{}\n", a.is_loopback()));
+            out.push_str(&format!("Is link-local:{}\n", a.is_link_local()));
+            out.push_str(&format!("Is multicast:{}\n", a.is_multicast()));
+        }
+        ipnet::IpNet::V6(v6) => {
+            let prefix = v6.prefix_len();
+            let exp = 128u32.saturating_sub(prefix as u32);
+            let size_str = if exp >= 64 {
+                format!("2^{}", exp)
+            } else {
+                (1u128 << exp).to_string()
+            };
+            out.push_str(&format!("Addresses:  {}\n", size_str));
+            let a = v6.addr();
+            out.push_str(&format!("Is loopback:{}\n", a.is_loopback()));
+            out.push_str(&format!("Is multicast:{}\n", a.is_multicast()));
+            out.push_str(&format!("Is unspecified:{}\n", a.is_unspecified()));
+        }
+    }
+    let ip: IpAddr = match &net {
+        ipnet::IpNet::V4(v) => IpAddr::V4(v.addr()),
+        ipnet::IpNet::V6(v) => IpAddr::V6(v.addr()),
+    };
+    out.push_str(&format!("Input addr: {}\n", ip));
+    Ok(out)
+}
+
+// ---------------------------------------------------------------------------
+// CIDR tool
+// ---------------------------------------------------------------------------
+#[function_component(CidrTool)]
+fn cidr_tool() -> Html {
+    let source = use_state(|| storage::get("cidr_source").unwrap_or_else(|| "192.168.1.0/24".to_string()));
+    let result = use_state(|| storage::get("cidr_result").unwrap_or_default());
+
+    let compute = {
+        let result = result.clone();
+        move |src: &str| {
+            let r = match describe_cidr(src) {
+                Ok(v) => v,
+                Err(e) => e,
+            };
+            storage::set("cidr_result", &r);
+            result.set(r);
+        }
+    };
+
+    let on_input = {
+        let source = source.clone();
+        let compute = compute.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            storage::set("cidr_source", &val);
+            source.set(val.clone());
+            compute(&val);
+        })
+    };
+
+    let on_calculate = {
+        let source = source.clone();
+        let compute = compute.clone();
+        Callback::from(move |_: MouseEvent| {
+            compute(&source);
+        })
+    };
+
+    let on_clear = {
+        let source = source.clone();
+        let result = result.clone();
+        Callback::from(move |_: MouseEvent| {
+            storage::remove("cidr_source");
+            storage::remove("cidr_result");
+            source.set(String::new());
+            result.set(String::new());
+        })
+    };
+
+    html! {
+        <div class="tool-container">
+            <div class="button-column">
+                <button class="btn btn-primary w-100 mb-2" onclick={on_calculate}>{ "Calculate" }</button>
+                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
+            </div>
+            <div class="content-column">
+                <div class="mb-3">
+                    <label class="form-label">{ "CIDR (e.g. 10.0.0.0/16 or 2001:db8::/32)" }</label>
+                    <input type="text" class="form-control"
+                           value={(*source).clone()}
+                           oninput={on_input} />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Result" }</label>
+                    <textarea class="form-control" rows="14" readonly=true
+                              style="font-family: monospace;"
+                              value={(*result).clone()}></textarea>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Color helpers
+// ---------------------------------------------------------------------------
+#[derive(Clone, Copy)]
+struct Rgb {
+    r: u8,
+    g: u8,
+    b: u8,
+    a: f32,
+}
+
+fn parse_color(input: &str) -> Result<Rgb, String> {
+    let s = input.trim();
+    if s.is_empty() {
+        return Err("Empty input".to_string());
+    }
+    if let Some(hex) = s.strip_prefix('#') {
+        return parse_hex(hex);
+    }
+    if let Some(rest) = s.to_lowercase().strip_prefix("rgb") {
+        return parse_rgb_func(rest);
+    }
+    if let Some(rest) = s.to_lowercase().strip_prefix("hsl") {
+        return parse_hsl_func(rest);
+    }
+    parse_hex(s)
+}
+
+fn parse_hex(hex: &str) -> Result<Rgb, String> {
+    let hex = hex.trim();
+    let (r, g, b, a) = match hex.len() {
+        3 => {
+            let rh = u8::from_str_radix(&hex[0..1].repeat(2), 16).map_err(|e| e.to_string())?;
+            let gh = u8::from_str_radix(&hex[1..2].repeat(2), 16).map_err(|e| e.to_string())?;
+            let bh = u8::from_str_radix(&hex[2..3].repeat(2), 16).map_err(|e| e.to_string())?;
+            (rh, gh, bh, 1.0)
+        }
+        4 => {
+            let rh = u8::from_str_radix(&hex[0..1].repeat(2), 16).map_err(|e| e.to_string())?;
+            let gh = u8::from_str_radix(&hex[1..2].repeat(2), 16).map_err(|e| e.to_string())?;
+            let bh = u8::from_str_radix(&hex[2..3].repeat(2), 16).map_err(|e| e.to_string())?;
+            let ah = u8::from_str_radix(&hex[3..4].repeat(2), 16).map_err(|e| e.to_string())?;
+            (rh, gh, bh, ah as f32 / 255.0)
+        }
+        6 => {
+            let rh = u8::from_str_radix(&hex[0..2], 16).map_err(|e| e.to_string())?;
+            let gh = u8::from_str_radix(&hex[2..4], 16).map_err(|e| e.to_string())?;
+            let bh = u8::from_str_radix(&hex[4..6], 16).map_err(|e| e.to_string())?;
+            (rh, gh, bh, 1.0)
+        }
+        8 => {
+            let rh = u8::from_str_radix(&hex[0..2], 16).map_err(|e| e.to_string())?;
+            let gh = u8::from_str_radix(&hex[2..4], 16).map_err(|e| e.to_string())?;
+            let bh = u8::from_str_radix(&hex[4..6], 16).map_err(|e| e.to_string())?;
+            let ah = u8::from_str_radix(&hex[6..8], 16).map_err(|e| e.to_string())?;
+            (rh, gh, bh, ah as f32 / 255.0)
+        }
+        _ => return Err(format!("Unexpected hex length {}", hex.len())),
+    };
+    Ok(Rgb { r, g, b, a })
+}
+
+fn parse_rgb_func(rest: &str) -> Result<Rgb, String> {
+    let body = rest.trim().trim_start_matches('a');
+    let body = body.trim().trim_start_matches('(').trim_end_matches(')');
+    let parts: Vec<&str> = body.split(|c| c == ',' || c == '/' || c == ' ')
+        .filter(|p| !p.trim().is_empty())
+        .collect();
+    if parts.len() < 3 {
+        return Err("rgb() needs 3+ components".to_string());
+    }
+    let r = parse_component(parts[0], 255.0)?.clamp(0.0, 255.0) as u8;
+    let g = parse_component(parts[1], 255.0)?.clamp(0.0, 255.0) as u8;
+    let b = parse_component(parts[2], 255.0)?.clamp(0.0, 255.0) as u8;
+    let a = if parts.len() >= 4 {
+        parse_component(parts[3], 1.0)?.clamp(0.0, 1.0)
+    } else {
+        1.0
+    };
+    Ok(Rgb { r, g, b, a })
+}
+
+fn parse_hsl_func(rest: &str) -> Result<Rgb, String> {
+    let body = rest.trim().trim_start_matches('a');
+    let body = body.trim().trim_start_matches('(').trim_end_matches(')');
+    let parts: Vec<&str> = body.split(|c| c == ',' || c == '/' || c == ' ')
+        .filter(|p| !p.trim().is_empty())
+        .collect();
+    if parts.len() < 3 {
+        return Err("hsl() needs 3+ components".to_string());
+    }
+    let h = parts[0].trim().trim_end_matches("deg").parse::<f32>().map_err(|e| e.to_string())?;
+    let s = parts[1].trim().trim_end_matches('%').parse::<f32>().map_err(|e| e.to_string())? / 100.0;
+    let l = parts[2].trim().trim_end_matches('%').parse::<f32>().map_err(|e| e.to_string())? / 100.0;
+    let a = if parts.len() >= 4 {
+        parse_component(parts[3], 1.0)?.clamp(0.0, 1.0)
+    } else {
+        1.0
+    };
+    let (r, g, b) = hsl_to_rgb(h, s, l);
+    Ok(Rgb {
+        r: (r * 255.0).round().clamp(0.0, 255.0) as u8,
+        g: (g * 255.0).round().clamp(0.0, 255.0) as u8,
+        b: (b * 255.0).round().clamp(0.0, 255.0) as u8,
+        a,
+    })
+}
+
+fn parse_component(s: &str, max: f32) -> Result<f32, String> {
+    let s = s.trim();
+    if let Some(p) = s.strip_suffix('%') {
+        let v: f32 = p.parse().map_err(|e: std::num::ParseFloatError| e.to_string())?;
+        return Ok(v / 100.0 * max);
+    }
+    s.parse::<f32>().map_err(|e| e.to_string())
+}
+
+fn rgb_to_hsl(r: u8, g: u8, b: u8) -> (f32, f32, f32) {
+    let r = r as f32 / 255.0;
+    let g = g as f32 / 255.0;
+    let b = b as f32 / 255.0;
+    let max = r.max(g).max(b);
+    let min = r.min(g).min(b);
+    let l = (max + min) / 2.0;
+    if (max - min).abs() < f32::EPSILON {
+        return (0.0, 0.0, l);
+    }
+    let d = max - min;
+    let s = if l > 0.5 { d / (2.0 - max - min) } else { d / (max + min) };
+    let h = if max == r {
+        ((g - b) / d + if g < b { 6.0 } else { 0.0 }) / 6.0
+    } else if max == g {
+        ((b - r) / d + 2.0) / 6.0
+    } else {
+        ((r - g) / d + 4.0) / 6.0
+    };
+    (h * 360.0, s, l)
+}
+
+fn hsl_to_rgb(h: f32, s: f32, l: f32) -> (f32, f32, f32) {
+    let h = (h.rem_euclid(360.0)) / 360.0;
+    if s == 0.0 {
+        return (l, l, l);
+    }
+    let q = if l < 0.5 { l * (1.0 + s) } else { l + s - l * s };
+    let p = 2.0 * l - q;
+    let r = hue_to_rgb(p, q, h + 1.0 / 3.0);
+    let g = hue_to_rgb(p, q, h);
+    let b = hue_to_rgb(p, q, h - 1.0 / 3.0);
+    (r, g, b)
+}
+
+fn hue_to_rgb(p: f32, q: f32, t: f32) -> f32 {
+    let t = if t < 0.0 { t + 1.0 } else if t > 1.0 { t - 1.0 } else { t };
+    if t < 1.0 / 6.0 { return p + (q - p) * 6.0 * t; }
+    if t < 1.0 / 2.0 { return q; }
+    if t < 2.0 / 3.0 { return p + (q - p) * (2.0 / 3.0 - t) * 6.0; }
+    p
+}
+
+fn relative_luminance(r: u8, g: u8, b: u8) -> f32 {
+    let f = |c: u8| {
+        let c = c as f32 / 255.0;
+        if c <= 0.03928 { c / 12.92 } else { ((c + 0.055) / 1.055).powf(2.4) }
+    };
+    0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+}
+
+fn contrast_ratio(a: Rgb, b: Rgb) -> f32 {
+    let la = relative_luminance(a.r, a.g, a.b);
+    let lb = relative_luminance(b.r, b.g, b.b);
+    let (hi, lo) = if la > lb { (la, lb) } else { (lb, la) };
+    (hi + 0.05) / (lo + 0.05)
+}
+
+fn describe_color(c: Rgb) -> String {
+    let (h, s, l) = rgb_to_hsl(c.r, c.g, c.b);
+    let alpha_note = if (c.a - 1.0).abs() > f32::EPSILON {
+        format!(" (alpha {:.3})", c.a)
+    } else {
+        String::new()
+    };
+    format!(
+        "HEX:  #{:02X}{:02X}{:02X}{}\nRGB:  rgb({}, {}, {}){}\nHSL:  hsl({:.0}, {:.0}%, {:.0}%){}\nLuma: {:.4}",
+        c.r, c.g, c.b,
+        if (c.a - 1.0).abs() > f32::EPSILON { format!("{:02X}", (c.a * 255.0).round() as u8) } else { String::new() },
+        c.r, c.g, c.b, alpha_note,
+        h, s * 100.0, l * 100.0, alpha_note,
+        relative_luminance(c.r, c.g, c.b),
+    )
+}
+
+fn wcag_grade(ratio: f32) -> &'static str {
+    if ratio >= 7.0 { "AAA (normal)" }
+    else if ratio >= 4.5 { "AA (normal) / AAA (large)" }
+    else if ratio >= 3.0 { "AA (large only)" }
+    else { "Fail" }
+}
+
+// ---------------------------------------------------------------------------
+// Color tool
+// ---------------------------------------------------------------------------
+#[function_component(ColorTool)]
+fn color_tool() -> Html {
+    let fg = use_state(|| storage::get("color_fg").unwrap_or_else(|| "#1d4ed8".to_string()));
+    let bg = use_state(|| storage::get("color_bg").unwrap_or_else(|| "#ffffff".to_string()));
+    let info = use_state(|| storage::get("color_info").unwrap_or_default());
+
+    let compute = {
+        let info = info.clone();
+        move |fg_str: &str, bg_str: &str| {
+            let fg_c = parse_color(fg_str);
+            let bg_c = parse_color(bg_str);
+            let mut out = String::new();
+            match &fg_c {
+                Ok(c) => out.push_str(&format!("-- Foreground --\n{}\n\n", describe_color(*c))),
+                Err(e) => out.push_str(&format!("Foreground: {}\n\n", e)),
+            }
+            match &bg_c {
+                Ok(c) => out.push_str(&format!("-- Background --\n{}\n\n", describe_color(*c))),
+                Err(e) => out.push_str(&format!("Background: {}\n\n", e)),
+            }
+            if let (Ok(a), Ok(b)) = (fg_c, bg_c) {
+                let ratio = contrast_ratio(a, b);
+                out.push_str(&format!(
+                    "-- Contrast --\nRatio: {:.2}:1\nWCAG:  {}",
+                    ratio,
+                    wcag_grade(ratio),
+                ));
+            }
+            storage::set("color_info", &out);
+            info.set(out);
+        }
+    };
+
+    let on_fg_input = {
+        let fg = fg.clone();
+        let bg = bg.clone();
+        let compute = compute.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            storage::set("color_fg", &val);
+            fg.set(val.clone());
+            compute(&val, &bg);
+        })
+    };
+
+    let on_bg_input = {
+        let fg = fg.clone();
+        let bg = bg.clone();
+        let compute = compute.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            storage::set("color_bg", &val);
+            bg.set(val.clone());
+            compute(&fg, &val);
+        })
+    };
+
+    let on_swap = {
+        let fg = fg.clone();
+        let bg = bg.clone();
+        let compute = compute.clone();
+        Callback::from(move |_: MouseEvent| {
+            let a = (*fg).clone();
+            let b = (*bg).clone();
+            storage::set("color_fg", &b);
+            storage::set("color_bg", &a);
+            fg.set(b.clone());
+            bg.set(a.clone());
+            compute(&b, &a);
+        })
+    };
+
+    let on_analyze = {
+        let fg = fg.clone();
+        let bg = bg.clone();
+        let compute = compute.clone();
+        Callback::from(move |_: MouseEvent| {
+            compute(&fg, &bg);
+        })
+    };
+
+    let on_clear = {
+        let fg = fg.clone();
+        let bg = bg.clone();
+        let info = info.clone();
+        Callback::from(move |_: MouseEvent| {
+            storage::remove("color_fg");
+            storage::remove("color_bg");
+            storage::remove("color_info");
+            fg.set(String::new());
+            bg.set(String::new());
+            info.set(String::new());
+        })
+    };
+
+    let swatch_style = |v: &str| -> String {
+        match parse_color(v) {
+            Ok(c) => format!(
+                "display:inline-block;width:100%;height:40px;border:1px solid #ccc;border-radius:4px;background: rgba({},{},{},{});",
+                c.r, c.g, c.b, c.a
+            ),
+            Err(_) => "display:inline-block;width:100%;height:40px;border:1px solid #ccc;border-radius:4px;background: repeating-linear-gradient(45deg,#eee,#eee 8px,#fff 8px,#fff 16px);".to_string(),
+        }
+    };
+
+    let preview_style = {
+        let fg_c = parse_color(&fg).ok();
+        let bg_c = parse_color(&bg).ok();
+        match (fg_c, bg_c) {
+            (Some(f), Some(b)) => format!(
+                "padding:12px;border:1px solid #ccc;border-radius:4px;background:rgba({},{},{},{});color:rgba({},{},{},{});",
+                b.r, b.g, b.b, b.a, f.r, f.g, f.b, f.a
+            ),
+            _ => "padding:12px;border:1px solid #ccc;border-radius:4px;".to_string(),
+        }
+    };
+
+    html! {
+        <div class="tool-container">
+            <div class="button-column">
+                <button class="btn btn-primary w-100 mb-2" onclick={on_analyze}>{ "Analyze" }</button>
+                <button class="btn btn-warning w-100 mb-2" onclick={on_swap}>{ "Swap" }</button>
+                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
+            </div>
+            <div class="content-column">
+                <div class="mb-3">
+                    <label class="form-label">{ "Foreground (hex / rgb() / hsl())" }</label>
+                    <input type="text" class="form-control"
+                           value={(*fg).clone()}
+                           oninput={on_fg_input} />
+                    <div style={swatch_style(&fg)} class="mt-2"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Background" }</label>
+                    <input type="text" class="form-control"
+                           value={(*bg).clone()}
+                           oninput={on_bg_input} />
+                    <div style={swatch_style(&bg)} class="mt-2"></div>
+                </div>
+                <div class="mb-3">
+                    <div style={preview_style}>
+                        { "The quick brown fox jumps over the lazy dog — 0123456789" }
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Analysis" }</label>
+                    <textarea class="form-control" rows="14" readonly=true
+                              style="font-family: monospace;"
+                              value={(*info).clone()}></textarea>
                 </div>
             </div>
         </div>

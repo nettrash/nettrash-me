@@ -1,6 +1,8 @@
 use base64::Engine;
+use unicode_normalization::UnicodeNormalization;
+use unicode_segmentation::UnicodeSegmentation;
 use wasm_bindgen::JsCast;
-use web_sys::{HtmlInputElement, HtmlTextAreaElement};
+use web_sys::{HtmlInputElement, HtmlSelectElement, HtmlTextAreaElement};
 use yew::prelude::*;
 
 use crate::storage;
@@ -21,6 +23,8 @@ enum TextTab {
     Hex,
     RegEx,
     Password,
+    Case,
+    Unicode,
 }
 
 // ---------------------------------------------------------------------------
@@ -69,6 +73,14 @@ pub fn text() -> Html {
                     <a class={tab_class(&TextTab::Password)} href="#"
                        onclick={set_tab(TextTab::Password)}>{ "Password" }</a>
                 </li>
+                <li class="nav-item">
+                    <a class={tab_class(&TextTab::Case)} href="#"
+                       onclick={set_tab(TextTab::Case)}>{ "Case" }</a>
+                </li>
+                <li class="nav-item">
+                    <a class={tab_class(&TextTab::Unicode)} href="#"
+                       onclick={set_tab(TextTab::Unicode)}>{ "Unicode" }</a>
+                </li>
             </ul>
             <div class="tab-content">
                 { match *active_tab {
@@ -77,6 +89,8 @@ pub fn text() -> Html {
                     TextTab::Hex      => html! { <HexTool /> },
                     TextTab::RegEx    => html! { <RegExTool /> },
                     TextTab::Password => html! { <PasswordTool /> },
+                    TextTab::Case     => html! { <CaseTool /> },
+                    TextTab::Unicode  => html! { <UnicodeTool /> },
                 }}
             </div>
             <div class="bottomtext">
@@ -550,6 +564,390 @@ fn password_tool() -> Html {
                     <label class="form-label">{ "Password" }</label>
                     <textarea class="form-control" rows="2" readonly=true
                               value={(*result).clone()}></textarea>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Case converter helpers
+// ---------------------------------------------------------------------------
+fn split_words(s: &str) -> Vec<String> {
+    let mut out: Vec<String> = Vec::new();
+    let mut cur = String::new();
+    let mut prev_lower = false;
+    for c in s.chars() {
+        if c.is_alphanumeric() {
+            if prev_lower && c.is_uppercase() && !cur.is_empty() {
+                out.push(std::mem::take(&mut cur));
+            }
+            cur.push(c);
+            prev_lower = c.is_lowercase() || c.is_ascii_digit();
+        } else {
+            if !cur.is_empty() {
+                out.push(std::mem::take(&mut cur));
+            }
+            prev_lower = false;
+        }
+    }
+    if !cur.is_empty() {
+        out.push(cur);
+    }
+    out.into_iter().map(|w| w.to_lowercase()).collect()
+}
+
+fn convert_case(source: &str, kind: &str) -> String {
+    let words = split_words(source);
+    if words.is_empty() {
+        return String::new();
+    }
+    match kind {
+        "snake" => words.join("_"),
+        "screaming" => words.join("_").to_uppercase(),
+        "kebab" => words.join("-"),
+        "camel" => {
+            let mut it = words.into_iter();
+            let first = it.next().unwrap();
+            let rest: String = it
+                .map(|w| {
+                    let mut c = w.chars();
+                    match c.next() {
+                        Some(ch) => ch.to_uppercase().collect::<String>() + c.as_str(),
+                        None => String::new(),
+                    }
+                })
+                .collect();
+            first + &rest
+        }
+        "pascal" => words
+            .into_iter()
+            .map(|w| {
+                let mut c = w.chars();
+                match c.next() {
+                    Some(ch) => ch.to_uppercase().collect::<String>() + c.as_str(),
+                    None => String::new(),
+                }
+            })
+            .collect(),
+        "title" => words
+            .into_iter()
+            .map(|w| {
+                let mut c = w.chars();
+                match c.next() {
+                    Some(ch) => ch.to_uppercase().collect::<String>() + c.as_str(),
+                    None => String::new(),
+                }
+            })
+            .collect::<Vec<_>>()
+            .join(" "),
+        "dot" => words.join("."),
+        "path" => words.join("/"),
+        "sentence" => {
+            let mut s = words.join(" ");
+            if let Some(first) = s.chars().next() {
+                let upper: String = first.to_uppercase().collect();
+                s.replace_range(0..first.len_utf8(), &upper);
+            }
+            s
+        }
+        _ => source.to_string(),
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Case converter tool
+// ---------------------------------------------------------------------------
+#[function_component(CaseTool)]
+fn case_tool() -> Html {
+    let source = use_state(|| storage::get("case_source").unwrap_or_default());
+    let kind = use_state(|| storage::get("case_kind").unwrap_or_else(|| "snake".to_string()));
+    let result = use_state(|| storage::get("case_result").unwrap_or_default());
+
+    let recompute = |src: &str, kind: &str, result: &UseStateHandle<String>| {
+        let r = convert_case(src, kind);
+        storage::set("case_result", &r);
+        result.set(r);
+    };
+
+    let on_source_input = {
+        let source = source.clone();
+        let kind = kind.clone();
+        let result = result.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlTextAreaElement>().value();
+            storage::set("case_source", &val);
+            source.set(val.clone());
+            recompute(&val, &kind, &result);
+        })
+    };
+
+    let on_kind_change = {
+        let source = source.clone();
+        let kind = kind.clone();
+        let result = result.clone();
+        Callback::from(move |e: Event| {
+            let val = e.target().unwrap().unchecked_into::<HtmlSelectElement>().value();
+            storage::set("case_kind", &val);
+            kind.set(val.clone());
+            recompute(&source, &val, &result);
+        })
+    };
+
+    let on_convert = {
+        let source = source.clone();
+        let kind = kind.clone();
+        let result = result.clone();
+        Callback::from(move |_: MouseEvent| {
+            recompute(&source, &kind, &result);
+        })
+    };
+
+    let on_clear = {
+        let source = source.clone();
+        let result = result.clone();
+        Callback::from(move |_: MouseEvent| {
+            storage::remove("case_source");
+            storage::remove("case_result");
+            source.set(String::new());
+            result.set(String::new());
+        })
+    };
+
+    let opt = |v: &str, label: &str| -> Html {
+        let selected = *kind == v;
+        html! { <option value={v.to_string()} selected={selected}>{ label }</option> }
+    };
+
+    html! {
+        <div class="tool-container">
+            <div class="button-column">
+                <div class="mb-2">
+                    <label class="form-label">{ "Style" }</label>
+                    <select class="form-select" onchange={on_kind_change}>
+                        { opt("snake", "snake_case") }
+                        { opt("screaming", "SCREAMING_SNAKE") }
+                        { opt("kebab", "kebab-case") }
+                        { opt("camel", "camelCase") }
+                        { opt("pascal", "PascalCase") }
+                        { opt("title", "Title Case") }
+                        { opt("sentence", "Sentence case") }
+                        { opt("dot", "dot.case") }
+                        { opt("path", "path/case") }
+                    </select>
+                </div>
+                <button class="btn btn-primary w-100 mb-2" onclick={on_convert}>{ "Convert" }</button>
+                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
+            </div>
+            <div class="content-column">
+                <div class="mb-3">
+                    <label class="form-label">{ "Source" }</label>
+                    <textarea class="form-control" rows="3"
+                              value={(*source).clone()}
+                              oninput={on_source_input}></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Result" }</label>
+                    <textarea class="form-control" rows="3" readonly=true
+                              value={(*result).clone()}></textarea>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Unicode inspector helpers
+// ---------------------------------------------------------------------------
+fn char_name_hint(c: char) -> &'static str {
+    match c {
+        '\u{200B}' => "ZERO-WIDTH SPACE",
+        '\u{200C}' => "ZERO-WIDTH NON-JOINER",
+        '\u{200D}' => "ZERO-WIDTH JOINER",
+        '\u{FEFF}' => "BYTE ORDER MARK",
+        '\u{00A0}' => "NO-BREAK SPACE",
+        '\u{202E}' => "RIGHT-TO-LEFT OVERRIDE",
+        '\u{202D}' => "LEFT-TO-RIGHT OVERRIDE",
+        '\u{2028}' => "LINE SEPARATOR",
+        '\u{2029}' => "PARAGRAPH SEPARATOR",
+        '\u{00AD}' => "SOFT HYPHEN",
+        _ => "",
+    }
+}
+
+fn is_invisible(c: char) -> bool {
+    matches!(
+        c,
+        '\u{200B}' | '\u{200C}' | '\u{200D}' | '\u{FEFF}' | '\u{00AD}' | '\u{202A}'
+            | '\u{202B}' | '\u{202C}' | '\u{202D}' | '\u{202E}' | '\u{2066}' | '\u{2067}'
+            | '\u{2068}' | '\u{2069}'
+    )
+}
+
+fn inspect_unicode(source: &str) -> String {
+    if source.is_empty() {
+        return String::new();
+    }
+    let mut out = String::new();
+    let graphemes = source.graphemes(true).count();
+    let chars = source.chars().count();
+    let utf8_bytes = source.len();
+    let utf16_units: usize = source.chars().map(|c| c.len_utf16()).sum();
+    let invisible = source.chars().filter(|c| is_invisible(*c)).count();
+    out.push_str(&format!(
+        "Graphemes: {}\nCodepoints: {}\nUTF-8 bytes: {}\nUTF-16 code units: {}\nInvisible/format chars: {}\n\n",
+        graphemes, chars, utf8_bytes, utf16_units, invisible
+    ));
+    out.push_str("Idx  Char  Codepoint  UTF-8                UTF-16       Note\n");
+    out.push_str("---  ----  ---------  -------------------  -----------  ----\n");
+    for (i, c) in source.chars().enumerate().take(512) {
+        let utf8: Vec<String> = c
+            .to_string()
+            .as_bytes()
+            .iter()
+            .map(|b| format!("{:02X}", b))
+            .collect();
+        let mut buf = [0u16; 2];
+        let utf16_slice = c.encode_utf16(&mut buf);
+        let utf16: Vec<String> = utf16_slice.iter().map(|u| format!("{:04X}", u)).collect();
+        let display = if is_invisible(c) || c.is_control() {
+            "·".to_string()
+        } else {
+            c.to_string()
+        };
+        out.push_str(&format!(
+            "{:>3}  {:<4}  U+{:04X}     {:<19}  {:<11}  {}\n",
+            i,
+            display,
+            c as u32,
+            utf8.join(" "),
+            utf16.join(" "),
+            char_name_hint(c),
+        ));
+    }
+    if source.chars().count() > 512 {
+        out.push_str("... (truncated at 512 codepoints)\n");
+    }
+    out
+}
+
+// ---------------------------------------------------------------------------
+// Unicode inspector tool
+// ---------------------------------------------------------------------------
+#[function_component(UnicodeTool)]
+fn unicode_tool() -> Html {
+    let source = use_state(|| storage::get("uni_source").unwrap_or_default());
+    let form = use_state(|| storage::get("uni_form").unwrap_or_else(|| "nfc".to_string()));
+    let normalized = use_state(|| storage::get("uni_normalized").unwrap_or_default());
+    let report = use_state(|| storage::get("uni_report").unwrap_or_default());
+
+    let normalize = |src: &str, form: &str| -> String {
+        match form {
+            "nfc" => src.nfc().collect(),
+            "nfd" => src.nfd().collect(),
+            "nfkc" => src.nfkc().collect(),
+            "nfkd" => src.nfkd().collect(),
+            _ => src.to_string(),
+        }
+    };
+
+    let refresh = {
+        let normalized = normalized.clone();
+        let report = report.clone();
+        move |src: &str, form: &str| {
+            let n = normalize(src, form);
+            storage::set("uni_normalized", &n);
+            normalized.set(n);
+            let r = inspect_unicode(src);
+            storage::set("uni_report", &r);
+            report.set(r);
+        }
+    };
+
+    let on_source_input = {
+        let source = source.clone();
+        let form = form.clone();
+        let refresh = refresh.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlTextAreaElement>().value();
+            storage::set("uni_source", &val);
+            source.set(val.clone());
+            refresh(&val, &form);
+        })
+    };
+
+    let on_form_change = {
+        let source = source.clone();
+        let form = form.clone();
+        let refresh = refresh.clone();
+        Callback::from(move |e: Event| {
+            let val = e.target().unwrap().unchecked_into::<HtmlSelectElement>().value();
+            storage::set("uni_form", &val);
+            form.set(val.clone());
+            refresh(&source, &val);
+        })
+    };
+
+    let on_inspect = {
+        let source = source.clone();
+        let form = form.clone();
+        let refresh = refresh.clone();
+        Callback::from(move |_: MouseEvent| {
+            refresh(&source, &form);
+        })
+    };
+
+    let on_clear = {
+        let source = source.clone();
+        let normalized = normalized.clone();
+        let report = report.clone();
+        Callback::from(move |_: MouseEvent| {
+            storage::remove("uni_source");
+            storage::remove("uni_normalized");
+            storage::remove("uni_report");
+            source.set(String::new());
+            normalized.set(String::new());
+            report.set(String::new());
+        })
+    };
+
+    let opt = |v: &str, label: &str| -> Html {
+        let selected = *form == v;
+        html! { <option value={v.to_string()} selected={selected}>{ label }</option> }
+    };
+
+    html! {
+        <div class="tool-container">
+            <div class="button-column">
+                <div class="mb-2">
+                    <label class="form-label">{ "Normalization" }</label>
+                    <select class="form-select" onchange={on_form_change}>
+                        { opt("nfc", "NFC") }
+                        { opt("nfd", "NFD") }
+                        { opt("nfkc", "NFKC") }
+                        { opt("nfkd", "NFKD") }
+                    </select>
+                </div>
+                <button class="btn btn-primary w-100 mb-2" onclick={on_inspect}>{ "Inspect" }</button>
+                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
+            </div>
+            <div class="content-column">
+                <div class="mb-3">
+                    <label class="form-label">{ "Source" }</label>
+                    <textarea class="form-control" rows="3"
+                              value={(*source).clone()}
+                              oninput={on_source_input}></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Normalized" }</label>
+                    <textarea class="form-control" rows="3" readonly=true
+                              value={(*normalized).clone()}></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Report" }</label>
+                    <textarea class="form-control" rows="12" readonly=true
+                              style="font-family: monospace;"
+                              value={(*report).clone()}></textarea>
                 </div>
             </div>
         </div>

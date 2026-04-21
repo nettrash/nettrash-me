@@ -270,6 +270,7 @@ enum EncryptionTab {
     JwtDecoder,
     Hmac,
     Totp,
+    X509,
 }
 
 // ---------------------------------------------------------------------------
@@ -318,6 +319,10 @@ pub fn encryption() -> Html {
                     <a class={tab_class(&EncryptionTab::Totp)} href="#"
                        onclick={set_tab(EncryptionTab::Totp)}>{ "TOTP/HOTP" }</a>
                 </li>
+                <li class="nav-item">
+                    <a class={tab_class(&EncryptionTab::X509)} href="#"
+                       onclick={set_tab(EncryptionTab::X509)}>{ "X.509" }</a>
+                </li>
             </ul>
             <div class="tab-content">
                 { match *active_tab {
@@ -326,6 +331,7 @@ pub fn encryption() -> Html {
                     EncryptionTab::JwtDecoder => html! { <JwtDecoderTool /> },
                     EncryptionTab::Hmac       => html! { <HmacTool /> },
                     EncryptionTab::Totp       => html! { <TotpTool /> },
+                    EncryptionTab::X509       => html! { <X509Tool /> },
                 }}
             </div>
             <div class="bottomtext">
@@ -2682,6 +2688,176 @@ fn totp_tool() -> Html {
                             { format!("Expires in ~{} seconds", *remaining) }
                         </div>
                     }
+                </div>
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// X.509 / CSR viewer
+// ---------------------------------------------------------------------------
+fn parse_x509_pem(input: &str) -> Result<String, String> {
+    use x509_parser::pem::parse_x509_pem;
+
+    let src = input.trim();
+    if src.is_empty() {
+        return Err("Empty input".to_string());
+    }
+    let (_, pem) = parse_x509_pem(src.as_bytes()).map_err(|e| format!("PEM parse error: {}", e))?;
+
+    match pem.label.as_str() {
+        "CERTIFICATE" => describe_certificate(&pem.contents),
+        "CERTIFICATE REQUEST" | "NEW CERTIFICATE REQUEST" => describe_csr(&pem.contents),
+        other => Err(format!("Unsupported PEM label: {}", other)),
+    }
+}
+
+fn describe_certificate(der: &[u8]) -> Result<String, String> {
+    use x509_parser::extensions::ParsedExtension;
+    use x509_parser::prelude::*;
+
+    let (_, cert) = X509Certificate::from_der(der).map_err(|e| format!("DER parse error: {}", e))?;
+    let mut out = String::new();
+    out.push_str(&format!("Type:       X.509 Certificate (v{})\n", cert.version().0 + 1));
+    out.push_str(&format!("Subject:    {}\n", cert.subject()));
+    out.push_str(&format!("Issuer:     {}\n", cert.issuer()));
+    out.push_str(&format!("Serial:     {}\n", cert.raw_serial_as_string()));
+    out.push_str(&format!("Not before: {}\n", cert.validity().not_before));
+    out.push_str(&format!("Not after:  {}\n", cert.validity().not_after));
+    out.push_str(&format!("Sig algo:   {}\n", cert.signature_algorithm.algorithm));
+
+    let spki = &cert.tbs_certificate.subject_pki;
+    out.push_str(&format!("Key algo:   {}\n", spki.algorithm.algorithm));
+    out.push_str(&format!("Key bits:   {}\n", spki.subject_public_key.data.len() * 8));
+
+    let mut sans: Vec<String> = Vec::new();
+    let mut key_usage: Option<String> = None;
+    let mut ext_key_usage: Vec<String> = Vec::new();
+    let mut basic: Option<String> = None;
+
+    for ext in cert.extensions() {
+        match ext.parsed_extension() {
+            ParsedExtension::SubjectAlternativeName(san) => {
+                for name in &san.general_names {
+                    sans.push(format!("{:?}", name));
+                }
+            }
+            ParsedExtension::KeyUsage(ku) => {
+                key_usage = Some(format!("{:?}", ku));
+            }
+            ParsedExtension::ExtendedKeyUsage(eku) => {
+                if eku.server_auth { ext_key_usage.push("serverAuth".into()); }
+                if eku.client_auth { ext_key_usage.push("clientAuth".into()); }
+                if eku.code_signing { ext_key_usage.push("codeSigning".into()); }
+                if eku.email_protection { ext_key_usage.push("emailProtection".into()); }
+                if eku.time_stamping { ext_key_usage.push("timeStamping".into()); }
+                if eku.ocsp_signing { ext_key_usage.push("ocspSigning".into()); }
+            }
+            ParsedExtension::BasicConstraints(bc) => {
+                basic = Some(format!(
+                    "CA={} pathlen={}",
+                    bc.ca,
+                    bc.path_len_constraint.map(|v| v.to_string()).unwrap_or_else(|| "-".into())
+                ));
+            }
+            _ => {}
+        }
+    }
+
+    if let Some(k) = key_usage {
+        out.push_str(&format!("Key usage:  {}\n", k));
+    }
+    if !ext_key_usage.is_empty() {
+        out.push_str(&format!("EKU:        {}\n", ext_key_usage.join(", ")));
+    }
+    if let Some(b) = basic {
+        out.push_str(&format!("Basic:      {}\n", b));
+    }
+    if !sans.is_empty() {
+        out.push_str("SAN:\n");
+        for s in &sans {
+            out.push_str(&format!("  {}\n", s));
+        }
+    }
+    Ok(out)
+}
+
+fn describe_csr(der: &[u8]) -> Result<String, String> {
+    use x509_parser::prelude::*;
+
+    let (_, csr) = X509CertificationRequest::from_der(der)
+        .map_err(|e| format!("CSR parse error: {}", e))?;
+    let info = &csr.certification_request_info;
+    let mut out = String::new();
+    out.push_str("Type:       PKCS#10 Certificate Signing Request\n");
+    out.push_str(&format!("Subject:    {}\n", info.subject));
+    out.push_str(&format!("Sig algo:   {}\n", csr.signature_algorithm.algorithm));
+    out.push_str(&format!("Key algo:   {}\n", info.subject_pki.algorithm.algorithm));
+    out.push_str(&format!(
+        "Key bits:   {}\n",
+        info.subject_pki.subject_public_key.data.len() * 8
+    ));
+    Ok(out)
+}
+
+#[function_component(X509Tool)]
+fn x509_tool() -> Html {
+    let source = use_state(|| storage::get("x509_source").unwrap_or_default());
+    let result = use_state(|| storage::get("x509_result").unwrap_or_default());
+
+    let on_source_input = {
+        let source = source.clone();
+        Callback::from(move |e: InputEvent| {
+            let val = e.target().unwrap().unchecked_into::<HtmlTextAreaElement>().value();
+            storage::set("x509_source", &val);
+            source.set(val);
+        })
+    };
+
+    let on_parse = {
+        let source = source.clone();
+        let result = result.clone();
+        Callback::from(move |_: MouseEvent| {
+            let r = match parse_x509_pem(&source) {
+                Ok(v) => v,
+                Err(e) => e,
+            };
+            storage::set("x509_result", &r);
+            result.set(r);
+        })
+    };
+
+    let on_clear = {
+        let source = source.clone();
+        let result = result.clone();
+        Callback::from(move |_: MouseEvent| {
+            storage::remove("x509_source");
+            storage::remove("x509_result");
+            source.set(String::new());
+            result.set(String::new());
+        })
+    };
+
+    html! {
+        <div class="tool-container">
+            <div class="button-column">
+                <button class="btn btn-primary w-100 mb-2" onclick={on_parse}>{ "Parse" }</button>
+                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
+            </div>
+            <div class="content-column">
+                <div class="mb-3">
+                    <label class="form-label">{ "PEM (certificate or CSR)" }</label>
+                    <textarea class="form-control" rows="10"
+                              placeholder="-----BEGIN CERTIFICATE-----"
+                              value={(*source).clone()}
+                              oninput={on_source_input}></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Parsed" }</label>
+                    <textarea class="form-control" rows="16" readonly=true
+                              style="font-family: monospace;"
+                              value={(*result).clone()}></textarea>
                 </div>
             </div>
         </div>

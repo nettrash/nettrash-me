@@ -1,6 +1,6 @@
 # nettrash.me
 
-![Version](https://img.shields.io/badge/version-1.4.0-blue)
+![Version](https://img.shields.io/badge/version-1.5.0-blue)
 
 A developer utility toolkit built with **Rust** + **WebAssembly** (Yew framework), served by **nginx**.
 
@@ -14,7 +14,7 @@ A developer utility toolkit built with **Rust** + **WebAssembly** (Yew framework
   - **Luhn** — Luhn algorithm validation
   - **GUID** — UUID v4 generation
   - **Plot** — Function graph plotter (SVG output, supports sin/cos/tan/sqrt/exp/ln/etc.)
-- **Text** — Base64, URL, Hex encode/decode, RegEx matching, Password generator
+- **Text** — Base64, URL, Hex encode/decode, RegEx matching, Password generator, Case converter (snake/camel/kebab/Pascal/Title/dot/path/sentence), Unicode inspector (codepoints, UTF-8/16 bytes, NFC/NFD/NFKC/NFKD normalization, invisible/format char detection)
 - **Converters**
   - **Unixtime** — Unix timestamp ↔ date conversion
   - **1D/2D Code** — QR code, DataMatrix, Aztec, Code128, Code39, EAN-13, EAN-8, Codabar, ITF (SVG output)
@@ -23,6 +23,9 @@ A developer utility toolkit built with **Rust** + **WebAssembly** (Yew framework
   - **JSON Schema** — Validate JSON data against a JSON Schema
   - **Markdown** — Live Markdown preview with rendered HTML output
   - **Diff** — Side-by-side text diff with line-level highlighting
+  - **Cron** — Explain cron expressions and preview the next 8 scheduled runs (UTC)
+  - **CIDR** — IPv4/IPv6 subnet calculator (network, broadcast, range, host count, classification)
+  - **Color** — hex/rgb/hsl parser, swatches, live preview, WCAG contrast ratio + grade
 - **Encryption**
   - **Symmetric** — AES-128/192/256, DES, 3DES, Blowfish, Twofish (CBC/PKCS7)
   - **Asymmetric**
@@ -34,6 +37,7 @@ A developer utility toolkit built with **Rust** + **WebAssembly** (Yew framework
   - **JWT Decoder** — Decode and inspect JWT tokens (header + payload)
   - **HMAC** — Compute HMAC using SHA-1, SHA-256, SHA-384, SHA-512
   - **TOTP/HOTP** — Generate TOTP and HOTP one-time passwords (RFC 6238 / RFC 4226)
+  - **X.509** — Parse PEM-encoded certificates and PKCS#10 CSRs (subject, issuer, validity, key info, SAN, key usage)
 
 All state is persisted in **sessionStorage**. Everything runs **client-side in WebAssembly** — no data leaves the browser. nginx serves the static files and provides the client IP via a tiny `/api/ip` endpoint.
 
