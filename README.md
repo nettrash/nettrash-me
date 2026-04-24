@@ -1,6 +1,6 @@
 # nettrash.me
 
-![Version](https://img.shields.io/badge/version-1.5.0-blue)
+![Version](https://img.shields.io/badge/version-1.5.1-blue)
 
 A developer utility toolkit built with **Rust** + **WebAssembly** (Yew framework), served by **nginx**.
 
@@ -14,7 +14,7 @@ A developer utility toolkit built with **Rust** + **WebAssembly** (Yew framework
   - **Luhn** — Luhn algorithm validation
   - **GUID** — UUID v4 generation
   - **Plot** — Function graph plotter (SVG output, supports sin/cos/tan/sqrt/exp/ln/etc.)
-- **Text** — Base64, URL, Hex encode/decode, RegEx matching, Password generator, Case converter (snake/camel/kebab/Pascal/Title/dot/path/sentence), Unicode inspector (codepoints, UTF-8/16 bytes, NFC/NFD/NFKC/NFKD normalization, invisible/format char detection)
+- **Text** — Base64, URL, Hex encode/decode, RegEx matching, Password generator (random, pronounceable, passphrase modes), Case converter (snake/camel/kebab/Pascal/Title/dot/path/sentence), Unicode inspector (codepoints, UTF-8/16 bytes, NFC/NFD/NFKC/NFKD normalization, invisible/format char detection)
 - **Converters**
   - **Unixtime** — Unix timestamp ↔ date conversion
   - **1D/2D Code** — QR code, DataMatrix, Aztec, Code128, Code39, EAN-13, EAN-8, Codabar, ITF (SVG output)

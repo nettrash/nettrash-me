@@ -5,6 +5,7 @@ use wasm_bindgen::JsCast;
 use web_sys::{HtmlInputElement, HtmlSelectElement, HtmlTextAreaElement};
 use yew::prelude::*;
 
+use crate::components::wordlist::WORDS;
 use crate::storage;
 
 fn random_bytes(len: usize) -> Vec<u8> {
@@ -458,26 +459,177 @@ fn regex_tool() -> Html {
 // ---------------------------------------------------------------------------
 // Password generator tool
 // ---------------------------------------------------------------------------
+#[derive(Copy, Clone, PartialEq)]
+enum PasswordMode {
+    Random,
+    Readable,
+    Passphrase,
+}
+
+impl PasswordMode {
+    fn as_str(self) -> &'static str {
+        match self {
+            PasswordMode::Random => "random",
+            PasswordMode::Readable => "readable",
+            PasswordMode::Passphrase => "passphrase",
+        }
+    }
+    fn from_str(s: &str) -> Self {
+        match s {
+            "readable" => PasswordMode::Readable,
+            "passphrase" => PasswordMode::Passphrase,
+            _ => PasswordMode::Random,
+        }
+    }
+}
+
+const PRON_CONSONANTS: &[&str] = &[
+    "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z",
+    "ch", "cr", "cl", "br", "bl", "dr", "fl", "fr", "gl", "gr", "pl", "pr",
+    "sc", "sh", "sk", "sl", "sm", "sn", "sp", "st", "sw", "th", "tr", "tw", "wh",
+];
+const PRON_VOWELS: &[&str] = &[
+    "a", "e", "i", "o", "u", "ae", "ai", "ea", "ee", "ei", "ie", "oa", "oo", "ou",
+];
+const PRON_SYMBOLS: &[u8] = b"!@#$%^&*?";
+
+fn capitalize_first(s: &mut String) {
+    if let Some(c) = s.chars().next() {
+        let upper: String = c.to_uppercase().collect();
+        s.replace_range(0..c.len_utf8(), &upper);
+    }
+}
+
+fn gen_random_pwd(
+    length: usize,
+    upper: bool,
+    lower: bool,
+    digits: bool,
+    special: bool,
+) -> Result<String, String> {
+    let mut charset = String::new();
+    if upper { charset.push_str("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); }
+    if lower { charset.push_str("abcdefghijklmnopqrstuvwxyz"); }
+    if digits { charset.push_str("0123456789"); }
+    if special { charset.push_str("!@#$%^&*()-_=+[]{}|;:,.<>?"); }
+    if charset.is_empty() {
+        return Err("Select at least one character set.".into());
+    }
+    let chars: Vec<char> = charset.chars().collect();
+    let bytes = random_bytes(length);
+    Ok(bytes.iter().map(|b| chars[*b as usize % chars.len()]).collect())
+}
+
+fn gen_readable_pwd(
+    target_len: usize,
+    capitalize: bool,
+    append_digit: bool,
+    append_symbol: bool,
+) -> String {
+    let reserved = append_digit as usize + append_symbol as usize;
+    let core_len = target_len.saturating_sub(reserved).max(2);
+    let bytes = random_bytes(core_len + 16);
+    let mut out = String::with_capacity(core_len + reserved + 2);
+    let mut want_consonant = bytes[0] & 1 == 0;
+    let mut i = 1usize;
+    while out.len() < core_len {
+        let b = bytes[i % bytes.len()];
+        i += 1;
+        let piece = if want_consonant {
+            PRON_CONSONANTS[b as usize % PRON_CONSONANTS.len()]
+        } else {
+            PRON_VOWELS[b as usize % PRON_VOWELS.len()]
+        };
+        out.push_str(piece);
+        want_consonant = !want_consonant;
+    }
+    out.truncate(core_len); // all pieces are ASCII; byte truncation is safe
+    if capitalize {
+        capitalize_first(&mut out);
+    }
+    let extras = random_bytes(2);
+    if append_digit {
+        out.push(char::from(b'0' + (extras[0] % 10)));
+    }
+    if append_symbol {
+        out.push(char::from(PRON_SYMBOLS[extras[1] as usize % PRON_SYMBOLS.len()]));
+    }
+    out
+}
+
+fn gen_passphrase_pwd(
+    word_count: usize,
+    separator: &str,
+    capitalize: bool,
+    append_digit: bool,
+) -> String {
+    let bytes = random_bytes(word_count * 2 + 1);
+    let mut words: Vec<String> = Vec::with_capacity(word_count);
+    for i in 0..word_count {
+        let idx = (((bytes[2 * i] as usize) << 8) | bytes[2 * i + 1] as usize) % WORDS.len();
+        let mut w = WORDS[idx].to_string();
+        if capitalize {
+            capitalize_first(&mut w);
+        }
+        words.push(w);
+    }
+    let mut out = words.join(separator);
+    if append_digit {
+        out.push(char::from(b'0' + (bytes[word_count * 2] % 10)));
+    }
+    out
+}
+
 #[function_component(PasswordTool)]
 fn password_tool() -> Html {
+    let mode = use_state(|| {
+        PasswordMode::from_str(&storage::get("pwd_mode").unwrap_or_else(|| "random".into()))
+    });
+
+    // Random-mode state.
     let length = use_state(|| storage::get("pwd_length").and_then(|s| s.parse::<usize>().ok()).unwrap_or(16));
     let use_upper = use_state(|| storage::get("pwd_upper").map(|s| s == "true").unwrap_or(true));
     let use_lower = use_state(|| storage::get("pwd_lower").map(|s| s == "true").unwrap_or(true));
     let use_digits = use_state(|| storage::get("pwd_digits").map(|s| s == "true").unwrap_or(true));
     let use_special = use_state(|| storage::get("pwd_special").map(|s| s == "true").unwrap_or(true));
+
+    // Readable-mode state.
+    let readable_len = use_state(|| storage::get("pwd_readable_len").and_then(|s| s.parse::<usize>().ok()).unwrap_or(12));
+    let readable_caps = use_state(|| storage::get("pwd_readable_caps").map(|s| s == "true").unwrap_or(true));
+    let readable_digit = use_state(|| storage::get("pwd_readable_digit").map(|s| s == "true").unwrap_or(true));
+    let readable_symbol = use_state(|| storage::get("pwd_readable_symbol").map(|s| s == "true").unwrap_or(false));
+
+    // Passphrase-mode state.
+    let phrase_words = use_state(|| storage::get("pwd_phrase_words").and_then(|s| s.parse::<usize>().ok()).unwrap_or(5));
+    let phrase_sep = use_state(|| storage::get("pwd_phrase_sep").unwrap_or_else(|| "-".into()));
+    let phrase_caps = use_state(|| storage::get("pwd_phrase_caps").map(|s| s == "true").unwrap_or(false));
+    let phrase_digit = use_state(|| storage::get("pwd_phrase_digit").map(|s| s == "true").unwrap_or(false));
+
     let result = use_state(|| storage::get("pwd_result").unwrap_or_default());
 
-    let on_length_input = {
-        let length = length.clone();
+    let on_mode_change = {
+        let mode = mode.clone();
+        Callback::from(move |e: Event| {
+            let val = e.target().unwrap().unchecked_into::<HtmlSelectElement>().value();
+            storage::set("pwd_mode", &val);
+            mode.set(PasswordMode::from_str(&val));
+        })
+    };
+
+    let num_input = |state: UseStateHandle<usize>, key: &'static str, min: usize, max: usize| {
         Callback::from(move |e: InputEvent| {
             let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
             if let Ok(n) = val.parse::<usize>() {
-                let n = n.clamp(1, 128);
-                storage::set("pwd_length", &n.to_string());
-                length.set(n);
+                let n = n.clamp(min, max);
+                storage::set(key, &n.to_string());
+                state.set(n);
             }
         })
     };
+
+    let on_length_input = num_input(length.clone(), "pwd_length", 1, 128);
+    let on_readable_len = num_input(readable_len.clone(), "pwd_readable_len", 4, 64);
+    let on_phrase_words = num_input(phrase_words.clone(), "pwd_phrase_words", 2, 12);
 
     let toggle_cb = |state: UseStateHandle<bool>, key: &'static str| {
         Callback::from(move |e: Event| {
@@ -491,27 +643,52 @@ fn password_tool() -> Html {
     let on_lower = toggle_cb(use_lower.clone(), "pwd_lower");
     let on_digits = toggle_cb(use_digits.clone(), "pwd_digits");
     let on_special = toggle_cb(use_special.clone(), "pwd_special");
+    let on_rcaps = toggle_cb(readable_caps.clone(), "pwd_readable_caps");
+    let on_rdigit = toggle_cb(readable_digit.clone(), "pwd_readable_digit");
+    let on_rsymbol = toggle_cb(readable_symbol.clone(), "pwd_readable_symbol");
+    let on_pcaps = toggle_cb(phrase_caps.clone(), "pwd_phrase_caps");
+    let on_pdigit = toggle_cb(phrase_digit.clone(), "pwd_phrase_digit");
+
+    let on_sep_change = {
+        let phrase_sep = phrase_sep.clone();
+        Callback::from(move |e: Event| {
+            let val = e.target().unwrap().unchecked_into::<HtmlSelectElement>().value();
+            storage::set("pwd_phrase_sep", &val);
+            phrase_sep.set(val);
+        })
+    };
 
     let on_generate = {
+        let mode = mode.clone();
         let length = length.clone();
         let use_upper = use_upper.clone();
         let use_lower = use_lower.clone();
         let use_digits = use_digits.clone();
         let use_special = use_special.clone();
+        let readable_len = readable_len.clone();
+        let readable_caps = readable_caps.clone();
+        let readable_digit = readable_digit.clone();
+        let readable_symbol = readable_symbol.clone();
+        let phrase_words = phrase_words.clone();
+        let phrase_sep = phrase_sep.clone();
+        let phrase_caps = phrase_caps.clone();
+        let phrase_digit = phrase_digit.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
-            let mut charset = String::new();
-            if *use_upper { charset.push_str("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); }
-            if *use_lower { charset.push_str("abcdefghijklmnopqrstuvwxyz"); }
-            if *use_digits { charset.push_str("0123456789"); }
-            if *use_special { charset.push_str("!@#$%^&*()-_=+[]{}|;:,.<>?"); }
-            if charset.is_empty() {
-                result.set("Select at least one character set.".to_string());
-                return;
-            }
-            let chars: Vec<char> = charset.chars().collect();
-            let bytes = random_bytes(*length);
-            let pwd: String = bytes.iter().map(|b| chars[*b as usize % chars.len()]).collect();
+            let pwd = match *mode {
+                PasswordMode::Random => match gen_random_pwd(
+                    *length, *use_upper, *use_lower, *use_digits, *use_special,
+                ) {
+                    Ok(s) => s,
+                    Err(e) => e,
+                },
+                PasswordMode::Readable => gen_readable_pwd(
+                    *readable_len, *readable_caps, *readable_digit, *readable_symbol,
+                ),
+                PasswordMode::Passphrase => gen_passphrase_pwd(
+                    *phrase_words, &phrase_sep, *phrase_caps, *phrase_digit,
+                ),
+            };
             storage::set("pwd_result", &pwd);
             result.set(pwd);
         })
@@ -525,13 +702,18 @@ fn password_tool() -> Html {
         })
     };
 
-    html! {
-        <div class="tool-container">
-            <div class="button-column">
-                <button class="btn btn-primary w-100 mb-2" onclick={on_generate}>{ "Generate" }</button>
-                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
-            </div>
-            <div class="content-column">
+    let mode_opt = |v: PasswordMode, label: &str| -> Html {
+        let selected = *mode == v;
+        html! { <option value={v.as_str()} selected={selected}>{ label }</option> }
+    };
+    let sep_opt = |v: &str, label: &str| -> Html {
+        let selected = (*phrase_sep) == v;
+        html! { <option value={v.to_string()} selected={selected}>{ label }</option> }
+    };
+
+    let mode_controls = match *mode {
+        PasswordMode::Random => html! {
+            <>
                 <div class="mb-3">
                     <label class="form-label">{ "Length" }</label>
                     <input type="number" class="form-control" min="1" max="128"
@@ -560,6 +742,85 @@ fn password_tool() -> Html {
                         <label class="form-check-label" for="pwd-special">{ "!@#$..." }</label>
                     </div>
                 </div>
+            </>
+        },
+        PasswordMode::Readable => html! {
+            <>
+                <div class="mb-3">
+                    <label class="form-label">{ "Length" }</label>
+                    <input type="number" class="form-control" min="4" max="64"
+                           value={readable_len.to_string()}
+                           oninput={on_readable_len} />
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="pwd-rcaps"
+                               checked={*readable_caps} onchange={on_rcaps} />
+                        <label class="form-check-label" for="pwd-rcaps">{ "Capitalize" }</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="pwd-rdigit"
+                               checked={*readable_digit} onchange={on_rdigit} />
+                        <label class="form-check-label" for="pwd-rdigit">{ "Append digit" }</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="pwd-rsymbol"
+                               checked={*readable_symbol} onchange={on_rsymbol} />
+                        <label class="form-check-label" for="pwd-rsymbol">{ "Append symbol" }</label>
+                    </div>
+                </div>
+            </>
+        },
+        PasswordMode::Passphrase => html! {
+            <>
+                <div class="mb-3">
+                    <label class="form-label">{ "Words" }</label>
+                    <input type="number" class="form-control" min="2" max="12"
+                           value={phrase_words.to_string()}
+                           oninput={on_phrase_words} />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{ "Separator" }</label>
+                    <select class="form-select" onchange={on_sep_change}>
+                        { sep_opt("-", "dash -") }
+                        { sep_opt("_", "underscore _") }
+                        { sep_opt(".", "dot .") }
+                        { sep_opt(" ", "space") }
+                        { sep_opt("", "(none)") }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="pwd-pcaps"
+                               checked={*phrase_caps} onchange={on_pcaps} />
+                        <label class="form-check-label" for="pwd-pcaps">{ "Capitalize words" }</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="pwd-pdigit"
+                               checked={*phrase_digit} onchange={on_pdigit} />
+                        <label class="form-check-label" for="pwd-pdigit">{ "Append digit" }</label>
+                    </div>
+                </div>
+            </>
+        },
+    };
+
+    html! {
+        <div class="tool-container">
+            <div class="button-column">
+                <button class="btn btn-primary w-100 mb-2" onclick={on_generate}>{ "Generate" }</button>
+                <button class="btn btn-secondary w-100" onclick={on_clear}>{ "Clear" }</button>
+            </div>
+            <div class="content-column">
+                <div class="mb-3">
+                    <label class="form-label">{ "Mode" }</label>
+                    <select class="form-select" onchange={on_mode_change}>
+                        { mode_opt(PasswordMode::Random, "Random") }
+                        { mode_opt(PasswordMode::Readable, "Pronounceable") }
+                        { mode_opt(PasswordMode::Passphrase, "Passphrase") }
+                    </select>
+                </div>
+                { mode_controls }
                 <div class="mb-3">
                     <label class="form-label">{ "Password" }</label>
                     <textarea class="form-control" rows="2" readonly=true
