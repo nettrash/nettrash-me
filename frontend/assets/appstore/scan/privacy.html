@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scan — Privacy Policy</title>
+    <meta name="description" content="Privacy policy for the Scan iOS app by nettrash." />
+    <meta name="robots" content="index,follow" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous" />
+    <style>
+        body {
+            font-family: "Roboto", system-ui, -apple-system, sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.65;
+        }
+        main {
+            max-width: 820px;
+            margin: 3rem auto;
+            padding: 2.25rem 2.5rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            font-weight: 300;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        h2 {
+            font-weight: 400;
+            margin-top: 2rem;
+            font-size: 1.25rem;
+        }
+        .meta {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        table {
+            width: 100%;
+            margin: 1rem 0;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #e6e6e6;
+            padding: 0.6rem 0.75rem;
+            vertical-align: top;
+            font-size: 0.95rem;
+        }
+        th {
+            background: #f4f4f4;
+            font-weight: 600;
+            text-align: left;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 0.05rem 0.35rem;
+            border-radius: 3px;
+            font-size: 0.92em;
+            color: #0d3a8a;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #888;
+            font-size: 0.85rem;
+        }
+        a { color: #0d47a1; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Privacy Policy</h1>
+        <p class="meta">
+            <strong>Effective date:</strong> 26 April 2026 &middot;
+            <strong>Applies to:</strong> Scan — the iOS app published by nettrash on the App Store.
+        </p>
+
+        <p>
+            This policy is versioned alongside the app's source code; the
+            most recent commit on <code>main</code> is authoritative.
+        </p>
+
+        <h2>TL;DR</h2>
+        <p>
+            Scan <strong>does not collect, transmit, sell, or share any
+            personal data</strong>. It contains no analytics, no advertising
+            SDKs, no third-party trackers, and no remote servers operated by
+            us. Everything you scan, generate, or save stays on your
+            device — and, if you're signed in to iCloud, in <em>your own</em>
+            private iCloud database.
+        </p>
+        <p>If that already answers your question, you don't need to read the rest.</p>
+
+        <h2>What we collect</h2>
+        <p>
+            <strong>Nothing.</strong> Scan does not transmit any data about
+            you to us or to any third party. There is no account to create,
+            no email to register, and no telemetry pinging home from the app.
+        </p>
+        <p>
+            We have no servers in this picture. The app's network access is
+            limited to the URL schemes you explicitly trigger by tapping a
+            smart action — for example, opening a scanned <code>https://</code>
+            URL in Safari, an <code>upi://pay</code> URI in your installed
+            UPI app, or a SEPA verification URL on the issuing tax
+            authority's site. In every such case, the network request goes
+            from <em>your device</em> directly to <em>that destination</em> —
+            Scan is not in the loop.
+        </p>
+
+        <h2>Data stored on your device</h2>
+        <p>
+            Scan keeps a single local database — your <strong>scan
+            history</strong> — using Apple's Core Data with
+            <code>NSPersistentCloudKitContainer</code>:
+        </p>
+        <ul>
+            <li>
+                Each entry records the decoded value, the symbology, a
+                timestamp, and any notes you choose to attach.
+            </li>
+            <li>The database lives in the app's sandbox directory on your device.</li>
+            <li>
+                If you're signed in to iCloud and have <em>Scan</em> enabled
+                in <em>Settings → [Your Name] → iCloud → Apps Using
+                iCloud</em>, the database is mirrored to <strong>your
+                own</strong> private iCloud database via CloudKit. Apple
+                stores it; we never see it.
+            </li>
+            <li>Deleting a scan from the History tab removes it from the local database and the iCloud mirror.</li>
+            <li>
+                Deleting the app removes the local database. To remove the
+                iCloud copy, sign in at
+                <code>iCloud.com → Account → Manage iCloud Storage</code>
+                or delete the app's data from
+                <em>Settings → [Your Name] → iCloud → Manage Account
+                Storage</em>.
+            </li>
+        </ul>
+        <p>We have no access to this database under any circumstance.</p>
+
+        <h2>Permissions Scan asks for, and what each one is used for</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Permission</th>
+                    <th>Used for</th>
+                    <th>Scope</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Camera</strong> (<code>NSCameraUsageDescription</code>)</td>
+                    <td>Live barcode and QR-code scanning.</td>
+                    <td>Frames are decoded on-device by Apple's AVFoundation; nothing is recorded or transmitted.</td>
+                </tr>
+                <tr>
+                    <td><strong>Photo Library — add only</strong> (<code>NSPhotoLibraryAddUsageDescription</code>)</td>
+                    <td>Saving codes you generate to your Photos library.</td>
+                    <td>Write-only — the app cannot read existing photos.</td>
+                </tr>
+                <tr>
+                    <td><strong>Contacts</strong> (<code>NSContactsUsageDescription</code>)</td>
+                    <td>"Add to Contacts" when you scan a vCard / MECARD QR.</td>
+                    <td>Mediated by the system "New Contact" sheet that you must tap <em>Done</em> on; Scan does not read your address book.</td>
+                </tr>
+                <tr>
+                    <td><strong>Calendars — write only</strong> (<code>NSCalendarsWriteOnlyAccessUsageDescription</code> / <code>NSCalendarsUsageDescription</code>)</td>
+                    <td>"Add to Calendar" when you scan an iCalendar QR.</td>
+                    <td>Mediated by the system "Add Event" sheet on iOS 17+ via write-only access; Scan does not read your existing events.</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            Every privileged action is gated on a system-supplied
+            edit-and-save sheet that you control. If you cancel that sheet,
+            nothing is saved.
+        </p>
+
+        <h2>Third-party services</h2>
+        <p>
+            <strong>None.</strong> Scan ships with zero third-party SDKs,
+            frameworks, or libraries beyond what Apple itself provides as
+            part of iOS. There are no analytics tools (Firebase, Mixpanel,
+            Sentry, etc.), no advertising SDKs (AdMob, Meta, etc.), no crash
+            reporters that phone home, and no attribution providers. The
+            only external network connections are the ones <em>you</em>
+            initiate — tapping "Open in Safari" on a scanned URL, for
+            example.
+        </p>
+
+        <h2>Tracking</h2>
+        <p>
+            Scan does not "track" you in the sense Apple's <em>App Tracking
+            Transparency</em> framework defines: it does not link any data
+            collected in the app with data from other apps, websites, or
+            offline sources to build a user profile, and it does not share
+            any data with data brokers. Scan therefore does not present an
+            ATT prompt and is declared with <strong>Data Not Collected</strong>
+            on its App Store privacy nutrition label.
+        </p>
+
+        <h2>Children's privacy</h2>
+        <p>
+            Scan is rated <strong>4+</strong> and is suitable for all ages.
+            We do not knowingly collect personal information from children,
+            because we do not collect personal information from anyone.
+        </p>
+
+        <h2>International data transfers</h2>
+        <p>
+            Because Scan does not transmit personal data anywhere, there are
+            no cross-border transfers to disclose under the GDPR, UK GDPR,
+            CCPA, LGPD, or similar regimes. Your scan history's iCloud
+            mirror is governed by Apple's iCloud privacy terms, not ours.
+        </p>
+
+        <h2>Your rights</h2>
+        <p>Because we hold no data about you:</p>
+        <ul>
+            <li>There is <strong>no record to access</strong> under GDPR Article 15 / CCPA "right to know".</li>
+            <li>There is <strong>no record to delete</strong> under GDPR Article 17 / CCPA "right to delete" (the local + iCloud database is yours alone — see the deletion steps above).</li>
+            <li>There is <strong>no record to correct</strong> under GDPR Article 16.</li>
+            <li>There is <strong>nothing being sold or shared</strong> under CCPA / CPRA, so no opt-out is required.</li>
+        </ul>
+        <p>
+            If you'd like confirmation in writing that we hold no data about
+            you, email the address below and we will reply.
+        </p>
+
+        <h2>Changes to this policy</h2>
+        <p>
+            If a future version of Scan ever changes any of the above —
+            adds analytics, integrates a third-party SDK, transmits data
+            off-device, or requests new permissions — this document will be
+            updated <em>in the same release</em> and the <strong>Effective
+            date</strong> at the top will be bumped. The full history of
+            this file is visible in the project's <code>git log</code> on
+            GitHub:
+            <a href="https://github.com/nettrash/Scan/commits/main/PRIVACY.md">github.com/nettrash/Scan/commits/main/PRIVACY.md</a>.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+            For privacy questions, please email
+            <a href="mailto:nettrash@nettrash.me">nettrash@nettrash.me</a>.
+        </p>
+
+        <footer>
+            <a href="https://nettrash.me/">← nettrash.me</a>
+        </footer>
+    </main>
+</body>
+</html>
