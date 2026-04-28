@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Geo — Privacy Policy</title>
+    <meta name="description" content="Privacy policy for the Geo iOS app by nettrash." />
+    <meta name="robots" content="index,follow" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous" />
+    <style>
+        body { font-family: "Roboto", system-ui, -apple-system, sans-serif; background: #fafafa; color: #1a1a1a; line-height: 1.65; }
+        main { max-width: 820px; margin: 3rem auto; padding: 2.25rem 2.5rem; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        h1 { font-weight: 300; border-bottom: 1px solid #eee; padding-bottom: .75rem; margin-bottom: 1rem; font-size: 2rem; }
+        h2 { font-weight: 400; margin-top: 2rem; font-size: 1.25rem; }
+        .meta { color: #888; font-size: .9rem; margin-bottom: 1.5rem; }
+        table { width: 100%; margin: 1rem 0; border-collapse: collapse; }
+        th, td { border: 1px solid #e6e6e6; padding: .6rem .75rem; vertical-align: top; font-size: .95rem; }
+        th { background: #f4f4f4; font-weight: 600; text-align: left; }
+        code { background: #f4f4f4; padding: .05rem .35rem; border-radius: 3px; font-size: .92em; color: #0d3a8a; }
+        footer { text-align: center; margin-top: 2rem; color: #888; font-size: .85rem; }
+        a { color: #0d47a1; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Privacy Policy</h1>
+        <p class="meta">
+            <strong>Effective date:</strong> 28 April 2026 &middot;
+            <strong>Applies to:</strong> Geo — the iOS app (with Apple Watch companion) published by nettrash on the App Store.
+        </p>
+
+        <p>This policy is versioned alongside the app's source code; the most recent commit on <code>main</code> is authoritative.</p>
+
+        <h2>TL;DR</h2>
+        <p>
+            Geo doesn't collect any personal information about you, doesn't create accounts, and doesn't use analytics, advertising, or trackers. The only data that ever leaves your device is what's necessary to render the things you ask the app to render: a few network requests to display the map, and an approximate-location query to OpenStreetMap when the app looks up nearby mountain peaks. Nothing is sent to servers operated by us — we have no servers.
+        </p>
+
+        <h2>What the app accesses, and what each access does</h2>
+
+        <p>
+            <strong>Location — when in use</strong> (<code>NSLocationWhenInUseUsageDescription</code>). Granted via the system Location Services prompt the first time you open the Map or Nature tab. Used exclusively to:
+        </p>
+        <ol>
+            <li>Show your current position on the in-app map.</li>
+            <li>Compute distances and bearings to known peaks for the AR view and the "Nearby" list.</li>
+            <li>Build the Overpass API query described below.</li>
+        </ol>
+        <p>The app uses <em>when-in-use</em> only — it does not request "Always" / background location.</p>
+
+        <p>
+            <strong>Camera</strong> (<code>NSCameraUsageDescription</code>). Used by the AR view to overlay peak names on the camera feed. Frames are processed entirely on-device by ARKit; nothing is recorded or transmitted.
+        </p>
+
+        <p>
+            <strong>Motion &amp; Fitness</strong> (<code>NSMotionUsageDescription</code>). Reads the device's barometer and motion sensors so the app can compute altitude (from atmospheric pressure) and stabilise AR peak labels. Sensor values stay on the device.
+        </p>
+
+        <p>
+            The Apple Watch companion app and Watch widget request only <strong>Motion &amp; Fitness</strong> to read the Watch's barometer.
+        </p>
+
+        <h2>What goes over the network</h2>
+
+        <p>
+            <strong>OpenStreetMap Overpass API</strong> (<code>https://overpass-api.de/api/interpreter</code>). When you open the Nature tab, the app sends an HTTPS request containing your approximate latitude/longitude and a search radius (typically 25–50 km) to fetch the list of nodes tagged <code>natural=peak</code> near you. The request body contains <em>only</em> those coordinates and the radius — no device identifiers, no IDFA, no account information. The Overpass API is a free, public service hosted by OpenStreetMap volunteers and governed by the <a href="https://osmfoundation.org/wiki/Privacy_Policy">OpenStreetMap Foundation Privacy Policy</a>.
+        </p>
+
+        <p>
+            <strong>Apple MapKit.</strong> The Map view uses MapKit to render map tiles and your-location pin. Apple is the data controller for those requests; data flow and Apple's use of it are governed by the <a href="https://www.apple.com/legal/privacy/">Apple Privacy Policy</a> and the on-device privacy preferences you control in <em>Settings → Privacy &amp; Security → Location Services → Maps</em>. MapKit on iOS doesn't require an API key and routes all requests through Apple's privacy-preserving infrastructure — Apple does not share your queries with third parties for advertising.
+        </p>
+
+        <p>
+            That's the entire list. There are no other servers contacted. There is no telemetry, no crash reporter, no advertising network, no attribution provider, no remote analytics.
+        </p>
+
+        <h2>Data stored on your device</h2>
+        <p>
+            <strong>Pressure history</strong> — the device's barometer is sampled periodically and the readings are stored in a local Core Data store inside the app's sandbox so the Stat tab and the home-screen widget can show altitude trends. This data never leaves the device, is not synced to iCloud, and is removed when you uninstall the app.
+        </p>
+        <p>The Apple Watch companion stores its own pressure-history database locally on the Watch.</p>
+
+        <h2>App Tracking Transparency</h2>
+        <p>
+            Geo does not "track" you in the sense Apple's <em>App Tracking Transparency</em> framework defines: it does not link any data collected in the app with data from other apps, websites, or offline sources to build a user profile, and it does not share any data with data brokers. Geo therefore does not present an ATT prompt and is declared with an honest, narrowly-scoped privacy nutrition label on its App Store listing — see "Third-party services" below for the full picture.
+        </p>
+
+        <h2>Third-party services</h2>
+        <table>
+            <thead>
+                <tr><th>Service</th><th>What it sees</th><th>Whose policy applies</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Apple MapKit</td><td>Coarse position + viewport requests for tile rendering</td><td>Apple's</td></tr>
+                <tr><td>OpenStreetMap Overpass API</td><td>Approximate coordinates + search radius</td><td>OpenStreetMap Foundation's</td></tr>
+                <tr><td>Apple ARKit</td><td>Camera frames + IMU data, <strong>on-device only</strong></td><td>Apple's</td></tr>
+            </tbody>
+        </table>
+
+        <p>
+            Specifically NOT used: any third-party analytics SDK (Firebase, Mixpanel, Sentry, etc.), any advertising SDK (AdMob, Meta, AppLovin, etc.), any attribution / install-tracking SDK, any social-media SDK, any IDFA-consuming network.
+        </p>
+
+        <h2>Children's privacy</h2>
+        <p>
+            Geo is rated <strong>4+</strong> and is suitable for all ages. We do not knowingly collect personal information from children, because we do not collect personal information from anyone.
+        </p>
+
+        <h2>International data transfers</h2>
+        <p>
+            The Overpass API endpoint is a global service; requests may transit servers in any country. The data sent (coordinates + radius) does not contain personal data under GDPR Article 4(1) when used in this app — it's not combined with any identifier we hold. MapKit requests are routed through Apple's infrastructure under Apple's standard privacy controls.
+        </p>
+
+        <h2>Your rights</h2>
+        <p>Because we hold no data about you:</p>
+        <ul>
+            <li>There is no record to access under GDPR Article 15 / CCPA "right to know".</li>
+            <li>There is no record to delete under GDPR Article 17 / CCPA "right to delete" (the local pressure history is yours alone — uninstalling the app removes it entirely).</li>
+            <li>There is no record to correct under GDPR Article 16.</li>
+            <li>There is nothing being sold or shared under CCPA / CPRA, so no opt-out is required.</li>
+        </ul>
+        <p>
+            For data flowing through the third-party services listed above, the respective providers' privacy operators are the right point of contact.
+        </p>
+
+        <h2>Changes to this policy</h2>
+        <p>
+            If a future version of Geo changes any of the above — adds analytics, integrates a third-party SDK, adds a new network endpoint, or starts using a permission for a new purpose — this document will be updated <em>in the same release</em> and the <em>Effective date</em> will be bumped. Full history: <a href="https://github.com/nettrash/Geo/commits/main/PRIVACY.md">github.com/nettrash/Geo/commits/main/PRIVACY.md</a>.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+            Privacy questions: <a href="mailto:nettrash@nettrash.me">nettrash@nettrash.me</a>.
+        </p>
+
+        <footer>
+            <a href="https://nettrash.me/">← nettrash.me</a>
+        </footer>
+    </main>
+</body>
+</html>
