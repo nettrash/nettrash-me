@@ -9,6 +9,7 @@ use crate::storage;
 enum HomeTab {
     Info,
     GitHub,
+    AppStore,
 }
 
 #[wasm_bindgen]
@@ -50,6 +51,7 @@ pub fn home() -> Html {
     let active_tab = use_state(|| {
         match storage::get("home_tab").as_deref() {
             Some("github") => HomeTab::GitHub,
+            Some("appstore") => HomeTab::AppStore,
             _ => HomeTab::Info,
         }
     });
@@ -69,6 +71,7 @@ pub fn home() -> Html {
             let key = match &tab {
                 HomeTab::Info => "info",
                 HomeTab::GitHub => "github",
+                HomeTab::AppStore => "appstore",
             };
             storage::set("home_tab", key);
             active_tab.set(tab.clone());
@@ -215,6 +218,10 @@ pub fn home() -> Html {
                     <a class={tab_class(&HomeTab::GitHub)} href="#"
                        onclick={set_tab(HomeTab::GitHub)}>{ "GitHub" }</a>
                 </li>
+                <li class="nav-item">
+                    <a class={tab_class(&HomeTab::AppStore)} href="#"
+                       onclick={set_tab(HomeTab::AppStore)}>{ "App Store" }</a>
+                </li>
             </ul>
             {
                 match *active_tab {
@@ -258,6 +265,9 @@ pub fn home() -> Html {
                     },
                     HomeTab::GitHub => html! {
                         <GitHubTab />
+                    },
+                    HomeTab::AppStore => html! {
+                        <AppStoreTab />
                     },
                 }
             }
@@ -307,6 +317,44 @@ fn github_tab() -> Html {
 
                 // Highlighted projects
                 <h6 class="mb-3">{ "Highlighted Projects" }</h6>
+
+                // Scan — iOS app, on the App Store
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">
+                            <a href="https://github.com/nettrash/Scan" target="_blank"
+                               rel="noopener noreferrer" class="text-decoration-none">
+                                { "Scan" }
+                            </a>
+                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Swift / SwiftUI" }</span>
+                            <span class="badge bg-info ms-1" style="font-size:0.7em;">{ "iOS" }</span>
+                        </h6>
+                        <p class="card-text mb-2">
+                            { "Barcode and QR-code scanner / generator for iPhone and iPad. \
+                               Decodes Wi-Fi, contacts, calendar events, EPC SEPA / Swiss / \
+                               Russian / Indian / Serbian payments, crypto wallets and more — \
+                               each field tap-to-copy. Pure on-device decoding via AVFoundation \
+                               + Vision; no analytics, no ads, no trackers." }
+                        </p>
+                        <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                            <span>
+                                <a href="https://apps.apple.com/us/app/nettrash-scan/id6763932723"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "📱 App Store" }
+                                </a>
+                            </span>
+                            <span>
+                                <a href="https://nettrash.me/appstore/scan/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                            </span>
+                            <span class="badge bg-light text-dark">{ "MIT" }</span>
+                        </div>
+                    </div>
+                </div>
 
                 // pgc
                 <div class="card mb-3">
@@ -387,6 +435,66 @@ fn github_tab() -> Html {
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// App Store tab — apps published on Apple's App Store.
+// ---------------------------------------------------------------------------
+#[function_component(AppStoreTab)]
+fn app_store_tab() -> Html {
+    html! {
+        <div class="tool-container">
+            <div class="content-column" style="max-width:100%;flex:1;">
+
+                // Scan
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="scan-icon.png"
+                             alt="Scan app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://apps.apple.com/us/app/nettrash-scan/id6763932723"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "Scan" }
+                                </a>
+                                <span class="badge bg-info ms-2" style="font-size:0.7em;">{ "iOS" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "Barcode and QR-code reader and generator. Reads QR, Aztec, \
+                                   PDF417, Data Matrix, EAN, UPC, Code 128 and more, then explains \
+                                   what's inside the code — Wi-Fi, contacts, calendar events, \
+                                   payment slips (SEPA, Swiss QR-bill, Russian, Indian UPI, \
+                                   Serbian IPS, EMVCo merchant), crypto wallets — each field \
+                                   tap-to-copy. On-device. No accounts. No ads. No trackers." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://apps.apple.com/us/app/nettrash-scan/id6763932723"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-dark">
+                                    { "Download on the App Store" }
+                                </a>
+                                <a href="https://github.com/nettrash/Scan" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/scan/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     }
