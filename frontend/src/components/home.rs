@@ -10,6 +10,7 @@ enum HomeTab {
     Info,
     GitHub,
     AppStore,
+    Play,
 }
 
 #[wasm_bindgen]
@@ -52,6 +53,7 @@ pub fn home() -> Html {
         match storage::get("home_tab").as_deref() {
             Some("github") => HomeTab::GitHub,
             Some("appstore") => HomeTab::AppStore,
+            Some("play") => HomeTab::Play,
             _ => HomeTab::Info,
         }
     });
@@ -72,6 +74,7 @@ pub fn home() -> Html {
                 HomeTab::Info => "info",
                 HomeTab::GitHub => "github",
                 HomeTab::AppStore => "appstore",
+                HomeTab::Play => "play",
             };
             storage::set("home_tab", key);
             active_tab.set(tab.clone());
@@ -222,6 +225,10 @@ pub fn home() -> Html {
                     <a class={tab_class(&HomeTab::AppStore)} href="#"
                        onclick={set_tab(HomeTab::AppStore)}>{ "App Store" }</a>
                 </li>
+                <li class="nav-item">
+                    <a class={tab_class(&HomeTab::Play)} href="#"
+                       onclick={set_tab(HomeTab::Play)}>{ "Play" }</a>
+                </li>
             </ul>
             {
                 match *active_tab {
@@ -268,6 +275,9 @@ pub fn home() -> Html {
                     },
                     HomeTab::AppStore => html! {
                         <AppStoreTab />
+                    },
+                    HomeTab::Play => html! {
+                        <PlayTab />
                     },
                 }
             }
@@ -346,6 +356,44 @@ fn github_tab() -> Html {
                             </span>
                             <span>
                                 <a href="https://nettrash.me/appstore/scan/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                            </span>
+                            <span class="badge bg-light text-dark">{ "MIT" }</span>
+                        </div>
+                    </div>
+                </div>
+
+                // Scan.Android — Android port, on Google Play
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">
+                            <a href="https://github.com/nettrash/Scan.Android" target="_blank"
+                               rel="noopener noreferrer" class="text-decoration-none">
+                                { "Scan.Android" }
+                            </a>
+                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Kotlin / Jetpack Compose" }</span>
+                            <span class="badge bg-success ms-1" style="font-size:0.7em;">{ "Android" }</span>
+                        </h6>
+                        <p class="card-text mb-2">
+                            { "Android port of Scan with full payload-recognition parity. \
+                               Live-camera scanning via CameraX + ML Kit, Photo Picker import, \
+                               Room-backed history, on-device Compose UI. Same parser surface \
+                               as the iOS app — Wi-Fi, contacts, calendar, payment slips, \
+                               GS1 / IATA / AAMVA, crypto, and more. No analytics, no ads." }
+                        </p>
+                        <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                            <span>
+                                <a href="https://play.google.com/store/apps/details?id=me.nettrash.scan"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "▶ Google Play" }
+                                </a>
+                            </span>
+                            <span>
+                                <a href="https://nettrash.me/play/scan/privacy.html"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
                                     { "Privacy" }
@@ -485,6 +533,66 @@ fn app_store_tab() -> Html {
                                     { "Source" }
                                 </a>
                                 <a href="https://nettrash.me/appstore/scan/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Play tab — apps published on Google Play.
+// ---------------------------------------------------------------------------
+#[function_component(PlayTab)]
+fn play_tab() -> Html {
+    html! {
+        <div class="tool-container">
+            <div class="content-column" style="max-width:100%;flex:1;">
+
+                // Scan.Android
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="scan-android-icon.png"
+                             alt="Scan for Android app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://play.google.com/store/apps/details?id=me.nettrash.scan"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "Scan" }
+                                </a>
+                                <span class="badge bg-success ms-2" style="font-size:0.7em;">{ "Android" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "Barcode and QR-code reader and generator. Reads QR, Aztec, \
+                                   PDF417, Data Matrix, EAN, UPC, Code 128 and more, then explains \
+                                   what's inside the code — Wi-Fi, contacts, calendar events, \
+                                   payment slips (SEPA, Swiss QR-bill, Russian, Indian UPI, \
+                                   Serbian IPS, EMVCo merchant), crypto wallets — each field \
+                                   tap-to-copy. On-device. No accounts. No ads. No trackers." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://play.google.com/store/apps/details?id=me.nettrash.scan"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-success">
+                                    { "Get it on Google Play" }
+                                </a>
+                                <a href="https://github.com/nettrash/Scan.Android" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/play/scan/privacy.html"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
                                     { "Privacy" }
