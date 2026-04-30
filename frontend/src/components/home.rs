@@ -342,7 +342,7 @@ fn github_tab() -> Html {
                         <p class="card-text mb-2">
                             { "Barcode and QR-code scanner / generator for iPhone and iPad. \
                                Decodes Wi-Fi, contacts, calendar events, EPC SEPA / Swiss / \
-                               Russian / Indian / Serbian payments, crypto wallets and more — \
+                               Indian / Serbian payments, crypto wallets and more — \
                                each field tap-to-copy. Pure on-device decoding via AVFoundation \
                                + Vision; no analytics, no ads, no trackers." }
                         </p>
@@ -517,7 +517,7 @@ fn app_store_tab() -> Html {
                                 { "Barcode and QR-code reader and generator. Reads QR, Aztec, \
                                    PDF417, Data Matrix, EAN, UPC, Code 128 and more, then explains \
                                    what's inside the code — Wi-Fi, contacts, calendar events, \
-                                   payment slips (SEPA, Swiss QR-bill, Russian, Indian UPI, \
+                                   payment slips (SEPA, Swiss QR-bill, Indian UPI, \
                                    Serbian IPS, EMVCo merchant), crypto wallets — each field \
                                    tap-to-copy. On-device. No accounts. No ads. No trackers." }
                             </p>
@@ -577,7 +577,7 @@ fn play_tab() -> Html {
                                 { "Barcode and QR-code reader and generator. Reads QR, Aztec, \
                                    PDF417, Data Matrix, EAN, UPC, Code 128 and more, then explains \
                                    what's inside the code — Wi-Fi, contacts, calendar events, \
-                                   payment slips (SEPA, Swiss QR-bill, Russian, Indian UPI, \
+                                   payment slips (SEPA, Swiss QR-bill, Indian UPI, \
                                    Serbian IPS, EMVCo merchant), crypto wallets — each field \
                                    tap-to-copy. On-device. No accounts. No ads. No trackers." }
                             </p>
