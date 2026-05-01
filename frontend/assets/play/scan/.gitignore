@@ -1,0 +1,5 @@
+# Built APK artefacts are dropped in here at deploy time and not
+# committed — see README.md.
+*.apk
+*.apk.sha256
+*.apk.sig

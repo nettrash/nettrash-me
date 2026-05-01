@@ -393,6 +393,14 @@ fn github_tab() -> Html {
                                 </a>
                             </span>
                             <span>
+                                <a href="/play/scan/scan-latest.apk"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none"
+                                   download="scan-latest.apk">
+                                    { "⬇ APK" }
+                                </a>
+                            </span>
+                            <span>
                                 <a href="https://nettrash.me/play/scan/privacy.html"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
@@ -587,6 +595,16 @@ fn play_tab() -> Html {
                                    class="btn btn-sm btn-success">
                                     { "Get it on Google Play" }
                                 </a>
+                                // Direct APK side-load — exists because Google's
+                                // closed-testing-then-production rollout makes new
+                                // builds slow to land on Play. Same signed artefact
+                                // as the Play upload (see assets/play/scan/README.md).
+                                <a href="/play/scan/scan-latest.apk"
+                                   rel="noopener noreferrer"
+                                   class="btn btn-sm btn-outline-success"
+                                   download="scan-latest.apk">
+                                    { "Download APK" }
+                                </a>
                                 <a href="https://github.com/nettrash/Scan.Android" target="_blank"
                                    rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
@@ -599,6 +617,13 @@ fn play_tab() -> Html {
                                 </a>
                                 <span class="badge bg-light text-dark">{ "Free" }</span>
                             </div>
+                            <p class="text-muted small mt-2 mb-0" style="font-size:0.78em;">
+                                { "APK is for users who can't wait for the next Play \
+                                   rollout. Enable \"Install from unknown sources\" for \
+                                   your browser, install, and Android will keep it up \
+                                   to date the next time it sees the same package on \
+                                   Play. Same upload key as the Play build." }
+                            </p>
                         </div>
                     </div>
                 </div>
