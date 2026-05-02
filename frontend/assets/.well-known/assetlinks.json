@@ -1,0 +1,16 @@
+[
+  {
+    "_comment": "Two entries: the upload-key fingerprint (used by sideload APKs from nettrash.me/play/scan/scan-latest.apk) and the Play App Signing fingerprint (used by Play installs). Both must validate against this list for autoVerify to flip an installed app from 'browsable' to 'verified' for https://nettrash.me/scan/* links. Pull the Play App Signing SHA-256 from Play Console → Setup → App integrity → App signing key certificate and substitute it below before deploying.",
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "me.nettrash.scan",
+      "sha256_cert_fingerprints": [
+        "7A:B5:F1:52:E8:BB:2B:5C:C6:88:9C:79:B4:00:80:FE:88:8F:97:79:9A:A9:B6:8A:3C:59:84:F6:3C:41:77:E6",
+        "PLACEHOLDER_PLAY_APP_SIGNING_SHA256_FINGERPRINT_REPLACE_BEFORE_DEPLOY"
+      ]
+    }
+  }
+]

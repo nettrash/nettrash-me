@@ -1,0 +1,23 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["V4WM2SJ8Q9.me.nettrash.Scan"],
+        "components": [
+          {
+            "/": "/scan/*",
+            "comment": "Direct-decode deep links handled in-app: https://nettrash.me/scan/<base64url-payload>"
+          },
+          {
+            "/": "/appstore/scan/*",
+            "exclude": true,
+            "comment": "Privacy / metadata pages stay in Safari; the App-Store-listing tab on nettrash.me already handles those."
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["V4WM2SJ8Q9.me.nettrash.Scan"]
+  }
+}
