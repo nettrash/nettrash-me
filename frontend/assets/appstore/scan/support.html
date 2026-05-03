@@ -89,8 +89,8 @@
     <main>
         <h1>Scan — Support</h1>
         <p class="meta">
-            <strong>Last updated:</strong> 29 April 2026 &middot;
-            <strong>Applies to:</strong> Scan — the iOS app published by nettrash on the App Store.
+            <strong>Last updated:</strong> 2 May 2026 &middot;
+            <strong>Applies to:</strong> Scan — the iOS app published by nettrash on the App Store. The same binary runs on iPhone, iPad, Mac (via Mac Catalyst), and Apple Vision Pro (via Designed for iPad).
         </p>
 
         <p>
@@ -127,9 +127,11 @@
         <h2>What Scan does</h2>
         <ul>
             <li>Scans 1D barcodes (EAN-8/13, UPC-A/E, Code 39, Code 128, ITF, PDF417, etc.) and 2D codes (QR, Aztec, Data Matrix) using the device camera.</li>
-            <li>Decodes structured QR payloads — URLs, Wi-Fi join codes, vCard / MECARD contacts, iCalendar events, geo: locations, SEPA / EPC payment QRs, UPI payment URIs, and plain text.</li>
-            <li>Generates codes from text or structured input, and saves them to your Photos library.</li>
-            <li>Keeps a local scan history, mirrored to your private iCloud database when iCloud is enabled for Scan.</li>
+            <li>Decodes structured QR payloads — URLs, Wi-Fi join codes (incl. WPA3 + Passpoint), vCard / MECARD contacts, iCalendar events, geo: locations, SEPA / EPC / Swiss / Indian UPI / Serbian IPS payment QRs, EMVCo merchant codes, crypto wallets including USDC / USDT stablecoins, EUDI / DigiD identity flows, GS1 product / IATA boarding pass / AAMVA driver licence formats, and plain text.</li>
+            <li>Imports still images from the Photo Picker and image / PDF files from the Files app, decoding their contents through the same on-device pipeline.</li>
+            <li>Receives images and PDFs from the system Share Sheet via Scan's app extension, presenting decoded codes inline without leaving the source app.</li>
+            <li>Generates codes (QR, Aztec, PDF417, Code 128) from text or structured input, with custom colours / logos, error-correction control, and SVG / PDF export. Save to Photos, copy, or share through the system sheet.</li>
+            <li>Keeps a local scan history, mirrored to your private iCloud database when iCloud is enabled for Scan, so the same history follows you across iPhone, iPad, Mac, and Vision Pro.</li>
         </ul>
 
         <h2>Frequently asked questions</h2>
@@ -196,6 +198,41 @@
             <a href="privacy.html">Privacy Policy</a>.
         </p>
 
+        <h3>I'm on a Mac — does Scan work, and how do I scan?</h3>
+        <p>
+            Yes. The Mac build runs via Mac Catalyst on macOS 14 Sonoma or
+            later and uses the Mac's built-in webcam or any connected
+            Continuity Camera (your iPhone within Bluetooth range) as the
+            video source. The first time you open the Scan tab, macOS will
+            prompt for camera permission; if you missed the prompt, enable
+            it later under <em>System Settings → Privacy &amp; Security →
+            Camera → Scan</em>. The Generate, History, and Settings tabs
+            work identically to iPhone / iPad.
+        </p>
+
+        <h3>I'm on Vision Pro — there's no live camera. Is that a bug?</h3>
+        <p>
+            By design. Apple does not let third-party apps access Vision
+            Pro's world cameras, so there is no live-scanning path on
+            visionOS. The Scan tab opens directly to a "Choose from Photos
+            / Choose from Files" surface — pick a screenshot, photo, or PDF
+            you have saved, and Scan decodes it on-device the same way as
+            on iPhone. The Generate tab is fully functional (handy for
+            showing a Wi-Fi QR to a guest's phone), and your iCloud-synced
+            History from your other devices follows you here.
+        </p>
+
+        <h3>I shared an image or PDF to Scan and the result sheet is empty</h3>
+        <p>
+            Scan looks for printed barcode / QR formats inside the image or
+            PDF you shared. If the sheet says "No barcodes were found in
+            that image", the file genuinely doesn't contain a code Scan
+            can recognise — the picture may be too blurry, the code may be
+            cropped at the edge, or it may be a logo / decorative graphic
+            and not an actual barcode. Try a sharper photo, or use the live
+            scanner on the original printed code if you have access to it.
+        </p>
+
         <h3>A scanned URL or payment link looks suspicious. What should I do?</h3>
         <p>
             Scan only decodes what's printed in the code — it does not
@@ -229,12 +266,15 @@
         <h2>Software Bill of Materials</h2>
         <p>
             Scan is built on Apple's first-party frameworks
-            (<code>AVFoundation</code>, <code>Vision</code>,
-            <code>CoreImage</code>, <code>CoreData</code> with
+            (<code>SwiftUI</code>, <code>UIKit</code>,
+            <code>AVFoundation</code>, <code>Vision</code>,
+            <code>CoreImage</code>, <code>PDFKit</code>,
+            <code>CoreData</code> with
             <code>NSPersistentCloudKitContainer</code>,
-            <code>Contacts</code>, <code>EventKit</code>) and ships with
-            no third-party SDKs. The full source tree, including any
-            updates to this list, is published at
+            <code>PhotosUI</code>, <code>Contacts</code>,
+            <code>EventKit</code>, <code>UniformTypeIdentifiers</code>)
+            and ships with no third-party SDKs. The full source tree,
+            including any updates to this list, is published at
             <a href="https://github.com/nettrash/Scan">github.com/nettrash/Scan</a>.
         </p>
 

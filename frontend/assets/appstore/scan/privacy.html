@@ -79,8 +79,8 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Effective date:</strong> 26 April 2026 &middot;
-            <strong>Applies to:</strong> Scan — the iOS app published by nettrash on the App Store.
+            <strong>Effective date:</strong> 2 May 2026 &middot;
+            <strong>Applies to:</strong> Scan — the iOS app published by nettrash on the App Store. The same binary runs on iPhone, iPad, Mac (via Mac Catalyst), and Apple Vision Pro (via Designed for iPad); this policy covers all four destinations.
         </p>
 
         <p>
@@ -159,13 +159,13 @@
             <tbody>
                 <tr>
                     <td><strong>Camera</strong> (<code>NSCameraUsageDescription</code>)</td>
-                    <td>Live barcode and QR-code scanning.</td>
-                    <td>Frames are decoded on-device by Apple's AVFoundation; nothing is recorded or transmitted.</td>
+                    <td>Live barcode and QR-code scanning on iPhone, iPad, and Mac (Mac Catalyst, using the Mac's built-in webcam or any connected Continuity Camera). On Apple Vision Pro the live camera is <em>not</em> used at all — Apple does not expose Vision Pro's world cameras to third-party apps, so the Scan tab there opens directly to a "Choose from Photos / Choose from Files" landing surface and never starts a capture session.</td>
+                    <td>Frames are decoded on-device by Apple's AVFoundation and Vision frameworks; nothing is recorded or transmitted. On Mac Catalyst the App Sandbox <code>com.apple.security.device.camera</code> entitlement is set so the macOS camera-permission prompt fires the first time you open the Scan tab.</td>
                 </tr>
                 <tr>
                     <td><strong>Photo Library — add only</strong> (<code>NSPhotoLibraryAddUsageDescription</code>)</td>
                     <td>Saving codes you generate to your Photos library.</td>
-                    <td>Write-only — the app cannot read existing photos.</td>
+                    <td>Write-only — the app cannot read existing photos. Importing an existing photo to scan goes through the iOS Photo Picker (<code>PhotosPicker</code>), an out-of-process system component that hands the app one specifically-selected image without granting library-wide access — no permission required.</td>
                 </tr>
                 <tr>
                     <td><strong>Contacts</strong> (<code>NSContactsUsageDescription</code>)</td>
@@ -184,6 +184,37 @@
             edit-and-save sheet that you control. If you cancel that sheet,
             nothing is saved.
         </p>
+
+        <h2>Importing files and the Share Sheet</h2>
+        <p>
+            Beyond the live camera, Scan can decode codes from images and
+            PDFs you bring in yourself:
+        </p>
+        <ul>
+            <li>
+                <strong>Photos / Files import in the Scan tab.</strong> The
+                iOS Photo Picker and the Files importer both run
+                out-of-process; Scan only ever receives the single item you
+                pick.
+            </li>
+            <li>
+                <strong>Share to Scan.</strong> When you tap the iOS Share
+                button on an image or PDF in any other app and choose
+                <em>Scan</em>, iOS hands the file to Scan's app extension.
+                Decoding happens entirely inside the extension on your
+                device; no data is transmitted, and nothing is persisted
+                unless you tap <em>Save to History</em> in the result sheet.
+            </li>
+            <li>
+                <strong>Universal Links</strong>
+                (<code>https://nettrash.me/scan/&lt;base64url&gt;</code>) and
+                the <code>me.nettrash.scan://</code> custom scheme open
+                pre-decoded payloads directly in Scan. The decoding has
+                already happened in whatever app produced the link; Scan
+                just re-presents the content. No additional network access
+                is involved on Scan's side.
+            </li>
+        </ul>
 
         <h2>Third-party services</h2>
         <p>

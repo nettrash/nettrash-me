@@ -79,9 +79,10 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Effective date:</strong> 27 April 2026 &middot;
+            <strong>Effective date:</strong> 2 May 2026 &middot;
             <strong>Applies to:</strong> Scan — the Android app published by nettrash on Google Play
-            (<code>me.nettrash.scan</code>).
+            (<code>me.nettrash.scan</code>), and the same upload-key-signed APK side-loaded from
+            <a href="https://nettrash.me/play/scan/scan-latest.apk">nettrash.me/play/scan/scan-latest.apk</a>.
         </p>
 
         <p>
@@ -193,8 +194,13 @@
                 </tr>
                 <tr>
                     <td><strong>Internet</strong> (<code>android.permission.INTERNET</code>)</td>
-                    <td>Reserved for future use; the app makes no network calls today.</td>
+                    <td>Declared but the app process itself does not make outbound network calls. The Android system uses the manifest's <code>autoVerify</code> intent filter to fetch <code>https://nettrash.me/.well-known/assetlinks.json</code> on install / version-name bump for App Links verification — that fetch is performed by Play Services / the system intent verifier, not by Scan's process.</td>
                     <td>When you tap a smart action that opens a URL, the request is performed by the destination app you've chosen, not by Scan.</td>
+                </tr>
+                <tr>
+                    <td><strong>Vibrate</strong> (<code>android.permission.VIBRATE</code>)</td>
+                    <td>Optional haptic feedback after a successful scan, gated on the "Haptic on scan" toggle in the Settings tab (default on).</td>
+                    <td>Local only — the system vibrator is hardware on the device. Disable the toggle to turn it off.</td>
                 </tr>
             </tbody>
         </table>
@@ -233,6 +239,39 @@
             edit-and-save sheet that you control. If you cancel that sheet,
             nothing is saved.
         </p>
+
+        <h2>Importing files and share-to-Scan</h2>
+        <p>
+            Beyond the live camera, Scan can decode codes from images and
+            PDFs you bring in yourself:
+        </p>
+        <ul>
+            <li>
+                <strong>Photo Picker / Files import in the Scan tab.</strong>
+                Both flows run as out-of-process system pickers; Scan only
+                ever receives the single item you pick.
+            </li>
+            <li>
+                <strong>Share to Scan</strong>
+                (<code>ACTION_SEND</code> / <code>ACTION_SEND_MULTIPLE</code>).
+                When you tap Android's Share button on an image or PDF in
+                another app and choose <em>Scan</em>, the system passes a
+                temporary read-only handle to that file via FileProvider.
+                Decoding happens entirely on-device; no data is
+                transmitted, and nothing is persisted unless you tap
+                <em>Save to History</em> in the result sheet.
+            </li>
+            <li>
+                <strong>App Links</strong>
+                (<code>https://nettrash.me/scan/&lt;base64url&gt;</code>)
+                open pre-decoded payloads directly in Scan. The decoding
+                has already happened in whatever app produced the link;
+                Scan just re-presents the content. The system intent
+                verifier confirms the link belongs to Scan by fetching
+                <code>assetlinks.json</code> from nettrash.me — that fetch
+                is performed by the system, not by Scan.
+            </li>
+        </ul>
 
         <h2>Third-party services</h2>
         <p>

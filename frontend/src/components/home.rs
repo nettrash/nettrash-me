@@ -337,14 +337,19 @@ fn github_tab() -> Html {
                                 { "Scan" }
                             </a>
                             <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Swift / SwiftUI" }</span>
-                            <span class="badge bg-info ms-1" style="font-size:0.7em;">{ "iOS" }</span>
+                            <span class="badge bg-info ms-1" style="font-size:0.7em;">{ "iPhone · iPad · Mac · Vision Pro" }</span>
                         </h6>
                         <p class="card-text mb-2">
-                            { "Barcode and QR-code scanner / generator for iPhone and iPad. \
-                               Decodes Wi-Fi, contacts, calendar events, EPC SEPA / Swiss / \
-                               Indian / Serbian payments, crypto wallets and more — \
-                               each field tap-to-copy. Pure on-device decoding via AVFoundation \
-                               + Vision; no analytics, no ads, no trackers." }
+                            { "Barcode and QR-code scanner / generator that runs on iPhone, iPad, \
+                               Mac (Catalyst) and Apple Vision Pro. Decodes Wi-Fi (with WPA3 + \
+                               Passpoint), contacts, calendar events, payment slips (EPC SEPA, \
+                               Swiss QR-bill, Indian UPI, Serbian IPS, EMVCo merchant), crypto \
+                               wallets including USDC / USDT stablecoins, GS1 product barcodes, \
+                               IATA boarding passes, AAMVA driver licences, EUDI / DigiD identity \
+                               flows, loyalty cards. Universal Links into the app, iCloud-synced \
+                               history across all your devices, system Share Sheet extension for \
+                               photos and PDFs, pinch-to-zoom + centred-frame scanning. On-device \
+                               via AVFoundation + Vision; no analytics, no ads, no trackers." }
                         </p>
                         <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
                             <span>
@@ -352,6 +357,13 @@ fn github_tab() -> Html {
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
                                     { "📱 App Store" }
+                                </a>
+                            </span>
+                            <span>
+                                <a href="https://github.com/nettrash/Scan/blob/main/CHANGELOG.md"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "v1.8" }
                                 </a>
                             </span>
                             <span>
@@ -379,10 +391,15 @@ fn github_tab() -> Html {
                         </h6>
                         <p class="card-text mb-2">
                             { "Android port of Scan with full payload-recognition parity. \
-                               Live-camera scanning via CameraX + ML Kit, Photo Picker import, \
-                               Room-backed history, on-device Compose UI. Same parser surface \
-                               as the iOS app — Wi-Fi, contacts, calendar, payment slips, \
-                               GS1 / IATA / AAMVA, crypto, and more. No analytics, no ads." }
+                               Live-camera scanning via CameraX + ML Kit (bundled models, no \
+                               Play Services dependency), Photo Picker import, PDF + multi-image \
+                               batch decoding, Room-backed history with iCloud-equivalent Auto \
+                               Backup, on-device Compose UI. Same parser surface as the iOS app — \
+                               Wi-Fi (incl. WPA3 / Passpoint), contacts, calendar, payment slips, \
+                               GS1 / IATA / AAMVA, crypto + stablecoins, identity flows, loyalty \
+                               cards. App Links, ACTION_SEND share-intake, pinch-to-zoom + \
+                               centred-frame scanning. F-Droid metadata in-tree. \
+                               No analytics, no ads." }
                         </p>
                         <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
                             <span>
@@ -398,6 +415,13 @@ fn github_tab() -> Html {
                                    class="text-muted text-decoration-none"
                                    download="scan-latest.apk">
                                     { "⬇ APK" }
+                                </a>
+                            </span>
+                            <span>
+                                <a href="https://github.com/nettrash/Scan.Android/blob/main/CHANGELOG.md"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "v1.7" }
                                 </a>
                             </span>
                             <span>
@@ -478,9 +502,20 @@ fn github_tab() -> Html {
                             <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Rust / WASM" }</span>
                         </h6>
                         <p class="card-text mb-2">
-                            { "This website — a collection of useful developer tools built entirely in Rust with Yew (WebAssembly). Includes converters, encryption, math utilities, text processing, and more, all running client-side in the browser." }
+                            { "This website — a collection of useful developer tools built \
+                               entirely in Rust with Yew (WebAssembly). Hash + Luhn + UUID + \
+                               function plotter, Base64 / URL / Hex / Unicode / RegEx / \
+                               passwords / case-converter, Unixtime + 1D-2D code generator + \
+                               JSON formatter + JSON / YAML / TOML / CSV converter + JSON \
+                               Schema + Markdown + Diff + Cron + CIDR + Color, AES / DES / 3DES \
+                               / Blowfish / Twofish symmetric and RSA / ECDSA / Ed25519 / ECDH / \
+                               X25519 asymmetric crypto, JWT decoder, HMAC, TOTP / HOTP, X.509 \
+                               and CSR parsing. Everything runs client-side; no data leaves the \
+                               browser. Universal Links + AASA + assetlinks.json hosting for \
+                               the Scan apps, plus the privacy and support pages for the App \
+                               Store and Play submissions." }
                         </p>
-                        <div class="d-flex gap-3 text-muted small">
+                        <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
                             <span>
                                 <a href="https://nettrash.me" target="_blank"
                                    rel="noopener noreferrer"
@@ -488,6 +523,14 @@ fn github_tab() -> Html {
                                     { "nettrash.me" }
                                 </a>
                             </span>
+                            <span>
+                                <a href="https://github.com/nettrash/nettrash-me/blob/main/frontend/Cargo.toml"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "v1.6.0" }
+                                </a>
+                            </span>
+                            <span class="badge bg-light text-dark">{ "MIT" }</span>
                         </div>
                     </div>
                 </div>
