@@ -1,8 +1,12 @@
+use std::collections::HashMap;
+
 use gloo_timers::callback::Interval;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 
+use super::github_api::{fetch_repo_info, GhRepoInfo};
 use crate::storage;
 
 #[derive(Clone, PartialEq)]
@@ -298,8 +302,103 @@ pub fn home() -> Html {
 // ---------------------------------------------------------------------------
 // GitHub tab
 // ---------------------------------------------------------------------------
+// Repos shown on the GitHub tab. Each entry pairs a `(owner, repo)`
+// path on github.com with the hardcoded fallback values rendered when
+// the live API fetch hasn't resolved yet (or has failed). Add or
+// remove entries here; `GitHubTab` will pick them up automatically
+// for the live fetch and the cards below will keep their existing
+// fallback strings in sync.
+const PROJECT_REPOS: &[(&str, &str)] = &[
+    ("nettrash", "Scan"),
+    ("nettrash", "Scan.Android"),
+    ("nettrash", "pgc"),
+    ("nettrash", "pg_dbms_job"),
+    ("nettrash", "nettrash-me"),
+];
+
+/// Pick the live tag from a repo's fetched metadata, or the supplied
+/// fallback when the fetch hasn't landed / has failed / returned no
+/// tag at all. Always returns a `v`-prefixed tag — the GitHub
+/// tagging convention is mixed across nettrash's repos (some tag as
+/// `v1.0.15`, some as `1.0.15`) and the GitHub-tab cards previously
+/// hardcoded `v…` everywhere, so we normalise here rather than in
+/// the markup.
+fn live_tag(map: &HashMap<String, GhRepoInfo>, owner_repo: &str, fallback: &str) -> String {
+    let raw = map
+        .get(owner_repo)
+        .and_then(|d| d.latest_tag.clone())
+        .unwrap_or_else(|| fallback.to_string());
+    if raw.starts_with('v') || raw.starts_with('V') {
+        raw
+    } else {
+        format!("v{}", raw)
+    }
+}
+
+fn live_count<F: Fn(&GhRepoInfo) -> u32>(
+    map: &HashMap<String, GhRepoInfo>,
+    owner_repo: &str,
+    pick: F,
+    fallback: u32,
+) -> u32 {
+    map.get(owner_repo).map(pick).unwrap_or(fallback)
+}
+
 #[function_component(GitHubTab)]
 fn github_tab() -> Html {
+    // Live GitHub metadata, keyed by `"owner/repo"`. Empty until the
+    // first fetch resolves; cards use `live_tag` / `live_count` with
+    // the hardcoded fallbacks below to render meaningful values
+    // before / instead of live data.
+    let live = use_state(HashMap::<String, GhRepoInfo>::new);
+
+    {
+        // Spawn a single async task on mount: walk every repo in
+        // PROJECT_REPOS, fetch metadata (which itself honours the
+        // 1-hour sessionStorage cache in `github_api`), and replace
+        // the state map *once* when everything resolves. The single
+        // `set` avoids cascading re-renders during in-flight fetches
+        // and keeps the cards from briefly flashing the fallback
+        // values once each.
+        let live = live.clone();
+        use_effect_with((), move |_| {
+            spawn_local(async move {
+                let mut map = HashMap::new();
+                // `&(owner, repo)` destructures the tuple-by-reference
+                // so `owner` and `repo` are `&str` rather than `&&str` —
+                // simpler types at the call site than `for (a, b) in …`
+                // would give us.
+                for &(owner, repo) in PROJECT_REPOS {
+                    if let Some(info) = fetch_repo_info(owner, repo).await {
+                        map.insert(format!("{}/{}", owner, repo), info);
+                    }
+                }
+                if !map.is_empty() {
+                    live.set(map);
+                }
+            });
+            || ()
+        });
+    }
+
+    // Resolved per-card values. `*` deref converts the `UseStateHandle`
+    // into a borrow of the inner HashMap. Computed once per render and
+    // interpolated into the markup below.
+    let m = &*live;
+    let scan_tag = live_tag(m, "nettrash/Scan", "v1.8");
+    let scan_android_tag = live_tag(m, "nettrash/Scan.Android", "v1.7");
+    let pgc_tag = live_tag(m, "nettrash/pgc", "v1.0.15");
+    let pgc_stars = live_count(m, "nettrash/pgc", |d| d.stars, 2);
+    let pgc_forks = live_count(m, "nettrash/pgc", |d| d.forks, 2);
+    let pgc_tag_url = format!("https://github.com/nettrash/pgc/releases/tag/{}", pgc_tag);
+    let pg_dbms_tag = live_tag(m, "nettrash/pg_dbms_job", "v1.5.8-rust");
+    let pg_dbms_stars = live_count(m, "nettrash/pg_dbms_job", |d| d.stars, 4);
+    let pg_dbms_tag_url = format!(
+        "https://github.com/nettrash/pg_dbms_job/releases/tag/{}",
+        pg_dbms_tag
+    );
+    let nettrash_me_tag = live_tag(m, "nettrash/nettrash-me", "v1.6.1");
+
     html! {
         <div class="tool-container">
             <div class="content-column" style="max-width:100%;flex:1;">
@@ -363,7 +462,7 @@ fn github_tab() -> Html {
                                 <a href="https://github.com/nettrash/Scan/blob/main/CHANGELOG.md"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
-                                    { "v1.8" }
+                                    { scan_tag.clone() }
                                 </a>
                             </span>
                             <span>
@@ -421,7 +520,7 @@ fn github_tab() -> Html {
                                 <a href="https://github.com/nettrash/Scan.Android/blob/main/CHANGELOG.md"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
-                                    { "v1.7" }
+                                    { scan_android_tag.clone() }
                                 </a>
                             </span>
                             <span>
@@ -450,13 +549,13 @@ fn github_tab() -> Html {
                             { "PostgreSQL Database Comparer — a CLI tool for comparing two PostgreSQL database schemas and generating delta SQL scripts. Supports schema dumps, structure comparison with DROP/CREATE/ALTER, clear (drop-all) scripts, SSL, configurable connection pooling, and single-transaction output." }
                         </p>
                         <div class="d-flex gap-3 text-muted small">
-                            <span>{ "⭐ 2" }</span>
-                            <span>{ "🍴 2" }</span>
+                            <span>{ format!("⭐ {}", pgc_stars) }</span>
+                            <span>{ format!("🍴 {}", pgc_forks) }</span>
                             <span>
-                                <a href="https://github.com/nettrash/pgc/releases/tag/v1.0.15"
+                                <a href={pgc_tag_url.clone()}
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
-                                    { "v1.0.15" }
+                                    { pgc_tag.clone() }
                                 </a>
                             </span>
                             <span class="badge bg-light text-dark">{ "MIT" }</span>
@@ -478,12 +577,12 @@ fn github_tab() -> Html {
                             { "PostgreSQL extension providing full compatibility with Oracle's DBMS_JOB module. Manages scheduled and asynchronous jobs via a dedicated scheduler daemon. Rust fork with enhanced features." }
                         </p>
                         <div class="d-flex gap-3 text-muted small">
-                            <span>{ "⭐ 4" }</span>
+                            <span>{ format!("⭐ {}", pg_dbms_stars) }</span>
                             <span>
-                                <a href="https://github.com/nettrash/pg_dbms_job/releases/tag/v1.5.8-rust"
+                                <a href={pg_dbms_tag_url.clone()}
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
-                                    { "v1.5.8-rust" }
+                                    { pg_dbms_tag.clone() }
                                 </a>
                             </span>
                             <span class="badge bg-light text-dark">{ "PostgreSQL" }</span>
@@ -527,7 +626,7 @@ fn github_tab() -> Html {
                                 <a href="https://github.com/nettrash/nettrash-me/blob/main/frontend/Cargo.toml"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
-                                    { "v1.6.0" }
+                                    { nettrash_me_tag.clone() }
                                 </a>
                             </span>
                             <span class="badge bg-light text-dark">{ "MIT" }</span>
