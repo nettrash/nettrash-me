@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Exchange — Support</title>
+    <meta name="description" content="Support for the Exchange iOS app by nettrash." />
+    <meta name="robots" content="index,follow" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous" />
+    <style>
+        body { font-family: "Roboto", system-ui, -apple-system, sans-serif; background: #fafafa; color: #1a1a1a; line-height: 1.65; }
+        main { max-width: 820px; margin: 3rem auto; padding: 2.25rem 2.5rem; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        h1 { font-weight: 300; border-bottom: 1px solid #eee; padding-bottom: .75rem; margin-bottom: 1rem; font-size: 2rem; }
+        h2 { font-weight: 400; margin-top: 2rem; font-size: 1.25rem; }
+        h3 { font-weight: 500; margin-top: 1.5rem; font-size: 1rem; color: #333; }
+        .meta { color: #888; font-size: .9rem; margin-bottom: 1.5rem; }
+        code { background: #f4f4f4; padding: .05rem .35rem; border-radius: 3px; font-size: .92em; color: #0d3a8a; }
+        footer { text-align: center; margin-top: 2rem; color: #888; font-size: .85rem; }
+        a { color: #0d47a1; }
+        ul { padding-left: 1.25rem; }
+        li { margin: .25rem 0; }
+        .lede { font-size: 1.05rem; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Exchange — Support</h1>
+        <p class="meta">
+            <strong>Applies to:</strong> Exchange — the iOS app (with iMessage extension) published by nettrash on the App Store.
+        </p>
+
+        <p class="lede">
+            Exchange is a cryptographic messenger: encrypt anything on your device, send it through any app you already use, and decrypt back. Your private keys never leave your phone. This page covers the most common questions; if you don't find the answer, the email link at the bottom reaches a human.
+        </p>
+
+        <h2>Get in touch</h2>
+        <p>
+            The fastest way to reach the developer is email:
+            <a href="mailto:nettrash@nettrash.me?subject=Exchange%20support">nettrash@nettrash.me</a>.
+            Please include your iPhone model and iOS version — that helps a lot when reproducing extension or keychain issues.
+        </p>
+
+        <h2>Getting started</h2>
+
+        <h3>How do I add my first recipient?</h3>
+        <p>
+            On the home screen, tap the <strong>+</strong> button and pick one of two paths. If you're with the other person physically, ask them to open Exchange and tap "Show QR code" on their identity row, then tap <strong>Scan QR</strong> on your Add Recipient sheet and point your camera at their screen. The public-key bundle fills in automatically; type their display name and tap Save.
+        </p>
+        <p>
+            If you can't meet in person, the other person can copy their public-key bundle from their identity row and send it to you over any channel (iMessage, email, signal, paper). Paste it into the Public key bundle field on your Add Recipient sheet and save. <strong>Verify the fingerprint matches</strong> what they see on their phone — that's the step that prevents a man-in-the-middle on whatever channel you used.
+        </p>
+
+        <h3>How do I send my first encrypted message?</h3>
+        <p>
+            Two routes. Inside Exchange, tap the <strong>Compose</strong> icon (pencil-and-paper) in the top toolbar, pick a recipient, type your message, tap Encrypt. The screen swaps to a result view with the encrypted envelope shown as a single base64 line. Tap <strong>Share</strong> and pick whichever messenger you want to send it through — iMessage, Mail, Telegram, anything.
+        </p>
+        <p>
+            If you and the recipient both have Exchange installed and use iMessage, the slicker path is the <strong>iMessage extension</strong>. In any iMessage conversation, tap the <strong>+</strong> button next to the compose field, find Exchange in the apps list (the first time, you may need to tap "More" and enable it), pick the recipient, type, hit Encrypt &amp; insert. A 🔒 Encrypted message bubble drops into the compose field; tap iMessage's blue Send arrow.
+        </p>
+
+        <h3>How do I decrypt an envelope I received?</h3>
+        <p>
+            If it came through the iMessage extension (a 🔒 Encrypted message bubble), just tap the bubble and Exchange opens with the plaintext shown.
+        </p>
+        <p>
+            If it came as text in any other app — pasted into iMessage, sent over WhatsApp, in an email — copy the <code>EXC2:</code> blob, switch to Exchange, tap the <strong>Decrypt</strong> icon (open lock) in the top toolbar, tap "Paste from clipboard," then Decrypt. The plaintext appears with a footer telling you whether the sender's signing key matched a recipient you've saved.
+        </p>
+
+        <h2>Frequently asked questions</h2>
+
+        <h3>Why doesn't Exchange show up in iMessage's app drawer?</h3>
+        <p>
+            iMessage caches its installed-app list aggressively. After installing Exchange for the first time, force-quit Messages (swipe up from the bottom and swipe Messages off the top) and reopen it. Then in any conversation, tap <strong>+</strong> next to the compose field, scroll the list to the bottom, tap "More," and toggle Exchange on. You can drag it into Favorites so it shows up in the first row.
+        </p>
+
+        <h3>The app says "Signature verified, but the sender's signing key doesn't match anyone in your recipients." Should I be worried?</h3>
+        <p>
+            It means the envelope decrypted cleanly and the signature is mathematically valid — but the signing public key is one Exchange has never seen on this device. Two innocent reasons: the sender hasn't been added to your recipients yet, or they regenerated their identity (Reset identity in their Settings) and you have their old keys. The footer shows their fingerprint; if it matches what they tell you it should be, add them as a recipient and you'll see "from &lt;their name&gt;" next time.
+        </p>
+        <p>
+            The cautious reading: someone else encrypted this message to you and signed it with a key you don't recognise. The plaintext is still readable, but you have no proof of who actually composed it. Treat it like an unsigned email from an unknown address.
+        </p>
+
+        <h3>What happens when I tap "Reset identity" in Settings?</h3>
+        <p>
+            Your encryption and signing private keys are deleted from the iOS Keychain, and every recipient you've saved is removed from the local store. A fresh keypair is generated on the next moment of the launch — you'll see the splash screen briefly, then return to the home screen with a new identity. <strong>This is irreversible.</strong> Anything previously encrypted to your old public key becomes unrecoverable forever, even if a copy of the ciphertext exists somewhere else. Your contacts will need your new public key before they can encrypt to you again.
+        </p>
+
+        <h3>Can I move my identity to a new iPhone?</h3>
+        <p>
+            Not directly, by design. The Keychain item that holds your private keys is marked "this device only," which means iOS will <em>not</em> sync it via iCloud Keychain or carry it across in a device-to-device backup-and-restore. When you set up a new iPhone with Exchange, you get a fresh identity. The recipient list (other people's public keys) <em>does</em> survive a standard iOS encrypted backup-and-restore because it lives in the app's data container; only the private key starts fresh.
+        </p>
+        <p>
+            The trade-off is intentional: if your private key were syncable, anyone who got into your Apple account would be able to read all your old messages. Keeping it device-bound means a compromised iCloud account doesn't compromise your conversations.
+        </p>
+
+        <h3>I lost my phone. Can I recover my old messages?</h3>
+        <p>
+            No. Without the private key on the lost device, the ciphertext is unrecoverable. This is the security guarantee of an end-to-end encrypted system: there is no master key, no recovery mechanism, no developer back door. If recoverability matters more than this kind of forward secrecy, Exchange is the wrong tool.
+        </p>
+
+        <h3>Why does the encrypted envelope start with <code>EXC2:</code>?</h3>
+        <p>
+            That's the protocol version marker. <code>EXC2</code> is the current envelope format — Curve25519 ECDH + Ed25519 signature over a ChaCha20-Poly1305 wrapped key and body. If a future version of Exchange changes the format, the prefix will bump (<code>EXC3:</code>, etc.) and the app will refuse to open the new format with an "unsupported version" error rather than try to brute-force it. Old envelopes you've already received continue to decrypt as long as the same version number is supported.
+        </p>
+
+        <h3>The camera says "No camera available" — am I missing something?</h3>
+        <p>
+            iOS Simulator has no real camera, so QR scanning never works there. Use a real iPhone for the scan path, or paste the public-key bundle as text instead. On a real iPhone, if you previously denied camera permission, you'll see "Camera access is required" with a hint to <em>Settings → Exchange → Camera</em>; granting it there clears the message immediately on return.
+        </p>
+
+        <h3>Where is my data stored, and how do I delete it?</h3>
+        <p>
+            On your device, only. The identity private key lives in the iOS Keychain; the recipient list lives in a SwiftData store inside the App Group container shared with the iMessage extension. Nothing is uploaded to any server the developer runs. Full details are in the <a href="privacy.html">privacy policy</a>.
+        </p>
+        <p>
+            To delete everything: tap <strong>Reset identity</strong> in Settings, or uninstall the app. Both wipe the local state. Re-installing afterwards starts fresh with a brand-new identity.
+        </p>
+
+        <h2>Reporting bugs</h2>
+        <p>
+            If something looks wrong, please describe what you did, what you expected, and what actually happened. A screenshot or screen recording helps a lot. Send it to <a href="mailto:nettrash@nettrash.me?subject=Exchange%20bug%20report">nettrash@nettrash.me</a>; we'll respond as soon as we can. Please <strong>do not</strong> include your private key, encrypted envelopes, or anything you'd consider sensitive — bug reports should be reproducible without those, and we'd rather you not share them.
+        </p>
+
+        <footer>
+            <a href="https://nettrash.me/">← nettrash.me</a>
+        </footer>
+    </main>
+</body>
+</html>

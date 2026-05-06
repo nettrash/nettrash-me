@@ -43,16 +43,18 @@
         <h2>What the app accesses, and what each access does</h2>
 
         <p>
-            <strong>Location — Always &amp; When In Use</strong>
-            (<code>NSLocationAlwaysAndWhenInUseUsageDescription</code>,
-            <code>NSLocationWhenInUseUsageDescription</code>). Granted via the system Location Services prompt the first time you open the Map or Nature tab. Used exclusively to:
+            <strong>Location — When In Use</strong>
+            (<code>NSLocationWhenInUseUsageDescription</code>). Granted via the system Location Services prompt the first time you open the Map or Nature tab. Used exclusively to:
         </p>
         <ol>
             <li>Show your current position on the in-app map.</li>
             <li>Compute distances and bearings to known peaks for the AR view and the "Nearby" list.</li>
-            <li>Continue logging altitude / pressure history while the app is in the background, so the Stat-tab graphs stay continuous.</li>
             <li>Build the Overpass and Open-Elevation API queries described below.</li>
         </ol>
+        <p>
+            Geo does not request "Always" location authorisation. Background sampling of the barometer is performed by iOS's
+            <code>BGTaskScheduler</code> system, which works without continuous location access; the app never tracks the user's position while the screen is off.
+        </p>
 
         <p>
             <strong>Camera</strong> (<code>NSCameraUsageDescription</code>). Used by the AR view to overlay peak names on the camera feed. Frames are processed entirely on-device by ARKit; nothing is recorded or transmitted.

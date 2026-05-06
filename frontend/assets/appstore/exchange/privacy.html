@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Exchange — Privacy Policy</title>
+    <meta name="description" content="Privacy policy for the Exchange iOS app by nettrash." />
+    <meta name="robots" content="index,follow" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous" />
+    <style>
+        body { font-family: "Roboto", system-ui, -apple-system, sans-serif; background: #fafafa; color: #1a1a1a; line-height: 1.65; }
+        main { max-width: 820px; margin: 3rem auto; padding: 2.25rem 2.5rem; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        h1 { font-weight: 300; border-bottom: 1px solid #eee; padding-bottom: .75rem; margin-bottom: 1rem; font-size: 2rem; }
+        h2 { font-weight: 400; margin-top: 2rem; font-size: 1.25rem; }
+        .meta { color: #888; font-size: .9rem; margin-bottom: 1.5rem; }
+        table { width: 100%; margin: 1rem 0; border-collapse: collapse; }
+        th, td { border: 1px solid #e6e6e6; padding: .6rem .75rem; vertical-align: top; font-size: .95rem; }
+        th { background: #f4f4f4; font-weight: 600; text-align: left; }
+        code { background: #f4f4f4; padding: .05rem .35rem; border-radius: 3px; font-size: .92em; color: #0d3a8a; }
+        footer { text-align: center; margin-top: 2rem; color: #888; font-size: .85rem; }
+        a { color: #0d47a1; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Privacy Policy</h1>
+        <p class="meta">
+            <strong>Effective date:</strong> 6 May 2026 &middot;
+            <strong>Applies to:</strong> Exchange — the iOS app (with iMessage extension) published by nettrash on the App Store.
+        </p>
+
+        <p>This policy is versioned alongside the app's source code; the most recent commit on <code>main</code> is authoritative.</p>
+
+        <h2>TL;DR</h2>
+        <p>
+            Exchange is a cryptographic messenger that puts your keys on your device and leaves them there. It has no servers, no accounts, no analytics, no telemetry, no advertising, and contacts no third-party network at all. Everything you encrypt or decrypt happens locally inside the app process. The only things that ever leave your device are encrypted envelopes you choose to share through other apps — and once they leave, the developer has no way to read or trace them.
+        </p>
+
+        <h2>What the app accesses, and what each access does</h2>
+
+        <p>
+            <strong>Camera</strong> (<code>NSCameraUsageDescription</code>). Used by the Add Recipient screen when you tap "Scan QR" to capture a contact's public-key bundle from their phone. Camera frames are processed entirely on-device by iOS's QR-code recognition framework; nothing is recorded, stored, or transmitted. iOS asks for camera permission the first time you tap Scan QR. You can revoke the permission at any time in <em>Settings → Exchange → Camera</em>; without it, you can still add recipients by pasting their public-key bundle as text.
+        </p>
+
+        <p>
+            <strong>Keychain</strong>. Exchange writes a single 64-byte item to the iOS Keychain (your encryption + signing private keys) under a Keychain access group shared with the iMessage extension on the same device. The item uses <code>kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly</code>, an OS-level flag that prevents the item from syncing via iCloud Keychain or migrating to a different device. It is generated on first launch, replaced when you tap "Reset identity" in Settings, and is otherwise never copied, exported, or transferred.
+        </p>
+
+        <p>
+            <strong>App Group container</strong>. The list of recipients you've saved (display name, two public keys, fingerprint, optional notes, creation date) is stored in a SwiftData store inside an App Group container shared between the main app and the iMessage extension. The container is local to your device.
+        </p>
+
+        <h2>What goes over the network</h2>
+
+        <p>
+            <strong>Nothing the developer controls.</strong> Exchange has no backend. It does not contact any server operated by nettrash. It contains no third-party SDKs, no analytics, no telemetry, no crash reporter beyond Apple's automatic anonymous crash logs (which contain no user content). The app makes zero outbound network requests under its own initiative.
+        </p>
+
+        <p>
+            <strong>What you choose to share.</strong> When you tap Share or Copy on an encrypted envelope, the envelope is handed to whichever messenger you pick (iMessage, Mail, Telegram, WhatsApp, etc.). That messenger handles its own data flow under its own privacy policy; Exchange does not participate in or observe what happens after handoff. The envelope content is ciphertext that only your selected recipient's private key can open.
+        </p>
+
+        <p>
+            <strong>iMessage extension data flow.</strong> When you compose through Exchange's iMessage extension, the encrypted envelope is embedded in an <code>MSMessage</code> URL and delivered through Apple's iMessage end-to-end encrypted service to the recipient's device. Apple is the data controller for that delivery. The plaintext is never seen by iMessage — only the already-encrypted Exchange envelope rides inside the iMessage transport.
+        </p>
+
+        <h2>Data stored on your device</h2>
+        <p>
+            <strong>Identity private keys</strong> — the 64-byte concatenated Curve25519 ECDH + Ed25519 signing private keys, stored in Keychain with the "this device only" accessibility flag. Cannot be migrated, synced, or extracted by the operating system in normal use. Generated on first launch.
+        </p>
+        <p>
+            <strong>Recipient list</strong> — display names, public keys (encryption + signing), fingerprints, optional notes, creation timestamps. Stored in the app's private SwiftData container inside the App Group <code>group.me.nettrash.Exchange</code>. Survives a device-to-device backup-and-restore via standard iOS encrypted backup, but is not pushed to iCloud directly.
+        </p>
+        <p>
+            <strong>No message history.</strong> Exchange does <em>not</em> retain plaintext messages, ciphertext envelopes, or send/receive logs. Each compose and decrypt action is transient: the plaintext appears on screen and is forgotten when you dismiss the sheet. If you want a record of what you sent, copy it before dismissing — the app does not keep one for you.
+        </p>
+
+        <h2>Encryption details</h2>
+        <p>
+            Exchange uses standard, publicly vetted cryptography from Apple's CryptoKit framework. Each outgoing envelope is sealed using a hybrid scheme:
+        </p>
+        <ul>
+            <li><strong>Curve25519 (X25519)</strong> ephemeral-static ECDH for per-message key agreement.</li>
+            <li><strong>HKDF-SHA256</strong> to derive a wrapping key from the shared secret.</li>
+            <li><strong>ChaCha20-Poly1305</strong> AEAD for both wrapping the per-message symmetric key and encrypting the body.</li>
+            <li><strong>Ed25519</strong> signature over the entire binary blob, so the recipient can authenticate which signing key produced the message.</li>
+        </ul>
+        <p>
+            All four primitives are implemented by Apple's CryptoKit on-device and are exempt under EAR §740.17(b)(1) as standard mass-market cryptography. The app's source code is the authoritative reference; envelope format is documented in <code>CryptoEnvelope.swift</code>.
+        </p>
+
+        <h2>App Tracking Transparency</h2>
+        <p>
+            Exchange does not "track" you in the sense Apple's <em>App Tracking Transparency</em> framework defines: it does not link any data collected in the app with data from other apps, websites, or offline sources to build a user profile, and it does not share any data with data brokers. There is no data collected to share. Exchange therefore does not present an ATT prompt. The app ships a <code>PrivacyInfo.xcprivacy</code> manifest in every binary (main app and iMessage extension) declaring <code>NSPrivacyTracking = false</code>, no tracking domains, no collected data types, and no Required-Reason API usage.
+        </p>
+
+        <h2>Third-party services</h2>
+        <table>
+            <thead>
+                <tr><th>Service</th><th>What it sees</th><th>Whose policy applies</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Apple iMessage</td><td>Encrypted envelopes embedded in <code>MSMessage</code> URLs, when the iMessage extension is used as the transport</td><td>Apple's</td></tr>
+                <tr><td>Apple CryptoKit</td><td>On-device cryptographic operations only; no network use</td><td>Apple's</td></tr>
+                <tr><td>Apple Keychain</td><td>The local-only identity item, on this device</td><td>Apple's</td></tr>
+                <tr><td>Whatever messenger you choose for the Share button</td><td>The encrypted envelope (ciphertext) that you decided to send through it</td><td>That messenger's</td></tr>
+            </tbody>
+        </table>
+
+        <p>
+            Specifically NOT used: any third-party analytics SDK (Firebase, Mixpanel, Sentry, etc.), any advertising SDK, any attribution / install-tracking SDK, any social-media SDK, any IDFA-consuming network, any custom server. Exchange has no code that calls anything outside Apple's bundled frameworks.
+        </p>
+
+        <h2>Children's privacy</h2>
+        <p>
+            Exchange is rated <strong>4+</strong> and is suitable for all ages. We do not knowingly collect personal information from children, because we do not collect personal information from anyone.
+        </p>
+
+        <h2>International data transfers</h2>
+        <p>
+            Because Exchange has no backend and contacts no third-party network, no personal data is transferred internationally by the app. Your encrypted envelopes, when sent through Apple's iMessage or any other messenger, transit those services' infrastructure under their own respective privacy policies.
+        </p>
+
+        <h2>Your rights</h2>
+        <p>Because we hold no data about you:</p>
+        <ul>
+            <li>There is no record to access under GDPR Article 15 / CCPA "right to know".</li>
+            <li>There is no record to delete under GDPR Article 17 / CCPA "right to delete" — the local identity and recipient list are yours alone, and you can remove them by tapping Reset identity in Settings or by uninstalling the app.</li>
+            <li>There is no record to correct under GDPR Article 16.</li>
+            <li>There is nothing being sold or shared under CCPA / CPRA, so no opt-out is required.</li>
+        </ul>
+
+        <h2>Changes to this policy</h2>
+        <p>
+            If a future version of Exchange changes any of the above — adds analytics, integrates a third-party SDK, adds a network endpoint, or starts using a permission for a new purpose — this document will be updated <em>in the same release</em> and the <em>Effective date</em> will be bumped.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+            Privacy questions: <a href="mailto:nettrash@nettrash.me?subject=Exchange%20privacy">nettrash@nettrash.me</a>.
+            For day-to-day support, see the <a href="support.html">Exchange support page</a>.
+        </p>
+
+        <footer>
+            <a href="https://nettrash.me/">← nettrash.me</a>
+        </footer>
+    </main>
+</body>
+</html>
