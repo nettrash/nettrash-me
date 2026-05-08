@@ -103,6 +103,11 @@
             No. Without the private key on the lost device, the ciphertext is unrecoverable. This is the security guarantee of an end-to-end encrypted system: there is no master key, no recovery mechanism, no developer back door. If recoverability matters more than this kind of forward secrecy, Exchange is the wrong tool.
         </p>
 
+        <h3>What about Universal Links — should tapping an Exchange link open the app?</h3>
+        <p>
+            Yes. Exchange registers <code>https://nettrash.me/exchange/msg/*</code> as an associated-domain link. When a recipient taps an encrypted bubble in iMessage, or right-clicks an Exchange link in Messages on Mac and chooses Open Link, iOS or Mac Catalyst opens Exchange and decrypts the envelope automatically. If the app isn't installed, the link falls back to Safari and lands on a 404 — the URLs are pure data carriers and have no web page behind them. Install Exchange, then re-tap the link, and it opens in the app.
+        </p>
+
         <h3>Why does the encrypted envelope start with <code>EXC2:</code>?</h3>
         <p>
             That's the protocol version marker. <code>EXC2</code> is the current envelope format — Curve25519 ECDH + Ed25519 signature over a ChaCha20-Poly1305 wrapped key and body. If a future version of Exchange changes the format, the prefix will bump (<code>EXC3:</code>, etc.) and the app will refuse to open the new format with an "unsupported version" error rather than try to brute-force it. Old envelopes you've already received continue to decrypt as long as the same version number is supported.
