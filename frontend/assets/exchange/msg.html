@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Encrypted message — Exchange</title>
+    <meta name="description" content="An encrypted Exchange envelope. Open in the Exchange app to decrypt." />
+    <meta name="robots" content="noindex,nofollow" />
+
+    <!-- OpenGraph: drives the link-preview bubble in iMessage, Telegram,
+         WhatsApp, Slack, etc. Universal Links intercept before this page
+         loads on devices that have Exchange installed, so this preview
+         is what shows in the chat list and on devices without the app. -->
+    <meta property="og:title" content="🔒 Encrypted message" />
+    <meta property="og:description" content="Tap to open in Exchange and decrypt. Install from the App Store if you don't have it yet." />
+    <meta property="og:image" content="https://exchange.nettrash.me/exchange-icon.png" />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="1024" />
+    <meta property="og:image:alt" content="Exchange app icon" />
+    <meta property="og:url" content="https://exchange.nettrash.me/msg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Exchange" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="🔒 Encrypted message" />
+    <meta name="twitter:description" content="Tap to open in Exchange and decrypt." />
+    <meta name="twitter:image" content="https://exchange.nettrash.me/exchange-icon.png" />
+
+    <!-- iOS Smart Banner: if a user without the app lands here on iPhone,
+         a small "Install" banner appears at the top of Safari. -->
+    <meta name="apple-itunes-app" content="app-id=6766308999" />
+
+    <link rel="icon" type="image/x-icon" href="https://nettrash.me/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <style>
+        html, body { margin: 0; padding: 0; }
+        body { font-family: "Roboto", system-ui, -apple-system, sans-serif; background: #fafafa; color: #1a1a1a; line-height: 1.65; min-height: 100vh; }
+        main { max-width: 560px; margin: 4rem auto; padding: 2.5rem; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: center; }
+        .icon { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin: 0 auto 1.5rem; display: block; }
+        h1 { font-weight: 300; font-size: 1.75rem; margin: 0 0 .5rem; letter-spacing: -.01em; }
+        .lede { color: #555; margin: 0 auto 2rem; max-width: 44ch; }
+        .cta { display: inline-block; padding: .75rem 1.5rem; background: #0d47a1; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 500; transition: background .15s ease; }
+        .cta:hover { background: #0a3a86; }
+        .meta { color: #888; font-size: .9rem; margin-top: 2rem; }
+        a { color: #0d47a1; }
+        footer { text-align: center; margin: 1.5rem auto 2.5rem; color: #888; font-size: .85rem; }
+    </style>
+</head>
+<body>
+    <main>
+        <img src="https://exchange.nettrash.me/exchange-icon.png" alt="Exchange" class="icon" />
+        <h1>🔒 Encrypted message</h1>
+        <p class="lede">
+            This link carries an encrypted envelope addressed to a specific Exchange identity. If the Exchange app is installed on your device, it should have opened automatically and decrypted the message in place.
+        </p>
+        <p>
+            <a href="https://apps.apple.com/app/id6766308999" class="cta">Install Exchange</a>
+        </p>
+        <p class="meta">
+            Already have Exchange installed? Re-tap the link from Messages, or open the app and paste the link manually via the Decrypt button.
+        </p>
+    </main>
+    <footer>
+        <a href="https://nettrash.me/">← nettrash.me</a>
+    </footer>
+</body>
+</html>

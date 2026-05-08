@@ -39,6 +39,28 @@ The single `components` matcher catches `/msg` exactly. The query
 parameters carry the actual payload; AASA matches the path independently
 of the query so this matcher works for any `?v=…&p=…`.
 
+### `msg.html` — link-preview fallback page
+
+When Exchange URLs are sent from Mac (where the iMessage extension can't
+run, so envelopes go out as plain `https://exchange.nettrash.me/msg?…`
+text instead of as a rich `MSMessage` bubble), the receiving Messages
+client fetches the URL to build a link-preview card. This page is what
+that crawler sees: a small HTML document with OpenGraph tags pointing
+at the Exchange icon and a "🔒 Encrypted message" title, plus a Smart
+Banner / "Install Exchange" CTA for users without the app.
+
+Universal Links intercept the click *before* this page renders on
+devices that have Exchange installed, so the page is only ever visible
+to: (a) the link-preview crawler that builds the bubble, and
+(b) recipients without the app. nginx serves it under
+`location = /msg { try_files /msg.html =404; }`.
+
+### `exchange-icon.png`
+
+Copy of the iOS app icon. Referenced by `msg.html` as the OG image, so
+the link-preview bubble carries the Exchange brand mark. Self-hosted
+on `exchange.nettrash.me` so the subdomain is fully self-contained.
+
 ## DNS + nginx setup
 
 To make `exchange.nettrash.me` resolve and serve this AASA file, two
@@ -51,8 +73,9 @@ build-time things — they live outside the Trunk pipeline):
    minutes via your DNS provider.
 
 2. **nginx server block.** Add a new `server` block to
-   `nginx.conf` for `server_name exchange.nettrash.me;` that serves
-   the AASA file out of `dist/exchange/.well-known/`. Sketch:
+   `nginx.conf` for `server_name exchange.nettrash.me;` that serves the
+   AASA file plus the `/msg` link-preview fallback out of
+   `dist/exchange/`. Sketch:
 
    ```nginx
    server {
@@ -62,14 +85,26 @@ build-time things — they live outside the Trunk pipeline):
        ssl_certificate     /etc/letsencrypt/live/nettrash.me/fullchain.pem;
        ssl_certificate_key /etc/letsencrypt/live/nettrash.me/privkey.pem;
 
+       root /var/www/nettrash.me/dist/exchange;
+
        # Universal Links AASA — must serve as application/json with no
        # caching surprises. Apple's swcd refuses anything else.
-       location ^~ /.well-known/ {
-           root /var/www/nettrash.me/dist/exchange;
+       location = /.well-known/apple-app-site-association {
            default_type application/json;
-           add_header Cache-Control "no-store" always;
-           try_files $uri =404;
+           add_header Cache-Control "no-cache" always;
        }
+
+       # /msg → serve msg.html so link-preview crawlers (iMessage,
+       # Telegram, etc.) get OpenGraph tags and recipients without the
+       # app see an "Install Exchange" page. Universal Links intercept
+       # before this page renders for users with the app installed.
+       location = /msg {
+           try_files /msg.html =404;
+           add_header Cache-Control "public, max-age=3600";
+       }
+
+       # Static assets used by msg.html.
+       location = /exchange-icon.png { try_files $uri =404; }
 
        # Anything else under exchange.nettrash.me is a pure data carrier
        # (Exchange-encrypted payloads embedded in URL query strings) and
