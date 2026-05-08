@@ -647,6 +647,59 @@ fn app_store_tab() -> Html {
         <div class="tool-container">
             <div class="content-column" style="max-width:100%;flex:1;">
 
+                // Exchange
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="exchange-icon.png"
+                             alt="Exchange app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://apps.apple.com/us/app/nettrash-exchange/id6766308999"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "Exchange" }
+                                </a>
+                                <span class="badge bg-info ms-2" style="font-size:0.7em;">{ "iOS" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "End-to-end encryption for any messenger. Encrypt a message on \
+                                   your iPhone, get back a single base64 line, send it through \
+                                   iMessage, Mail, Telegram, WhatsApp — anything that carries \
+                                   text. The recipient pastes it back into Exchange and reads \
+                                   the original. Curve25519 + Ed25519 over ChaCha20-Poly1305, \
+                                   all on-device via CryptoKit. Includes an iMessage extension \
+                                   for in-conversation encrypt-and-send. No accounts. No \
+                                   servers. No trackers." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://apps.apple.com/us/app/nettrash-exchange/id6766308999"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-dark">
+                                    { "Download on the App Store" }
+                                </a>
+                                <a href="https://github.com/nettrash/exchange-ios" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/exchange/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/exchange/support.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Support" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 // Scan
                 <div class="card mb-3">
                     <div class="card-body d-flex align-items-start">
