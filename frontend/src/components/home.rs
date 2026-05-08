@@ -309,10 +309,11 @@ pub fn home() -> Html {
 // for the live fetch and the cards below will keep their existing
 // fallback strings in sync.
 const PROJECT_REPOS: &[(&str, &str)] = &[
-    ("nettrash", "Scan"),
-    ("nettrash", "Scan.Android"),
     ("nettrash", "pgc"),
     ("nettrash", "pg_dbms_job"),
+    ("nettrash", "Scan"),
+    ("nettrash", "exchange-ios"),
+    ("nettrash", "Scan.Android"),
     ("nettrash", "nettrash-me"),
 ];
 
@@ -397,6 +398,11 @@ fn github_tab() -> Html {
         "https://github.com/nettrash/pg_dbms_job/releases/tag/{}",
         pg_dbms_tag
     );
+    let exchange_tag = live_tag(m, "nettrash/exchange-ios", "v1.1");
+    let exchange_tag_url = format!(
+        "https://github.com/nettrash/exchange-ios/releases/tag/{}",
+        exchange_tag
+    );
     let nettrash_me_tag = live_tag(m, "nettrash/nettrash-me", "v1.6.1");
 
     html! {
@@ -426,6 +432,61 @@ fn github_tab() -> Html {
 
                 // Highlighted projects
                 <h6 class="mb-3">{ "Highlighted Projects" }</h6>
+
+                // pgc
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">
+                            <a href="https://github.com/nettrash/pgc" target="_blank"
+                               rel="noopener noreferrer" class="text-decoration-none">
+                                { "pgc" }
+                            </a>
+                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Rust" }</span>
+                        </h6>
+                        <p class="card-text mb-2">
+                            { "PostgreSQL Database Comparer — a CLI tool for comparing two PostgreSQL database schemas and generating delta SQL scripts. Supports schema dumps, structure comparison with DROP/CREATE/ALTER, clear (drop-all) scripts, SSL, configurable connection pooling, and single-transaction output." }
+                        </p>
+                        <div class="d-flex gap-3 text-muted small">
+                            <span>{ format!("⭐ {}", pgc_stars) }</span>
+                            <span>{ format!("🍴 {}", pgc_forks) }</span>
+                            <span>
+                                <a href={pgc_tag_url.clone()}
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { pgc_tag.clone() }
+                                </a>
+                            </span>
+                            <span class="badge bg-light text-dark">{ "MIT" }</span>
+                        </div>
+                    </div>
+                </div>
+
+                // pg_dbms_job
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">
+                            <a href="https://github.com/nettrash/pg_dbms_job" target="_blank"
+                               rel="noopener noreferrer" class="text-decoration-none">
+                                { "pg_dbms_job" }
+                            </a>
+                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Rust" }</span>
+                        </h6>
+                        <p class="card-text mb-2">
+                            { "PostgreSQL extension providing full compatibility with Oracle's DBMS_JOB module. Manages scheduled and asynchronous jobs via a dedicated scheduler daemon. Rust fork with enhanced features." }
+                        </p>
+                        <div class="d-flex gap-3 text-muted small">
+                            <span>{ format!("⭐ {}", pg_dbms_stars) }</span>
+                            <span>
+                                <a href={pg_dbms_tag_url.clone()}
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { pg_dbms_tag.clone() }
+                                </a>
+                            </span>
+                            <span class="badge bg-light text-dark">{ "PostgreSQL" }</span>
+                        </div>
+                    </div>
+                </div>
 
                 // Scan — iOS app, on the App Store
                 <div class="card mb-3">
@@ -467,6 +528,60 @@ fn github_tab() -> Html {
                             </span>
                             <span>
                                 <a href="https://nettrash.me/appstore/scan/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                            </span>
+                            <span class="badge bg-light text-dark">{ "MIT" }</span>
+                        </div>
+                    </div>
+                </div>
+
+                // exchange-ios — iOS + Mac Catalyst, on the App Store
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title mb-1">
+                            <a href="https://github.com/nettrash/exchange-ios" target="_blank"
+                               rel="noopener noreferrer" class="text-decoration-none">
+                                { "exchange-ios" }
+                            </a>
+                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Swift / SwiftUI" }</span>
+                            <span class="badge bg-info ms-1" style="font-size:0.7em;">{ "iPhone · iPad · Mac" }</span>
+                        </h6>
+                        <p class="card-text mb-2">
+                            { "End-to-end-encrypted messenger that rides any messenger you already \
+                               use. Encrypt a message in Exchange, get a single base64 line, send \
+                               it through iMessage, Mail, Telegram, WhatsApp — anything that \
+                               carries text. Recipient opens it back in Exchange. Includes an \
+                               iMessage extension for in-conversation encrypt-and-send, plus \
+                               Universal Links so tapping a 🔒 bubble in Messages on iPhone or \
+                               Mac decrypts in place. Curve25519 (X25519) + Ed25519 over \
+                               ChaCha20-Poly1305 + HKDF-SHA256, all on-device via CryptoKit. \
+                               Identity rides iCloud Keychain across iPhone and Mac (end-to-end \
+                               encrypted with a device-class secret); recipients sync via an \
+                               extra identity-derived encryption layer so Apple sees only \
+                               ciphertext. Passphrase-encrypted backup and one-shot QR transfer \
+                               for manual moves between devices. No accounts, no servers, \
+                               no trackers." }
+                        </p>
+                        <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                            <span>
+                                <a href="https://apps.apple.com/us/app/nettrash-exchange/id6766308999"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "📱 App Store" }
+                                </a>
+                            </span>
+                            <span>
+                                <a href={exchange_tag_url.clone()}
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { exchange_tag.clone() }
+                                </a>
+                            </span>
+                            <span>
+                                <a href="https://nettrash.me/appstore/exchange/privacy.html"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
                                     { "Privacy" }
@@ -531,61 +646,6 @@ fn github_tab() -> Html {
                                 </a>
                             </span>
                             <span class="badge bg-light text-dark">{ "MIT" }</span>
-                        </div>
-                    </div>
-                </div>
-
-                // pgc
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h6 class="card-title mb-1">
-                            <a href="https://github.com/nettrash/pgc" target="_blank"
-                               rel="noopener noreferrer" class="text-decoration-none">
-                                { "pgc" }
-                            </a>
-                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Rust" }</span>
-                        </h6>
-                        <p class="card-text mb-2">
-                            { "PostgreSQL Database Comparer — a CLI tool for comparing two PostgreSQL database schemas and generating delta SQL scripts. Supports schema dumps, structure comparison with DROP/CREATE/ALTER, clear (drop-all) scripts, SSL, configurable connection pooling, and single-transaction output." }
-                        </p>
-                        <div class="d-flex gap-3 text-muted small">
-                            <span>{ format!("⭐ {}", pgc_stars) }</span>
-                            <span>{ format!("🍴 {}", pgc_forks) }</span>
-                            <span>
-                                <a href={pgc_tag_url.clone()}
-                                   target="_blank" rel="noopener noreferrer"
-                                   class="text-muted text-decoration-none">
-                                    { pgc_tag.clone() }
-                                </a>
-                            </span>
-                            <span class="badge bg-light text-dark">{ "MIT" }</span>
-                        </div>
-                    </div>
-                </div>
-
-                // pg_dbms_job
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h6 class="card-title mb-1">
-                            <a href="https://github.com/nettrash/pg_dbms_job" target="_blank"
-                               rel="noopener noreferrer" class="text-decoration-none">
-                                { "pg_dbms_job" }
-                            </a>
-                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Rust" }</span>
-                        </h6>
-                        <p class="card-text mb-2">
-                            { "PostgreSQL extension providing full compatibility with Oracle's DBMS_JOB module. Manages scheduled and asynchronous jobs via a dedicated scheduler daemon. Rust fork with enhanced features." }
-                        </p>
-                        <div class="d-flex gap-3 text-muted small">
-                            <span>{ format!("⭐ {}", pg_dbms_stars) }</span>
-                            <span>
-                                <a href={pg_dbms_tag_url.clone()}
-                                   target="_blank" rel="noopener noreferrer"
-                                   class="text-muted text-decoration-none">
-                                    { pg_dbms_tag.clone() }
-                                </a>
-                            </span>
-                            <span class="badge bg-light text-dark">{ "PostgreSQL" }</span>
                         </div>
                     </div>
                 </div>
