@@ -1,0 +1,18 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "V4WM2SJ8Q9.me.nettrash.Exchange",
+          "V4WM2SJ8Q9.maccatalyst.me.nettrash.Exchange"
+        ],
+        "components": [
+          {
+            "/": "/msg",
+            "comment": "Encrypted-envelope deep links handed to the Exchange app for in-place decryption: https://exchange.nettrash.me/msg?v=2&p=<base64url-envelope>"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -14,23 +14,6 @@
             "comment": "Privacy / metadata pages stay in Safari; the App-Store-listing tab on nettrash.me already handles those."
           }
         ]
-      },
-      {
-        "appIDs": [
-          "V4WM2SJ8Q9.me.nettrash.Exchange",
-          "V4WM2SJ8Q9.maccatalyst.me.nettrash.Exchange"
-        ],
-        "components": [
-          {
-            "/": "/exchange/msg/*",
-            "comment": "Encrypted-envelope deep links handed to the Exchange app for in-place decryption: https://nettrash.me/exchange/msg/<base64url-envelope>"
-          },
-          {
-            "/": "/appstore/exchange/*",
-            "exclude": true,
-            "comment": "Privacy / support pages stay in Safari; the Settings sheet links here directly."
-          }
-        ]
       }
     ]
   },
