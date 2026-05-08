@@ -70,10 +70,10 @@
 
         <h2>Data stored on your device</h2>
         <p>
-            <strong>Identity private keys</strong> — the 64-byte concatenated Curve25519 ECDH + Ed25519 signing private keys, stored in Keychain with the "this device only" accessibility flag. Cannot be migrated, synced, or extracted by the operating system in normal use. Generated on first launch.
+            <strong>Identity private keys</strong> — the 64-byte concatenated Curve25519 ECDH + Ed25519 signing private keys, stored in iOS Keychain. Generated on first launch. Starting with v1.1, the default storage mode is <code>Synchronizable</code> with <code>kSecAttrAccessibleAfterFirstUnlock</code>, which lets iOS / macOS sync the keys across the user's same-Apple-ID devices via end-to-end encrypted iCloud Keychain. The user can opt back to <code>kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly</code> in Settings → Identity sync if they prefer the v1.0 device-bound behaviour. The user can also export the identity as a passphrase-encrypted (PBKDF2-SHA256 + ChaCha20-Poly1305) blob, or transfer it in person via QR — both in <em>Settings → Backup &amp; transfer</em>.
         </p>
         <p>
-            <strong>Recipient list</strong> — display names, public keys (encryption + signing), fingerprints, optional notes, creation timestamps. Stored in the app's private SwiftData container inside the App Group <code>group.me.nettrash.Exchange</code>. Survives a device-to-device backup-and-restore via standard iOS encrypted backup, but is not pushed to iCloud directly.
+            <strong>Recipient list</strong> — display names, public keys (encryption + signing), fingerprints, optional notes, creation timestamps. Stored locally in the app's private SwiftData container inside the App Group <code>group.me.nettrash.Exchange</code>. <strong>Starting with v1.1, the recipient list is also synced across the user's devices via an end-to-end-encrypted blob</strong>: the list is JSON-encoded, encrypted with ChaCha20-Poly1305 under a key derived from the identity's encryption private key (HKDF-SHA256, info "Exchange.recipients.v1"), and the resulting opaque blob is stored as a Synchronizable Keychain item. iCloud Keychain carries the ciphertext between the user's devices on the same Apple ID; Apple cannot decrypt it because Apple does not hold the identity-derived key. Recipients sync is on by default in v1.1 and can be turned off in Settings → Recipients sync. SwiftData's CloudKit integration remains explicitly disabled (<code>cloudKitDatabase: .none</code>) — no recipient metadata is ever stored on Apple's CloudKit servers in plaintext or under Apple-managed keys.
         </p>
         <p>
             <strong>No message history.</strong> Exchange does <em>not</em> retain plaintext messages, ciphertext envelopes, or send/receive logs. Each compose and decrypt action is transient: the plaintext appears on screen and is forgotten when you dismiss the sheet. If you want a record of what you sent, copy it before dismissing — the app does not keep one for you.
@@ -106,7 +106,7 @@
             <tbody>
                 <tr><td>Apple iMessage</td><td>Encrypted envelopes embedded in <code>MSMessage</code> URLs, when the iMessage extension is used as the transport</td><td>Apple's</td></tr>
                 <tr><td>Apple CryptoKit</td><td>On-device cryptographic operations only; no network use</td><td>Apple's</td></tr>
-                <tr><td>Apple Keychain</td><td>The local-only identity item, on this device</td><td>Apple's</td></tr>
+                <tr><td>Apple Keychain</td><td>The identity item; if iCloud Keychain sync is on (the default), Apple stores the end-to-end-encrypted blob in iCloud Keychain so the user's own devices on the same Apple ID share it</td><td>Apple's</td></tr>
                 <tr><td>Whatever messenger you choose for the Share button</td><td>The encrypted envelope (ciphertext) that you decided to send through it</td><td>That messenger's</td></tr>
             </tbody>
         </table>

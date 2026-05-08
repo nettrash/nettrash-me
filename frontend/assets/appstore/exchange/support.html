@@ -90,17 +90,40 @@
             Your encryption and signing private keys are deleted from the iOS Keychain, and every recipient you've saved is removed from the local store. A fresh keypair is generated on the next moment of the launch — you'll see the splash screen briefly, then return to the home screen with a new identity. <strong>This is irreversible.</strong> Anything previously encrypted to your old public key becomes unrecoverable forever, even if a copy of the ciphertext exists somewhere else. Your contacts will need your new public key before they can encrypt to you again.
         </p>
 
-        <h3>Can I move my identity to a new iPhone?</h3>
+        <h3>Can I move my identity to a new iPhone or to a Mac?</h3>
         <p>
-            Not directly, by design. The Keychain item that holds your private keys is marked "this device only," which means iOS will <em>not</em> sync it via iCloud Keychain or carry it across in a device-to-device backup-and-restore. When you set up a new iPhone with Exchange, you get a fresh identity. The recipient list (other people's public keys) <em>does</em> survive a standard iOS encrypted backup-and-restore because it lives in the app's data container; only the private key starts fresh.
+            Yes — Exchange 1.1 ships three ways, in roughly increasing order of effort:
         </p>
         <p>
-            The trade-off is intentional: if your private key were syncable, anyone who got into your Apple account would be able to read all your old messages. Keeping it device-bound means a compromised iCloud account doesn't compromise your conversations.
+            <strong>iCloud Keychain (default).</strong> The identity private keys are written to iOS Keychain with the <code>Synchronizable</code> bit set, so they travel automatically across the iPhone and Mac signed into the same Apple ID. A new iPhone restored from your Apple account picks up the existing identity once iCloud Keychain syncs through. iCloud Keychain is itself end-to-end encrypted with a device-class secret, so the keys are never visible to Apple in plaintext. You can turn this off in <em>Settings → Identity sync</em> to pin the key to one device only — that's the original v1.0 behaviour, useful if you want strong forward secrecy at the cost of multi-device convenience.
+        </p>
+        <p>
+            <strong>Passphrase backup.</strong> In <em>Settings → Backup &amp; transfer</em>, "Export identity (passphrase)" prompts for a passphrase, runs PBKDF2 + ChaCha20-Poly1305, and gives you a single line of base64 (<code>EXCBKP1:…</code>) that contains your identity <em>and</em> your full recipient list. Save it in a password manager; later, "Import identity (passphrase)" with the same passphrase replaces the local identity on another device. The strength of the passphrase is the only thing protecting the export, so pick something long and unique.
+        </p>
+        <p>
+            <strong>QR transfer.</strong> When both phones are physically with you, "Send identity (QR code)" on the source device shows an encrypted single-use QR; "Receive identity (Scan QR)" on the target device scans it, shows the fingerprint, and asks you to confirm before overwriting. Faster than typing a passphrase, but only safe in a setting where the QR is visible only to your two devices — don't photograph it, don't show it on a video call.
+        </p>
+        <p>
+            All three options overwrite the local identity on the receiving device. Anything previously encrypted to the old key on that device that isn't reachable through the imported one becomes unreadable; that's the cost of replacing rather than adding. Recipient lists on the other hand are preserved across a standard iOS encrypted backup-and-restore, and the passphrase backup also includes them.
+        </p>
+
+        <h3>Do my recipients sync between iPhone and Mac too?</h3>
+        <p>
+            Yes — Exchange 1.1 also syncs the recipient list across your devices. The mechanism mirrors identity sync but is one step more careful: the recipients are encrypted on-device with a key derived from your identity, and only the resulting opaque blob rides iCloud Keychain. Apple sees ciphertext only — display names, public keys, fingerprints, and notes are end-to-end encrypted between your devices, regardless of whether you have Advanced Data Protection turned on.
+        </p>
+        <p>
+            Toggle this off in <em>Settings → Recipients sync</em> if you want to keep the recipient list strictly local to each device.
+        </p>
+        <p>
+            Edge case worth knowing: if you add or remove a recipient on two of your own devices in the same minute and the changes don't reach iCloud Keychain in order, one device's change can overwrite the other. The blob is whole-list, not per-recipient; that's a deliberate simplification because edits are rare for personal use. If you need bulletproof multi-device editing, the passphrase backup is the more deterministic mechanism.
         </p>
 
         <h3>I lost my phone. Can I recover my old messages?</h3>
         <p>
-            No. Without the private key on the lost device, the ciphertext is unrecoverable. This is the security guarantee of an end-to-end encrypted system: there is no master key, no recovery mechanism, no developer back door. If recoverability matters more than this kind of forward secrecy, Exchange is the wrong tool.
+            If you had iCloud Keychain sync turned on (the default in 1.1) and your iPhone was signed into your Apple ID, your identity is still in iCloud Keychain — sign in on a new device and Exchange picks up the same identity once it syncs through. You'll be able to read messages that arrive going forward, but anything that was already on the lost phone and hasn't been re-sent is gone.
+        </p>
+        <p>
+            If iCloud Keychain sync was turned off, or you used the original v1.0 build, the identity is unrecoverable: there's no master key, no recovery mechanism, no developer back door, by design. The cost of that strong forward-secrecy guarantee is that a lost-and-not-wiped device leaks every message ever sent to its identity, but a lost-and-wiped device takes them with it.
         </p>
 
         <h3>What about Universal Links — should tapping an Exchange link open the app?</h3>
