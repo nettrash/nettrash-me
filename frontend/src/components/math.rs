@@ -418,20 +418,14 @@ fn download_svg(svg_data: &str, filename: &str) {
 // ---------------------------------------------------------------------------
 fn preprocess_math_expr(expr: &str) -> String {
     let fns = [
-        "asinh", "acosh", "atanh",
-        "asin", "acos", "atan2", "atan",
-        "sinh", "cosh", "tanh",
-        "sin", "cos", "tan",
-        "sqrt", "cbrt", "abs",
-        "exp2", "exp",
-        "log10", "log2", "ln",
-        "floor", "ceil", "round",
-        "pow", "hypot",
+        "asinh", "acosh", "atanh", "asin", "acos", "atan2", "atan", "sinh", "cosh", "tanh", "sin",
+        "cos", "tan", "sqrt", "cbrt", "abs", "exp2", "exp", "log10", "log2", "ln", "floor", "ceil",
+        "round", "pow", "hypot",
     ];
     let mut s = expr.to_string();
     // Strip any existing math:: prefix to normalize
     for f in &fns {
-        s = s.replace(&format!("math::{}", f), *f);
+        s = s.replace(&format!("math::{}", f), f);
     }
     // Add math:: prefix to bare function calls
     let pattern = fns.join("|");
@@ -458,17 +452,20 @@ fn render_plot_svg(
             &mut context,
             "x".into(),
             evalexpr::Value::Float(x),
-        ).ok()?;
+        )
+        .ok()?;
         evalexpr::ContextWithMutableVariables::set_value(
             &mut context,
             "pi".into(),
             evalexpr::Value::Float(std::f64::consts::PI),
-        ).ok()?;
+        )
+        .ok()?;
         evalexpr::ContextWithMutableVariables::set_value(
             &mut context,
             "e".into(),
             evalexpr::Value::Float(std::f64::consts::E),
-        ).ok()?;
+        )
+        .ok()?;
         match precompiled.eval_with_context(&context) {
             Ok(evalexpr::Value::Float(v)) => Some(v),
             Ok(evalexpr::Value::<evalexpr::DefaultNumericTypes>::Int(v)) => Some(v as f64),
@@ -507,7 +504,10 @@ fn render_plot_svg(
         let sx = to_sx(gx);
         svg.push_str(&format!(
             "<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\"/>",
-            sx, margin, sx, margin + plot_h
+            sx,
+            margin,
+            sx,
+            margin + plot_h
         ));
         gx += x_step;
     }
@@ -516,7 +516,10 @@ fn render_plot_svg(
         let sy = to_sy(gy);
         svg.push_str(&format!(
             "<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\"/>",
-            margin, sy, margin + plot_w, sy
+            margin,
+            sy,
+            margin + plot_w,
+            sy
         ));
         gy += y_step;
     }
@@ -528,14 +531,20 @@ fn render_plot_svg(
         let sy = to_sy(0.0);
         svg.push_str(&format!(
             "<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\"/>",
-            margin, sy, margin + plot_w, sy
+            margin,
+            sy,
+            margin + plot_w,
+            sy
         ));
     }
     if x_min <= 0.0 && x_max >= 0.0 {
         let sx = to_sx(0.0);
         svg.push_str(&format!(
             "<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\"/>",
-            sx, margin, sx, margin + plot_h
+            sx,
+            margin,
+            sx,
+            margin + plot_h
         ));
     }
     svg.push_str("</g>");
@@ -547,7 +556,9 @@ fn render_plot_svg(
         let sx = to_sx(gx);
         svg.push_str(&format!(
             "<text x=\"{:.1}\" y=\"{:.1}\" text-anchor=\"middle\">{}</text>",
-            sx, margin + plot_h + 15.0, format_label(gx)
+            sx,
+            margin + plot_h + 15.0,
+            format_label(gx)
         ));
         gx += x_step;
     }
@@ -657,7 +668,11 @@ fn plot_tool() -> Html {
     let on_expr_input = {
         let expr = expr.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             storage::set("plot_expr", &val);
             expr.set(val);
         })
@@ -665,7 +680,11 @@ fn plot_tool() -> Html {
     let on_xmin_input = {
         let x_min_s = x_min_s.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             storage::set("plot_xmin", &val);
             x_min_s.set(val);
         })
@@ -673,7 +692,11 @@ fn plot_tool() -> Html {
     let on_xmax_input = {
         let x_max_s = x_max_s.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             storage::set("plot_xmax", &val);
             x_max_s.set(val);
         })
@@ -681,7 +704,11 @@ fn plot_tool() -> Html {
     let on_ymin_input = {
         let y_min_s = y_min_s.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             storage::set("plot_ymin", &val);
             y_min_s.set(val);
         })
@@ -689,7 +716,11 @@ fn plot_tool() -> Html {
     let on_ymax_input = {
         let y_max_s = y_max_s.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             storage::set("plot_ymax", &val);
             y_max_s.set(val);
         })

@@ -14,6 +14,7 @@ enum HomeTab {
     Info,
     GitHub,
     AppStore,
+    MacAppStore,
     Play,
 }
 
@@ -53,13 +54,12 @@ fn init_map(element: &web_sys::HtmlElement, lat: f64, lng: f64) {
 
 #[function_component(Home)]
 pub fn home() -> Html {
-    let active_tab = use_state(|| {
-        match storage::get("home_tab").as_deref() {
-            Some("github") => HomeTab::GitHub,
-            Some("appstore") => HomeTab::AppStore,
-            Some("play") => HomeTab::Play,
-            _ => HomeTab::Info,
-        }
+    let active_tab = use_state(|| match storage::get("home_tab").as_deref() {
+        Some("github") => HomeTab::GitHub,
+        Some("appstore") => HomeTab::AppStore,
+        Some("mac_appstore") => HomeTab::MacAppStore,
+        Some("play") => HomeTab::Play,
+        _ => HomeTab::Info,
     });
 
     let tab_class = |tab: &HomeTab| -> &'static str {
@@ -78,6 +78,7 @@ pub fn home() -> Html {
                 HomeTab::Info => "info",
                 HomeTab::GitHub => "github",
                 HomeTab::AppStore => "appstore",
+                HomeTab::MacAppStore => "mac_appstore",
                 HomeTab::Play => "play",
             };
             storage::set("home_tab", key);
@@ -230,6 +231,10 @@ pub fn home() -> Html {
                        onclick={set_tab(HomeTab::AppStore)}>{ "App Store" }</a>
                 </li>
                 <li class="nav-item">
+                    <a class={tab_class(&HomeTab::MacAppStore)} href="#"
+                       onclick={set_tab(HomeTab::MacAppStore)}>{ "Mac App Store" }</a>
+                </li>
+                <li class="nav-item">
                     <a class={tab_class(&HomeTab::Play)} href="#"
                        onclick={set_tab(HomeTab::Play)}>{ "Play" }</a>
                 </li>
@@ -280,6 +285,9 @@ pub fn home() -> Html {
                     HomeTab::AppStore => html! {
                         <AppStoreTab />
                     },
+                    HomeTab::MacAppStore => html! {
+                        <MacAppStoreTab />
+                    },
                     HomeTab::Play => html! {
                         <PlayTab />
                     },
@@ -311,10 +319,8 @@ pub fn home() -> Html {
 const PROJECT_REPOS: &[(&str, &str)] = &[
     ("nettrash", "pgc"),
     ("nettrash", "pg_dbms_job"),
-    ("nettrash", "Scan"),
-    ("nettrash", "exchange-ios"),
-    ("nettrash", "Scan.Android"),
-    ("nettrash", "nettrash-me"),
+    ("nettrash", "pg_amqp"),
+    ("nettrash", "logpipe"),
 ];
 
 /// Pick the live tag from a repo's fetched metadata, or the supplied
@@ -386,24 +392,28 @@ fn github_tab() -> Html {
     // into a borrow of the inner HashMap. Computed once per render and
     // interpolated into the markup below.
     let m = &*live;
-    let scan_tag = live_tag(m, "nettrash/Scan", "v1.8");
-    let scan_android_tag = live_tag(m, "nettrash/Scan.Android", "v1.7");
-    let pgc_tag = live_tag(m, "nettrash/pgc", "v1.0.15");
-    let pgc_stars = live_count(m, "nettrash/pgc", |d| d.stars, 2);
-    let pgc_forks = live_count(m, "nettrash/pgc", |d| d.forks, 2);
+    let pgc_tag = live_tag(m, "nettrash/pgc", "v1.0.20.1");
+    let pgc_stars = live_count(m, "nettrash/pgc", |d| d.stars, 3);
+    let pgc_forks = live_count(m, "nettrash/pgc", |d| d.forks, 3);
     let pgc_tag_url = format!("https://github.com/nettrash/pgc/releases/tag/{}", pgc_tag);
-    let pg_dbms_tag = live_tag(m, "nettrash/pg_dbms_job", "v1.5.8-rust");
+    let pg_dbms_tag = live_tag(m, "nettrash/pg_dbms_job", "v1.5.13-rust");
     let pg_dbms_stars = live_count(m, "nettrash/pg_dbms_job", |d| d.stars, 4);
     let pg_dbms_tag_url = format!(
         "https://github.com/nettrash/pg_dbms_job/releases/tag/{}",
         pg_dbms_tag
     );
-    let exchange_tag = live_tag(m, "nettrash/exchange-ios", "v1.1");
-    let exchange_tag_url = format!(
-        "https://github.com/nettrash/exchange-ios/releases/tag/{}",
-        exchange_tag
+    // pg_amqp has no GitHub releases tagged yet — README documents
+    // 0.4.4 as the current version, so we show that as the label and
+    // link to the source tree instead of releases/tag/… (which would 404).
+    let pg_amqp_tag = live_tag(m, "nettrash/pg_amqp", "v0.4.4");
+    let pg_amqp_stars = live_count(m, "nettrash/pg_amqp", |d| d.stars, 0);
+    let pg_amqp_forks = live_count(m, "nettrash/pg_amqp", |d| d.forks, 0);
+    let logpipe_tag = live_tag(m, "nettrash/logpipe", "v0.3.0");
+    let logpipe_stars = live_count(m, "nettrash/logpipe", |d| d.stars, 0);
+    let logpipe_tag_url = format!(
+        "https://github.com/nettrash/logpipe/releases/tag/{}",
+        logpipe_tag
     );
-    let nettrash_me_tag = live_tag(m, "nettrash/nettrash-me", "v1.6.1");
 
     html! {
         <div class="tool-container">
@@ -488,205 +498,63 @@ fn github_tab() -> Html {
                     </div>
                 </div>
 
-                // Scan — iOS app, on the App Store
+                // pg_amqp
                 <div class="card mb-3">
                     <div class="card-body">
                         <h6 class="card-title mb-1">
-                            <a href="https://github.com/nettrash/Scan" target="_blank"
+                            <a href="https://github.com/nettrash/pg_amqp" target="_blank"
                                rel="noopener noreferrer" class="text-decoration-none">
-                                { "Scan" }
+                                { "pg_amqp" }
                             </a>
-                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Swift / SwiftUI" }</span>
-                            <span class="badge bg-info ms-1" style="font-size:0.7em;">{ "iPhone · iPad · Mac · Vision Pro" }</span>
+                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "C" }</span>
+                            <span class="badge bg-light text-dark ms-1" style="font-size:0.7em;">{ "Fork" }</span>
                         </h6>
                         <p class="card-text mb-2">
-                            { "Barcode and QR-code scanner / generator that runs on iPhone, iPad, \
-                               Mac (Catalyst) and Apple Vision Pro. Decodes Wi-Fi (with WPA3 + \
-                               Passpoint), contacts, calendar events, payment slips (EPC SEPA, \
-                               Swiss QR-bill, Indian UPI, Serbian IPS, EMVCo merchant), crypto \
-                               wallets including USDC / USDT stablecoins, GS1 product barcodes, \
-                               IATA boarding passes, AAMVA driver licences, EUDI / DigiD identity \
-                               flows, loyalty cards. Universal Links into the app, iCloud-synced \
-                               history across all your devices, system Share Sheet extension for \
-                               photos and PDFs, pinch-to-zoom + centred-frame scanning. On-device \
-                               via AVFoundation + Vision; no analytics, no ads, no trackers." }
+                            { "PostgreSQL extension that publishes AMQP 0-9-1 messages straight \
+                               from SQL — a maintained fork of omniti-labs/pg_amqp. Version 0.4.4 \
+                               adds PostgreSQL 18 toolchain compatibility, IPv6 broker resolution, \
+                               and TLS/SSL transport, targeting modern RabbitMQ deployments." }
                         </p>
-                        <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                        <div class="d-flex gap-3 text-muted small">
+                            <span>{ format!("⭐ {}", pg_amqp_stars) }</span>
+                            <span>{ format!("🍴 {}", pg_amqp_forks) }</span>
                             <span>
-                                <a href="https://apps.apple.com/us/app/nettrash-scan/id6763932723"
+                                <a href="https://github.com/nettrash/pg_amqp/tree/master"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
-                                    { "📱 App Store" }
+                                    { pg_amqp_tag.clone() }
                                 </a>
                             </span>
-                            <span>
-                                <a href="https://github.com/nettrash/Scan/blob/main/CHANGELOG.md"
-                                   target="_blank" rel="noopener noreferrer"
-                                   class="text-muted text-decoration-none">
-                                    { scan_tag.clone() }
-                                </a>
-                            </span>
-                            <span>
-                                <a href="https://nettrash.me/appstore/scan/privacy.html"
-                                   target="_blank" rel="noopener noreferrer"
-                                   class="text-muted text-decoration-none">
-                                    { "Privacy" }
-                                </a>
-                            </span>
-                            <span class="badge bg-light text-dark">{ "MIT" }</span>
+                            <span class="badge bg-light text-dark">{ "PostgreSQL" }</span>
                         </div>
                     </div>
                 </div>
 
-                // exchange-ios — iOS + Mac Catalyst, on the App Store
+                // logpipe
                 <div class="card mb-3">
                     <div class="card-body">
                         <h6 class="card-title mb-1">
-                            <a href="https://github.com/nettrash/exchange-ios" target="_blank"
+                            <a href="https://github.com/nettrash/logpipe" target="_blank"
                                rel="noopener noreferrer" class="text-decoration-none">
-                                { "exchange-ios" }
+                                { "logpipe" }
                             </a>
-                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Swift / SwiftUI" }</span>
-                            <span class="badge bg-info ms-1" style="font-size:0.7em;">{ "iPhone · iPad · Mac" }</span>
+                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Rust" }</span>
                         </h6>
                         <p class="card-text mb-2">
-                            { "End-to-end-encrypted messenger that rides any messenger you already \
-                               use. Encrypt a message in Exchange, get a single base64 line, send \
-                               it through iMessage, Mail, Telegram, WhatsApp — anything that \
-                               carries text. Recipient opens it back in Exchange. Includes an \
-                               iMessage extension for in-conversation encrypt-and-send, plus \
-                               Universal Links so tapping a 🔒 bubble in Messages on iPhone or \
-                               Mac decrypts in place. Curve25519 (X25519) + Ed25519 over \
-                               ChaCha20-Poly1305 + HKDF-SHA256, all on-device via CryptoKit. \
-                               Identity rides iCloud Keychain across iPhone and Mac (end-to-end \
-                               encrypted with a device-class secret); recipients sync via an \
-                               extra identity-derived encryption layer so Apple sees only \
-                               ciphertext. Passphrase-encrypted backup and one-shot QR transfer \
-                               for manual moves between devices. No accounts, no servers, \
-                               no trackers." }
+                            { "Log-forwarding service for Linux. Exposes a writable named pipe at \
+                               /dev/logpipe; every line written there streams into a configured \
+                               OpenSearch index via the _bulk API. Plain text becomes a structured \
+                               document, single-line JSON objects merge their fields into the \
+                               record — drop-in shipping for any local process via echo, tail or \
+                               structured loggers." }
                         </p>
-                        <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                        <div class="d-flex gap-3 text-muted small">
+                            <span>{ format!("⭐ {}", logpipe_stars) }</span>
                             <span>
-                                <a href="https://apps.apple.com/us/app/nettrash-exchange/id6766308999"
+                                <a href={logpipe_tag_url.clone()}
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
-                                    { "📱 App Store" }
-                                </a>
-                            </span>
-                            <span>
-                                <a href={exchange_tag_url.clone()}
-                                   target="_blank" rel="noopener noreferrer"
-                                   class="text-muted text-decoration-none">
-                                    { exchange_tag.clone() }
-                                </a>
-                            </span>
-                            <span>
-                                <a href="https://nettrash.me/appstore/exchange/privacy.html"
-                                   target="_blank" rel="noopener noreferrer"
-                                   class="text-muted text-decoration-none">
-                                    { "Privacy" }
-                                </a>
-                            </span>
-                            <span class="badge bg-light text-dark">{ "MIT" }</span>
-                        </div>
-                    </div>
-                </div>
-
-                // Scan.Android — Android port, on Google Play
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h6 class="card-title mb-1">
-                            <a href="https://github.com/nettrash/Scan.Android" target="_blank"
-                               rel="noopener noreferrer" class="text-decoration-none">
-                                { "Scan.Android" }
-                            </a>
-                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Kotlin / Jetpack Compose" }</span>
-                            <span class="badge bg-success ms-1" style="font-size:0.7em;">{ "Android" }</span>
-                        </h6>
-                        <p class="card-text mb-2">
-                            { "Android port of Scan with full payload-recognition parity. \
-                               Live-camera scanning via CameraX + ML Kit (bundled models, no \
-                               Play Services dependency), Photo Picker import, PDF + multi-image \
-                               batch decoding, Room-backed history with iCloud-equivalent Auto \
-                               Backup, on-device Compose UI. Same parser surface as the iOS app — \
-                               Wi-Fi (incl. WPA3 / Passpoint), contacts, calendar, payment slips, \
-                               GS1 / IATA / AAMVA, crypto + stablecoins, identity flows, loyalty \
-                               cards. App Links, ACTION_SEND share-intake, pinch-to-zoom + \
-                               centred-frame scanning. F-Droid metadata in-tree. \
-                               No analytics, no ads." }
-                        </p>
-                        <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
-                            <span>
-                                <a href="https://play.google.com/store/apps/details?id=me.nettrash.scan"
-                                   target="_blank" rel="noopener noreferrer"
-                                   class="text-muted text-decoration-none">
-                                    { "▶ Google Play" }
-                                </a>
-                            </span>
-                            <span>
-                                <a href="/play/scan/scan-latest.apk"
-                                   rel="noopener noreferrer"
-                                   class="text-muted text-decoration-none"
-                                   download="scan-latest.apk">
-                                    { "⬇ APK" }
-                                </a>
-                            </span>
-                            <span>
-                                <a href="https://github.com/nettrash/Scan.Android/blob/main/CHANGELOG.md"
-                                   target="_blank" rel="noopener noreferrer"
-                                   class="text-muted text-decoration-none">
-                                    { scan_android_tag.clone() }
-                                </a>
-                            </span>
-                            <span>
-                                <a href="https://nettrash.me/play/scan/privacy.html"
-                                   target="_blank" rel="noopener noreferrer"
-                                   class="text-muted text-decoration-none">
-                                    { "Privacy" }
-                                </a>
-                            </span>
-                            <span class="badge bg-light text-dark">{ "MIT" }</span>
-                        </div>
-                    </div>
-                </div>
-
-                // nettrash.me
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h6 class="card-title mb-1">
-                            <a href="https://github.com/nettrash/nettrash-me" target="_blank"
-                               rel="noopener noreferrer" class="text-decoration-none">
-                                { "nettrash.me" }
-                            </a>
-                            <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Rust / WASM" }</span>
-                        </h6>
-                        <p class="card-text mb-2">
-                            { "This website — a collection of useful developer tools built \
-                               entirely in Rust with Yew (WebAssembly). Hash + Luhn + UUID + \
-                               function plotter, Base64 / URL / Hex / Unicode / RegEx / \
-                               passwords / case-converter, Unixtime + 1D-2D code generator + \
-                               JSON formatter + JSON / YAML / TOML / CSV converter + JSON \
-                               Schema + Markdown + Diff + Cron + CIDR + Color, AES / DES / 3DES \
-                               / Blowfish / Twofish symmetric and RSA / ECDSA / Ed25519 / ECDH / \
-                               X25519 asymmetric crypto, JWT decoder, HMAC, TOTP / HOTP, X.509 \
-                               and CSR parsing. Everything runs client-side; no data leaves the \
-                               browser. Universal Links + AASA + assetlinks.json hosting for \
-                               the Scan apps, plus the privacy and support pages for the App \
-                               Store and Play submissions." }
-                        </p>
-                        <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
-                            <span>
-                                <a href="https://nettrash.me" target="_blank"
-                                   rel="noopener noreferrer"
-                                   class="text-muted text-decoration-none">
-                                    { "nettrash.me" }
-                                </a>
-                            </span>
-                            <span>
-                                <a href="https://github.com/nettrash/nettrash-me/blob/main/frontend/Cargo.toml"
-                                   target="_blank" rel="noopener noreferrer"
-                                   class="text-muted text-decoration-none">
-                                    { nettrash_me_tag.clone() }
+                                    { logpipe_tag.clone() }
                                 </a>
                             </span>
                             <span class="badge bg-light text-dark">{ "MIT" }</span>
@@ -789,6 +657,123 @@ fn app_store_tab() -> Html {
                                    target="_blank" rel="noopener noreferrer"
                                    class="btn btn-sm btn-dark">
                                     { "Download on the App Store" }
+                                </a>
+                                <a href="https://github.com/nettrash/Scan" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/scan/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Mac App Store tab — apps published on the Mac App Store.
+// Same App IDs as the iOS listings (universal/Catalyst); `?platform=mac`
+// deep-links the Mac storefront entry.
+// ---------------------------------------------------------------------------
+#[function_component(MacAppStoreTab)]
+fn mac_app_store_tab() -> Html {
+    html! {
+        <div class="tool-container">
+            <div class="content-column" style="max-width:100%;flex:1;">
+
+                // Exchange
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="exchange-icon.png"
+                             alt="Exchange app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://apps.apple.com/us/app/nettrash-exchange/id6766308999?platform=mac"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "Exchange" }
+                                </a>
+                                <span class="badge bg-dark ms-2" style="font-size:0.7em;">{ "Mac" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "End-to-end encryption for any messenger, now on Mac. Encrypt a \
+                                   message on your Mac, get back a single base64 line, paste it \
+                                   into iMessage, Mail, Telegram, WhatsApp — anything that carries \
+                                   text. The recipient pastes it back into Exchange and reads the \
+                                   original. Curve25519 + Ed25519 over ChaCha20-Poly1305, all \
+                                   on-device via CryptoKit. Identity rides iCloud Keychain across \
+                                   your iPhone and Mac. No accounts. No servers. No trackers." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://apps.apple.com/us/app/nettrash-exchange/id6766308999?platform=mac"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-dark">
+                                    { "Download on the Mac App Store" }
+                                </a>
+                                <a href="https://github.com/nettrash/exchange-ios" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/exchange/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/exchange/support.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Support" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                // Scan
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="scan-icon.png"
+                             alt="Scan app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://apps.apple.com/us/app/nettrash-scan/id6763932723?platform=mac"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "Scan" }
+                                </a>
+                                <span class="badge bg-dark ms-2" style="font-size:0.7em;">{ "Mac" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "Barcode and QR-code reader and generator, now on Mac. Scan with \
+                                   your Mac's built-in or Continuity camera, decode from images or \
+                                   PDFs dropped into the window, generate codes back. Recognises \
+                                   QR, Aztec, PDF417, Data Matrix, EAN, UPC, Code 128 and more, \
+                                   then explains what's inside — Wi-Fi, contacts, calendar events, \
+                                   payment slips (SEPA, Swiss QR-bill, Indian UPI, Serbian IPS, \
+                                   EMVCo merchant), crypto wallets — each field tap-to-copy. \
+                                   iCloud-synced history across all your devices. \
+                                   On-device. No accounts. No ads. No trackers." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://apps.apple.com/us/app/nettrash-scan/id6763932723?platform=mac"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-dark">
+                                    { "Download on the Mac App Store" }
                                 </a>
                                 <a href="https://github.com/nettrash/Scan" target="_blank"
                                    rel="noopener noreferrer"

@@ -291,8 +291,13 @@ fn aztec_to_svg(data: &str, min_size: usize) -> Result<String, String> {
     use rxing::BarcodeFormat;
     use rxing::Writer;
 
-    let matrix: BitMatrix = AztecWriter::default()
-        .encode(data, &BarcodeFormat::AZTEC, min_size as i32, min_size as i32)
+    let matrix: BitMatrix = AztecWriter
+        .encode(
+            data,
+            &BarcodeFormat::AZTEC,
+            min_size as i32,
+            min_size as i32,
+        )
         .map_err(|e| format!("Aztec error: {}", e))?;
     let w = matrix.width() as usize;
     let h = matrix.height() as usize;
@@ -327,11 +332,11 @@ fn aztec_to_svg(data: &str, min_size: usize) -> Result<String, String> {
 // ---------------------------------------------------------------------------
 fn barcode_1d_to_svg(data: &str, format: &str) -> Result<String, String> {
     use barcoders::generators::svg::*;
+    use barcoders::sym::codabar::Codabar;
     use barcoders::sym::code128::Code128;
     use barcoders::sym::code39::Code39;
     use barcoders::sym::ean13::EAN13;
     use barcoders::sym::ean8::EAN8;
-    use barcoders::sym::codabar::Codabar;
     use barcoders::sym::tf::TF;
 
     let encoded: Vec<u8> = match format {
@@ -344,7 +349,9 @@ fn barcode_1d_to_svg(data: &str, format: &str) -> Result<String, String> {
         _ => return Err("Unknown format".to_string()),
     };
 
-    let svg = SVG::new(100).generate(&encoded).map_err(|e| e.to_string())?;
+    let svg = SVG::new(100)
+        .generate(&encoded)
+        .map_err(|e| e.to_string())?;
     Ok(svg)
 }
 
@@ -360,7 +367,11 @@ fn qrcode_tool() -> Html {
     let on_format_change = {
         let format = format.clone();
         Callback::from(move |e: Event| {
-            let val = e.target().unwrap().unchecked_into::<HtmlSelectElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
             storage::set("qr_format", &val);
             format.set(val);
         })
@@ -389,15 +400,13 @@ fn qrcode_tool() -> Html {
                 return;
             }
             let result = match format.as_str() {
-                "qrcode" => {
-                    match qrcode::QrCode::new(source.as_bytes()) {
-                        Ok(code) => Ok(code
-                            .render::<qrcode::render::svg::Color>()
-                            .min_dimensions(200, 200)
-                            .build()),
-                        Err(e) => Err(format!("QR error: {}", e)),
-                    }
-                }
+                "qrcode" => match qrcode::QrCode::new(source.as_bytes()) {
+                    Ok(code) => Ok(code
+                        .render::<qrcode::render::svg::Color>()
+                        .min_dimensions(200, 200)
+                        .build()),
+                    Err(e) => Err(format!("QR error: {}", e)),
+                },
                 "datamatrix" => datamatrix_to_svg(source.as_bytes(), 200),
                 "aztec" => aztec_to_svg(&source, 200),
                 other => barcode_1d_to_svg(&source, other),
@@ -575,10 +584,7 @@ fn csv_to_json(input: &str) -> Result<String, String> {
         let row = row.map_err(|e| format!("CSV row error: {}", e))?;
         let mut map = serde_json::Map::new();
         for (i, field) in row.iter().enumerate() {
-            let key = headers
-                .get(i)
-                .unwrap_or(&format!("col{}", i))
-                .to_string();
+            let key = headers.get(i).unwrap_or(&format!("col{}", i)).to_string();
             map.insert(key, serde_json::Value::String(field.to_string()));
         }
         records.push(map);
@@ -635,18 +641,15 @@ fn convert_data(source: &str, from: &str, to: &str) -> Result<String, String> {
     // For CSV → non-JSON, go via JSON intermediate
     if from == "csv" {
         let json_str = csv_to_json(source)?;
-        let val: serde_json::Value = serde_json::from_str(&json_str)
-            .map_err(|e| format!("Internal JSON error: {}", e))?;
+        let val: serde_json::Value =
+            serde_json::from_str(&json_str).map_err(|e| format!("Internal JSON error: {}", e))?;
         return serialize_value(&val, to);
     }
     // Parse source
     let val: serde_json::Value = match from {
-        "json" => serde_json::from_str(source)
-            .map_err(|e| format!("Invalid JSON: {}", e))?,
-        "yaml" => serde_yaml::from_str(source)
-            .map_err(|e| format!("Invalid YAML: {}", e))?,
-        "toml" => toml::from_str(source)
-            .map_err(|e| format!("Invalid TOML: {}", e))?,
+        "json" => serde_json::from_str(source).map_err(|e| format!("Invalid JSON: {}", e))?,
+        "yaml" => serde_yaml::from_str(source).map_err(|e| format!("Invalid YAML: {}", e))?,
+        "toml" => toml::from_str(source).map_err(|e| format!("Invalid TOML: {}", e))?,
         _ => return Err("Unknown source format".to_string()),
     };
     // For → CSV, go via JSON intermediate
@@ -662,8 +665,9 @@ fn serialize_value(val: &serde_json::Value, to: &str) -> Result<String, String> 
     match to {
         "json" => serde_json::to_string_pretty(val)
             .map_err(|e| format!("JSON serialization error: {}", e)),
-        "yaml" => serde_yaml::to_string(val)
-            .map_err(|e| format!("YAML serialization error: {}", e)),
+        "yaml" => {
+            serde_yaml::to_string(val).map_err(|e| format!("YAML serialization error: {}", e))
+        }
         "toml" => {
             let toml_val: toml::Value = serde_json::from_value(val.clone())
                 .map_err(|e| format!("TOML conversion error: {}", e))?;
@@ -676,7 +680,8 @@ fn serialize_value(val: &serde_json::Value, to: &str) -> Result<String, String> 
 
 #[function_component(DataConverterTool)]
 fn data_converter_tool() -> Html {
-    let from_fmt = use_state(|| storage::get("dataconv_from").unwrap_or_else(|| "json".to_string()));
+    let from_fmt =
+        use_state(|| storage::get("dataconv_from").unwrap_or_else(|| "json".to_string()));
     let to_fmt = use_state(|| storage::get("dataconv_to").unwrap_or_else(|| "yaml".to_string()));
     let source = use_state(|| storage::get("dataconv_source").unwrap_or_default());
     let result = use_state(|| storage::get("dataconv_result").unwrap_or_default());
@@ -684,7 +689,11 @@ fn data_converter_tool() -> Html {
     let on_from_change = {
         let from_fmt = from_fmt.clone();
         Callback::from(move |e: Event| {
-            let val = e.target().unwrap().unchecked_into::<HtmlSelectElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
             storage::set("dataconv_from", &val);
             from_fmt.set(val);
         })
@@ -693,7 +702,11 @@ fn data_converter_tool() -> Html {
     let on_to_change = {
         let to_fmt = to_fmt.clone();
         Callback::from(move |e: Event| {
-            let val = e.target().unwrap().unchecked_into::<HtmlSelectElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
             storage::set("dataconv_to", &val);
             to_fmt.set(val);
         })
@@ -751,13 +764,15 @@ fn data_converter_tool() -> Html {
         })
     };
 
-    fn fmt_label<'a>(f: &'a str) -> &'a str { match f {
-        "json" => "JSON",
-        "yaml" => "YAML",
-        "toml" => "TOML",
-        "csv" => "CSV",
-        _ => f,
-    }}
+    fn fmt_label(f: &str) -> &str {
+        match f {
+            "json" => "JSON",
+            "yaml" => "YAML",
+            "toml" => "TOML",
+            "csv" => "CSV",
+            _ => f,
+        }
+    }
     let btn_label = format!("{} → {}", fmt_label(&from_fmt), fmt_label(&to_fmt));
 
     html! {
@@ -1161,7 +1176,11 @@ fn explain_cron_field(field: &str, labels: &[&str], offset: usize, is_names: boo
 fn single_cron_part(part: &str, labels: &[&str], offset: usize, is_names: bool) -> String {
     let part = part.trim();
     if let Some((range, step)) = part.split_once('/') {
-        return format!("every {} of {}", step, single_cron_part(range, labels, offset, is_names));
+        return format!(
+            "every {} of {}",
+            step,
+            single_cron_part(range, labels, offset, is_names)
+        );
     }
     if let Some((a, b)) = part.split_once('-') {
         return format!(
@@ -1190,9 +1209,14 @@ fn label_for(value: &str, labels: &[&str], offset: usize, is_names: bool) -> Str
 fn describe_cron(expr: &str) -> String {
     let parts: Vec<&str> = expr.split_whitespace().collect();
     if parts.len() != 5 {
-        return format!("Expected 5 fields (min hour dom mon dow), got {}", parts.len());
+        return format!(
+            "Expected 5 fields (min hour dom mon dow), got {}",
+            parts.len()
+        );
     }
-    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    let months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ];
     let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     format!(
         "Minute: {}\nHour:   {}\nDay:    {}\nMonth:  {}\nDOW:    {}",
@@ -1223,7 +1247,8 @@ fn next_cron_runs(expr: &str, count: usize) -> Result<Vec<String>, String> {
 // ---------------------------------------------------------------------------
 #[function_component(CronTool)]
 fn cron_tool() -> Html {
-    let source = use_state(|| storage::get("cron_source").unwrap_or_else(|| "*/5 * * * *".to_string()));
+    let source =
+        use_state(|| storage::get("cron_source").unwrap_or_else(|| "*/5 * * * *".to_string()));
     let description = use_state(|| storage::get("cron_description").unwrap_or_default());
     let runs = use_state(|| storage::get("cron_runs").unwrap_or_default());
 
@@ -1247,7 +1272,11 @@ fn cron_tool() -> Html {
         let source = source.clone();
         let compute = compute.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             storage::set("cron_source", &val);
             source.set(val.clone());
             compute(&val);
@@ -1314,7 +1343,9 @@ fn describe_cidr(input: &str) -> Result<String, String> {
     if src.is_empty() {
         return Err("Empty input".to_string());
     }
-    let net: ipnet::IpNet = src.parse().map_err(|e: ipnet::AddrParseError| e.to_string())?;
+    let net: ipnet::IpNet = src
+        .parse()
+        .map_err(|e: ipnet::AddrParseError| e.to_string())?;
     let mut out = String::new();
     out.push_str(&format!("Network:    {}\n", net.network()));
     out.push_str(&format!("Prefix:     /{}\n", net.prefix_len()));
@@ -1332,8 +1363,21 @@ fn describe_cidr(input: &str) -> Result<String, String> {
             out.push_str(&format!("Addresses:  {}\n", size));
             out.push_str(&format!("Usable:     {}\n", usable));
             let hosts = v4.hosts();
-            out.push_str(&format!("First:      {}\n", hosts.clone().next().map(|a| a.to_string()).unwrap_or_else(|| "-".to_string())));
-            out.push_str(&format!("Last:       {}\n", hosts.last().map(|a| a.to_string()).unwrap_or_else(|| "-".to_string())));
+            out.push_str(&format!(
+                "First:      {}\n",
+                hosts
+                    .clone()
+                    .next()
+                    .map(|a| a.to_string())
+                    .unwrap_or_else(|| "-".to_string())
+            ));
+            out.push_str(&format!(
+                "Last:       {}\n",
+                hosts
+                    .last()
+                    .map(|a| a.to_string())
+                    .unwrap_or_else(|| "-".to_string())
+            ));
             let a = v4.addr();
             out.push_str(&format!("Is private: {}\n", a.is_private()));
             out.push_str(&format!("Is loopback:{}\n", a.is_loopback()));
@@ -1368,7 +1412,8 @@ fn describe_cidr(input: &str) -> Result<String, String> {
 // ---------------------------------------------------------------------------
 #[function_component(CidrTool)]
 fn cidr_tool() -> Html {
-    let source = use_state(|| storage::get("cidr_source").unwrap_or_else(|| "192.168.1.0/24".to_string()));
+    let source =
+        use_state(|| storage::get("cidr_source").unwrap_or_else(|| "192.168.1.0/24".to_string()));
     let result = use_state(|| storage::get("cidr_result").unwrap_or_default());
 
     let compute = {
@@ -1387,7 +1432,11 @@ fn cidr_tool() -> Html {
         let source = source.clone();
         let compute = compute.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             storage::set("cidr_source", &val);
             source.set(val.clone());
             compute(&val);
@@ -1502,7 +1551,8 @@ fn parse_hex(hex: &str) -> Result<Rgb, String> {
 fn parse_rgb_func(rest: &str) -> Result<Rgb, String> {
     let body = rest.trim().trim_start_matches('a');
     let body = body.trim().trim_start_matches('(').trim_end_matches(')');
-    let parts: Vec<&str> = body.split(|c| c == ',' || c == '/' || c == ' ')
+    let parts: Vec<&str> = body
+        .split([',', '/', ' '])
         .filter(|p| !p.trim().is_empty())
         .collect();
     if parts.len() < 3 {
@@ -1522,15 +1572,30 @@ fn parse_rgb_func(rest: &str) -> Result<Rgb, String> {
 fn parse_hsl_func(rest: &str) -> Result<Rgb, String> {
     let body = rest.trim().trim_start_matches('a');
     let body = body.trim().trim_start_matches('(').trim_end_matches(')');
-    let parts: Vec<&str> = body.split(|c| c == ',' || c == '/' || c == ' ')
+    let parts: Vec<&str> = body
+        .split([',', '/', ' '])
         .filter(|p| !p.trim().is_empty())
         .collect();
     if parts.len() < 3 {
         return Err("hsl() needs 3+ components".to_string());
     }
-    let h = parts[0].trim().trim_end_matches("deg").parse::<f32>().map_err(|e| e.to_string())?;
-    let s = parts[1].trim().trim_end_matches('%').parse::<f32>().map_err(|e| e.to_string())? / 100.0;
-    let l = parts[2].trim().trim_end_matches('%').parse::<f32>().map_err(|e| e.to_string())? / 100.0;
+    let h = parts[0]
+        .trim()
+        .trim_end_matches("deg")
+        .parse::<f32>()
+        .map_err(|e| e.to_string())?;
+    let s = parts[1]
+        .trim()
+        .trim_end_matches('%')
+        .parse::<f32>()
+        .map_err(|e| e.to_string())?
+        / 100.0;
+    let l = parts[2]
+        .trim()
+        .trim_end_matches('%')
+        .parse::<f32>()
+        .map_err(|e| e.to_string())?
+        / 100.0;
     let a = if parts.len() >= 4 {
         parse_component(parts[3], 1.0)?.clamp(0.0, 1.0)
     } else {
@@ -1548,7 +1613,9 @@ fn parse_hsl_func(rest: &str) -> Result<Rgb, String> {
 fn parse_component(s: &str, max: f32) -> Result<f32, String> {
     let s = s.trim();
     if let Some(p) = s.strip_suffix('%') {
-        let v: f32 = p.parse().map_err(|e: std::num::ParseFloatError| e.to_string())?;
+        let v: f32 = p
+            .parse()
+            .map_err(|e: std::num::ParseFloatError| e.to_string())?;
         return Ok(v / 100.0 * max);
     }
     s.parse::<f32>().map_err(|e| e.to_string())
@@ -1565,7 +1632,11 @@ fn rgb_to_hsl(r: u8, g: u8, b: u8) -> (f32, f32, f32) {
         return (0.0, 0.0, l);
     }
     let d = max - min;
-    let s = if l > 0.5 { d / (2.0 - max - min) } else { d / (max + min) };
+    let s = if l > 0.5 {
+        d / (2.0 - max - min)
+    } else {
+        d / (max + min)
+    };
     let h = if max == r {
         ((g - b) / d + if g < b { 6.0 } else { 0.0 }) / 6.0
     } else if max == g {
@@ -1581,7 +1652,11 @@ fn hsl_to_rgb(h: f32, s: f32, l: f32) -> (f32, f32, f32) {
     if s == 0.0 {
         return (l, l, l);
     }
-    let q = if l < 0.5 { l * (1.0 + s) } else { l + s - l * s };
+    let q = if l < 0.5 {
+        l * (1.0 + s)
+    } else {
+        l + s - l * s
+    };
     let p = 2.0 * l - q;
     let r = hue_to_rgb(p, q, h + 1.0 / 3.0);
     let g = hue_to_rgb(p, q, h);
@@ -1590,17 +1665,33 @@ fn hsl_to_rgb(h: f32, s: f32, l: f32) -> (f32, f32, f32) {
 }
 
 fn hue_to_rgb(p: f32, q: f32, t: f32) -> f32 {
-    let t = if t < 0.0 { t + 1.0 } else if t > 1.0 { t - 1.0 } else { t };
-    if t < 1.0 / 6.0 { return p + (q - p) * 6.0 * t; }
-    if t < 1.0 / 2.0 { return q; }
-    if t < 2.0 / 3.0 { return p + (q - p) * (2.0 / 3.0 - t) * 6.0; }
+    let t = if t < 0.0 {
+        t + 1.0
+    } else if t > 1.0 {
+        t - 1.0
+    } else {
+        t
+    };
+    if t < 1.0 / 6.0 {
+        return p + (q - p) * 6.0 * t;
+    }
+    if t < 1.0 / 2.0 {
+        return q;
+    }
+    if t < 2.0 / 3.0 {
+        return p + (q - p) * (2.0 / 3.0 - t) * 6.0;
+    }
     p
 }
 
 fn relative_luminance(r: u8, g: u8, b: u8) -> f32 {
     let f = |c: u8| {
         let c = c as f32 / 255.0;
-        if c <= 0.03928 { c / 12.92 } else { ((c + 0.055) / 1.055).powf(2.4) }
+        if c <= 0.03928 {
+            c / 12.92
+        } else {
+            ((c + 0.055) / 1.055).powf(2.4)
+        }
     };
     0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
 }
@@ -1630,10 +1721,15 @@ fn describe_color(c: Rgb) -> String {
 }
 
 fn wcag_grade(ratio: f32) -> &'static str {
-    if ratio >= 7.0 { "AAA (normal)" }
-    else if ratio >= 4.5 { "AA (normal) / AAA (large)" }
-    else if ratio >= 3.0 { "AA (large only)" }
-    else { "Fail" }
+    if ratio >= 7.0 {
+        "AAA (normal)"
+    } else if ratio >= 4.5 {
+        "AA (normal) / AAA (large)"
+    } else if ratio >= 3.0 {
+        "AA (large only)"
+    } else {
+        "Fail"
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -1677,7 +1773,11 @@ fn color_tool() -> Html {
         let bg = bg.clone();
         let compute = compute.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             storage::set("color_fg", &val);
             fg.set(val.clone());
             compute(&val, &bg);
@@ -1689,7 +1789,11 @@ fn color_tool() -> Html {
         let bg = bg.clone();
         let compute = compute.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             storage::set("color_bg", &val);
             bg.set(val.clone());
             compute(&fg, &val);

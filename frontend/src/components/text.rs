@@ -484,9 +484,9 @@ impl PasswordMode {
 }
 
 const PRON_CONSONANTS: &[&str] = &[
-    "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z",
-    "ch", "cr", "cl", "br", "bl", "dr", "fl", "fr", "gl", "gr", "pl", "pr",
-    "sc", "sh", "sk", "sl", "sm", "sn", "sp", "st", "sw", "th", "tr", "tw", "wh",
+    "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z", "ch",
+    "cr", "cl", "br", "bl", "dr", "fl", "fr", "gl", "gr", "pl", "pr", "sc", "sh", "sk", "sl", "sm",
+    "sn", "sp", "st", "sw", "th", "tr", "tw", "wh",
 ];
 const PRON_VOWELS: &[&str] = &[
     "a", "e", "i", "o", "u", "ae", "ai", "ea", "ee", "ei", "ie", "oa", "oo", "ou",
@@ -508,16 +508,27 @@ fn gen_random_pwd(
     special: bool,
 ) -> Result<String, String> {
     let mut charset = String::new();
-    if upper { charset.push_str("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); }
-    if lower { charset.push_str("abcdefghijklmnopqrstuvwxyz"); }
-    if digits { charset.push_str("0123456789"); }
-    if special { charset.push_str("!@#$%^&*()-_=+[]{}|;:,.<>?"); }
+    if upper {
+        charset.push_str("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    }
+    if lower {
+        charset.push_str("abcdefghijklmnopqrstuvwxyz");
+    }
+    if digits {
+        charset.push_str("0123456789");
+    }
+    if special {
+        charset.push_str("!@#$%^&*()-_=+[]{}|;:,.<>?");
+    }
     if charset.is_empty() {
         return Err("Select at least one character set.".into());
     }
     let chars: Vec<char> = charset.chars().collect();
     let bytes = random_bytes(length);
-    Ok(bytes.iter().map(|b| chars[*b as usize % chars.len()]).collect())
+    Ok(bytes
+        .iter()
+        .map(|b| chars[*b as usize % chars.len()])
+        .collect())
 }
 
 fn gen_readable_pwd(
@@ -552,7 +563,9 @@ fn gen_readable_pwd(
         out.push(char::from(b'0' + (extras[0] % 10)));
     }
     if append_symbol {
-        out.push(char::from(PRON_SYMBOLS[extras[1] as usize % PRON_SYMBOLS.len()]));
+        out.push(char::from(
+            PRON_SYMBOLS[extras[1] as usize % PRON_SYMBOLS.len()],
+        ));
     }
     out
 }
@@ -587,30 +600,82 @@ fn password_tool() -> Html {
     });
 
     // Random-mode state.
-    let length = use_state(|| storage::get("pwd_length").and_then(|s| s.parse::<usize>().ok()).unwrap_or(16));
-    let use_upper = use_state(|| storage::get("pwd_upper").map(|s| s == "true").unwrap_or(true));
-    let use_lower = use_state(|| storage::get("pwd_lower").map(|s| s == "true").unwrap_or(true));
-    let use_digits = use_state(|| storage::get("pwd_digits").map(|s| s == "true").unwrap_or(true));
-    let use_special = use_state(|| storage::get("pwd_special").map(|s| s == "true").unwrap_or(true));
+    let length = use_state(|| {
+        storage::get("pwd_length")
+            .and_then(|s| s.parse::<usize>().ok())
+            .unwrap_or(16)
+    });
+    let use_upper = use_state(|| {
+        storage::get("pwd_upper")
+            .map(|s| s == "true")
+            .unwrap_or(true)
+    });
+    let use_lower = use_state(|| {
+        storage::get("pwd_lower")
+            .map(|s| s == "true")
+            .unwrap_or(true)
+    });
+    let use_digits = use_state(|| {
+        storage::get("pwd_digits")
+            .map(|s| s == "true")
+            .unwrap_or(true)
+    });
+    let use_special = use_state(|| {
+        storage::get("pwd_special")
+            .map(|s| s == "true")
+            .unwrap_or(true)
+    });
 
     // Readable-mode state.
-    let readable_len = use_state(|| storage::get("pwd_readable_len").and_then(|s| s.parse::<usize>().ok()).unwrap_or(12));
-    let readable_caps = use_state(|| storage::get("pwd_readable_caps").map(|s| s == "true").unwrap_or(true));
-    let readable_digit = use_state(|| storage::get("pwd_readable_digit").map(|s| s == "true").unwrap_or(true));
-    let readable_symbol = use_state(|| storage::get("pwd_readable_symbol").map(|s| s == "true").unwrap_or(false));
+    let readable_len = use_state(|| {
+        storage::get("pwd_readable_len")
+            .and_then(|s| s.parse::<usize>().ok())
+            .unwrap_or(12)
+    });
+    let readable_caps = use_state(|| {
+        storage::get("pwd_readable_caps")
+            .map(|s| s == "true")
+            .unwrap_or(true)
+    });
+    let readable_digit = use_state(|| {
+        storage::get("pwd_readable_digit")
+            .map(|s| s == "true")
+            .unwrap_or(true)
+    });
+    let readable_symbol = use_state(|| {
+        storage::get("pwd_readable_symbol")
+            .map(|s| s == "true")
+            .unwrap_or(false)
+    });
 
     // Passphrase-mode state.
-    let phrase_words = use_state(|| storage::get("pwd_phrase_words").and_then(|s| s.parse::<usize>().ok()).unwrap_or(5));
+    let phrase_words = use_state(|| {
+        storage::get("pwd_phrase_words")
+            .and_then(|s| s.parse::<usize>().ok())
+            .unwrap_or(5)
+    });
     let phrase_sep = use_state(|| storage::get("pwd_phrase_sep").unwrap_or_else(|| "-".into()));
-    let phrase_caps = use_state(|| storage::get("pwd_phrase_caps").map(|s| s == "true").unwrap_or(false));
-    let phrase_digit = use_state(|| storage::get("pwd_phrase_digit").map(|s| s == "true").unwrap_or(false));
+    let phrase_caps = use_state(|| {
+        storage::get("pwd_phrase_caps")
+            .map(|s| s == "true")
+            .unwrap_or(false)
+    });
+    let phrase_digit = use_state(|| {
+        storage::get("pwd_phrase_digit")
+            .map(|s| s == "true")
+            .unwrap_or(false)
+    });
 
     let result = use_state(|| storage::get("pwd_result").unwrap_or_default());
 
     let on_mode_change = {
         let mode = mode.clone();
         Callback::from(move |e: Event| {
-            let val = e.target().unwrap().unchecked_into::<HtmlSelectElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
             storage::set("pwd_mode", &val);
             mode.set(PasswordMode::from_str(&val));
         })
@@ -618,7 +683,11 @@ fn password_tool() -> Html {
 
     let num_input = |state: UseStateHandle<usize>, key: &'static str, min: usize, max: usize| {
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlInputElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
             if let Ok(n) = val.parse::<usize>() {
                 let n = n.clamp(min, max);
                 storage::set(key, &n.to_string());
@@ -633,7 +702,11 @@ fn password_tool() -> Html {
 
     let toggle_cb = |state: UseStateHandle<bool>, key: &'static str| {
         Callback::from(move |e: Event| {
-            let checked = e.target().unwrap().unchecked_into::<HtmlInputElement>().checked();
+            let checked = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .checked();
             storage::set(key, if checked { "true" } else { "false" });
             state.set(checked);
         })
@@ -652,7 +725,11 @@ fn password_tool() -> Html {
     let on_sep_change = {
         let phrase_sep = phrase_sep.clone();
         Callback::from(move |e: Event| {
-            let val = e.target().unwrap().unchecked_into::<HtmlSelectElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
             storage::set("pwd_phrase_sep", &val);
             phrase_sep.set(val);
         })
@@ -676,18 +753,22 @@ fn password_tool() -> Html {
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
             let pwd = match *mode {
-                PasswordMode::Random => match gen_random_pwd(
-                    *length, *use_upper, *use_lower, *use_digits, *use_special,
-                ) {
-                    Ok(s) => s,
-                    Err(e) => e,
-                },
+                PasswordMode::Random => {
+                    match gen_random_pwd(*length, *use_upper, *use_lower, *use_digits, *use_special)
+                    {
+                        Ok(s) => s,
+                        Err(e) => e,
+                    }
+                }
                 PasswordMode::Readable => gen_readable_pwd(
-                    *readable_len, *readable_caps, *readable_digit, *readable_symbol,
+                    *readable_len,
+                    *readable_caps,
+                    *readable_digit,
+                    *readable_symbol,
                 ),
-                PasswordMode::Passphrase => gen_passphrase_pwd(
-                    *phrase_words, &phrase_sep, *phrase_caps, *phrase_digit,
-                ),
+                PasswordMode::Passphrase => {
+                    gen_passphrase_pwd(*phrase_words, &phrase_sep, *phrase_caps, *phrase_digit)
+                }
             };
             storage::set("pwd_result", &pwd);
             result.set(pwd);
@@ -936,7 +1017,11 @@ fn case_tool() -> Html {
         let kind = kind.clone();
         let result = result.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlTextAreaElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlTextAreaElement>()
+                .value();
             storage::set("case_source", &val);
             source.set(val.clone());
             recompute(&val, &kind, &result);
@@ -948,7 +1033,11 @@ fn case_tool() -> Html {
         let kind = kind.clone();
         let result = result.clone();
         Callback::from(move |e: Event| {
-            let val = e.target().unwrap().unchecked_into::<HtmlSelectElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
             storage::set("case_kind", &val);
             kind.set(val.clone());
             recompute(&source, &val, &result);
@@ -1039,9 +1128,20 @@ fn char_name_hint(c: char) -> &'static str {
 fn is_invisible(c: char) -> bool {
     matches!(
         c,
-        '\u{200B}' | '\u{200C}' | '\u{200D}' | '\u{FEFF}' | '\u{00AD}' | '\u{202A}'
-            | '\u{202B}' | '\u{202C}' | '\u{202D}' | '\u{202E}' | '\u{2066}' | '\u{2067}'
-            | '\u{2068}' | '\u{2069}'
+        '\u{200B}'
+            | '\u{200C}'
+            | '\u{200D}'
+            | '\u{FEFF}'
+            | '\u{00AD}'
+            | '\u{202A}'
+            | '\u{202B}'
+            | '\u{202C}'
+            | '\u{202D}'
+            | '\u{202E}'
+            | '\u{2066}'
+            | '\u{2067}'
+            | '\u{2068}'
+            | '\u{2069}'
     )
 }
 
@@ -1130,7 +1230,11 @@ fn unicode_tool() -> Html {
         let form = form.clone();
         let refresh = refresh.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlTextAreaElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlTextAreaElement>()
+                .value();
             storage::set("uni_source", &val);
             source.set(val.clone());
             refresh(&val, &form);
@@ -1142,7 +1246,11 @@ fn unicode_tool() -> Html {
         let form = form.clone();
         let refresh = refresh.clone();
         Callback::from(move |e: Event| {
-            let val = e.target().unwrap().unchecked_into::<HtmlSelectElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
             storage::set("uni_form", &val);
             form.set(val.clone());
             refresh(&source, &val);

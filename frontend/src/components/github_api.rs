@@ -76,7 +76,7 @@ fn load_cached(owner: &str, repo: &str) -> Option<GhRepoInfo> {
     // `age >= 0` guards against a clock that's jumped backwards — if
     // the cache says it was fetched in the future, treat it as stale
     // and re-fetch rather than serving content with a nonsensical age.
-    if age >= 0 && age < CACHE_TTL_SECS {
+    if (0..CACHE_TTL_SECS).contains(&age) {
         Some(cached.data)
     } else {
         None

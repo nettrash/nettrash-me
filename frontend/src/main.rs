@@ -77,11 +77,6 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
-    fn route_time_path() {
-        assert_eq!(Route::Time.to_path(), "/time");
-    }
-
-    #[wasm_bindgen_test]
     fn route_not_found_path() {
         assert_eq!(Route::NotFound.to_path(), "/404");
     }
@@ -102,6 +97,7 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
+    #[allow(clippy::eq_op)] // intentional: verifies PartialEq reflexivity
     fn route_equality() {
         assert_eq!(Route::Home, Route::Home);
         assert_ne!(Route::Home, Route::Math);
@@ -120,7 +116,8 @@ mod tests {
         let _ = switch(Route::Home);
         let _ = switch(Route::Math);
         let _ = switch(Route::Text);
-        let _ = switch(Route::Time);
+        let _ = switch(Route::Converters);
+        let _ = switch(Route::Encryption);
         let _ = switch(Route::NotFound);
     }
 }

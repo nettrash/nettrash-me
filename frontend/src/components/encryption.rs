@@ -4,13 +4,11 @@ use blowfish::Blowfish;
 use cbc::cipher::{block_padding::Pkcs7, BlockDecryptMut, BlockEncryptMut, KeyIvInit};
 use des::{Des, TdesEde3};
 use ecdsa::signature::{Signer, Verifier};
-use ed25519_dalek::{
-    SigningKey as Ed25519SigningKey, VerifyingKey as Ed25519VerifyingKey,
-};
+use ed25519_dalek::{SigningKey as Ed25519SigningKey, VerifyingKey as Ed25519VerifyingKey};
+use gloo_timers::future::TimeoutFuture;
 use pkcs8::{DecodePrivateKey, DecodePublicKey, EncodePrivateKey, EncodePublicKey, LineEnding};
 use rsa::{Oaep, Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
 use twofish::Twofish;
-use gloo_timers::future::TimeoutFuture;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::{HtmlSelectElement, HtmlTextAreaElement};
@@ -525,17 +523,14 @@ async fn generate_rsa_keypair_webcrypto(bits: u32) -> Result<(String, String), S
 
     // Build the RsaHashedKeyGenParams
     let algorithm = Object::new();
-    Reflect::set(&algorithm, &"name".into(), &"RSA-OAEP".into())
-        .map_err(|_| "param error")?;
+    Reflect::set(&algorithm, &"name".into(), &"RSA-OAEP".into()).map_err(|_| "param error")?;
     Reflect::set(&algorithm, &"modulusLength".into(), &JsValue::from(bits))
         .map_err(|_| "param error")?;
     // publicExponent = Uint8Array([1, 0, 1])  (65537)
     let pub_exp = Uint8Array::new_with_length(3);
     pub_exp.copy_from(&[1, 0, 1]);
-    Reflect::set(&algorithm, &"publicExponent".into(), &pub_exp)
-        .map_err(|_| "param error")?;
-    Reflect::set(&algorithm, &"hash".into(), &"SHA-256".into())
-        .map_err(|_| "param error")?;
+    Reflect::set(&algorithm, &"publicExponent".into(), &pub_exp).map_err(|_| "param error")?;
+    Reflect::set(&algorithm, &"hash".into(), &"SHA-256".into()).map_err(|_| "param error")?;
 
     let usages = Array::new();
     usages.push(&"encrypt".into());
@@ -616,11 +611,9 @@ fn rsa_encrypt(padding: &str, pub_pem: &str, plaintext: &str) -> Result<String, 
                 .encrypt(&mut rng, padding, data)
                 .map_err(|e| e.to_string())?
         }
-        _ => {
-            pub_key
-                .encrypt(&mut rng, Pkcs1v15Encrypt, data)
-                .map_err(|e| e.to_string())?
-        }
+        _ => pub_key
+            .encrypt(&mut rng, Pkcs1v15Encrypt, data)
+            .map_err(|e| e.to_string())?,
     };
     Ok(hex::encode_upper(ct))
 }
@@ -644,11 +637,9 @@ fn rsa_decrypt(padding: &str, priv_pem: &str, ciphertext_hex: &str) -> Result<St
                 .decrypt(padding, &data)
                 .map_err(|e| e.to_string())?
         }
-        _ => {
-            priv_key
-                .decrypt(Pkcs1v15Encrypt, &data)
-                .map_err(|e| e.to_string())?
-        }
+        _ => priv_key
+            .decrypt(Pkcs1v15Encrypt, &data)
+            .map_err(|e| e.to_string())?,
     };
     String::from_utf8(pt).map_err(|e| e.to_string())
 }
@@ -799,7 +790,7 @@ fn ed25519_encrypt(pub_hex: &str, plaintext: &str) -> Result<String, String> {
     let recipient_x25519 = x25519_dalek::PublicKey::from(recipient_montgomery.to_bytes());
 
     // Ephemeral X25519 keypair
-    let ephemeral_secret = x25519_dalek::StaticSecret::random_from_rng(&mut rand::thread_rng());
+    let ephemeral_secret = x25519_dalek::StaticSecret::random_from_rng(rand::thread_rng());
     let ephemeral_public = x25519_dalek::PublicKey::from(&ephemeral_secret);
 
     // ECDH → shared secret → AES-256 key
@@ -843,8 +834,8 @@ fn ed25519_decrypt(priv_hex: &str, ciphertext_hex: &str) -> Result<String, Strin
     let x25519_secret = x25519_dalek::StaticSecret::from(x25519_bytes);
 
     // Parse: ephemeral_pub (32) ‖ iv (16) ‖ ciphertext
-    let data = hex::decode(ciphertext_hex.trim())
-        .map_err(|e| format!("Invalid ciphertext hex: {e}"))?;
+    let data =
+        hex::decode(ciphertext_hex.trim()).map_err(|e| format!("Invalid ciphertext hex: {e}"))?;
     if data.len() < 49 {
         return Err("Ciphertext too short".into());
     }
@@ -1033,12 +1024,10 @@ fn asymmetric_tool() -> Html {
 // ---------------------------------------------------------------------------
 #[function_component(RsaTool)]
 fn rsa_tool() -> Html {
-    let algorithm = use_state(|| {
-        storage::get("asym_algorithm").unwrap_or_else(|| "rsa2048".to_string())
-    });
-    let padding = use_state(|| {
-        storage::get("asym_padding").unwrap_or_else(|| "oaep_sha256".to_string())
-    });
+    let algorithm =
+        use_state(|| storage::get("asym_algorithm").unwrap_or_else(|| "rsa2048".to_string()));
+    let padding =
+        use_state(|| storage::get("asym_padding").unwrap_or_else(|| "oaep_sha256".to_string()));
     let private_key = use_state(|| storage::get("asym_private_key").unwrap_or_default());
     let public_key = use_state(|| storage::get("asym_public_key").unwrap_or_default());
     let source = use_state(|| storage::get("asym_source").unwrap_or_default());
@@ -1358,18 +1347,20 @@ fn ecdsa_tool() -> Html {
         let source = source.clone();
         let signature = signature.clone();
         let result = result.clone();
-        Callback::from(move |_: MouseEvent| match ecdsa_sign(&curve, &private_key, &source) {
-            Ok(sig) => {
-                storage::set("ecdsa_signature", &sig);
-                signature.set(sig.clone());
-                storage::set("ecdsa_result", &sig);
-                result.set(sig);
-            }
-            Err(e) => {
-                storage::set("ecdsa_result", &e);
-                result.set(e);
-            }
-        })
+        Callback::from(
+            move |_: MouseEvent| match ecdsa_sign(&curve, &private_key, &source) {
+                Ok(sig) => {
+                    storage::set("ecdsa_signature", &sig);
+                    signature.set(sig.clone());
+                    storage::set("ecdsa_result", &sig);
+                    result.set(sig);
+                }
+                Err(e) => {
+                    storage::set("ecdsa_result", &e);
+                    result.set(e);
+                }
+            },
+        )
     };
     let on_verify = {
         let curve = curve.clone();
@@ -1378,8 +1369,7 @@ fn ecdsa_tool() -> Html {
         let signature = signature.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
-            let r =
-                ecdsa_verify(&curve, &public_key, &source, &signature).unwrap_or_else(|e| e);
+            let r = ecdsa_verify(&curve, &public_key, &source, &signature).unwrap_or_else(|e| e);
             storage::set("ecdsa_result", &r);
             result.set(r);
         })
@@ -1569,18 +1559,20 @@ fn ed25519_tool() -> Html {
         let source = source.clone();
         let signature = signature.clone();
         let result = result.clone();
-        Callback::from(move |_: MouseEvent| match ed25519_sign(&private_key, &source) {
-            Ok(sig) => {
-                storage::set("ed25519_signature", &sig);
-                signature.set(sig.clone());
-                storage::set("ed25519_result", &sig);
-                result.set(sig);
-            }
-            Err(e) => {
-                storage::set("ed25519_result", &e);
-                result.set(e);
-            }
-        })
+        Callback::from(
+            move |_: MouseEvent| match ed25519_sign(&private_key, &source) {
+                Ok(sig) => {
+                    storage::set("ed25519_signature", &sig);
+                    signature.set(sig.clone());
+                    storage::set("ed25519_result", &sig);
+                    result.set(sig);
+                }
+                Err(e) => {
+                    storage::set("ed25519_result", &e);
+                    result.set(e);
+                }
+            },
+        )
     };
     let on_verify = {
         let public_key = public_key.clone();
@@ -1706,8 +1698,7 @@ fn ecdh_tool() -> Html {
     let curve = use_state(|| storage::get("ecdh_curve").unwrap_or_else(|| "p256".to_string()));
     let private_key = use_state(|| storage::get("ecdh_private_key").unwrap_or_default());
     let public_key = use_state(|| storage::get("ecdh_public_key").unwrap_or_default());
-    let peer_public_key =
-        use_state(|| storage::get("ecdh_peer_public_key").unwrap_or_default());
+    let peer_public_key = use_state(|| storage::get("ecdh_peer_public_key").unwrap_or_default());
     let result = use_state(|| storage::get("ecdh_result").unwrap_or_default());
 
     let on_curve_change = {
@@ -1796,8 +1787,7 @@ fn ecdh_tool() -> Html {
         let peer_public_key = peer_public_key.clone();
         let result = result.clone();
         Callback::from(move |_: MouseEvent| {
-            let r =
-                ecdh_derive(&curve, &private_key, &peer_public_key).unwrap_or_else(|e| e);
+            let r = ecdh_derive(&curve, &private_key, &peer_public_key).unwrap_or_else(|e| e);
             storage::set("ecdh_result", &r);
             result.set(r);
         })
@@ -1890,8 +1880,7 @@ fn ecdh_tool() -> Html {
 fn x25519_tool() -> Html {
     let private_key = use_state(|| storage::get("x25519_private_key").unwrap_or_default());
     let public_key = use_state(|| storage::get("x25519_public_key").unwrap_or_default());
-    let peer_public_key =
-        use_state(|| storage::get("x25519_peer_public_key").unwrap_or_default());
+    let peer_public_key = use_state(|| storage::get("x25519_peer_public_key").unwrap_or_default());
     let result = use_state(|| storage::get("x25519_result").unwrap_or_default());
 
     let on_private_key_input = {
@@ -2058,8 +2047,7 @@ fn decode_jwt_part(part: &str) -> Result<String, String> {
     let bytes = base64::engine::general_purpose::STANDARD
         .decode(replaced.as_bytes())
         .map_err(|e| format!("Base64 decode error: {}", e))?;
-    let json_str =
-        String::from_utf8(bytes).map_err(|e| format!("UTF-8 error: {}", e))?;
+    let json_str = String::from_utf8(bytes).map_err(|e| format!("UTF-8 error: {}", e))?;
     match js_sys::JSON::parse(&json_str) {
         Ok(obj) => match js_sys::JSON::stringify_with_replacer_and_space(
             &obj,
@@ -2084,7 +2072,11 @@ fn format_timestamp(val: &js_sys::JsString) -> Option<String> {
                 if let Some(ts) = n.as_i64() {
                     let dt = chrono::DateTime::from_timestamp(ts, 0);
                     if let Some(dt) = dt {
-                        notes.push(format!("  {} = {}", field, dt.format("%Y-%m-%d %H:%M:%S UTC")));
+                        notes.push(format!(
+                            "  {} = {}",
+                            field,
+                            dt.format("%Y-%m-%d %H:%M:%S UTC")
+                        ));
                     }
                 }
             }
@@ -2143,9 +2135,7 @@ fn jwt_decoder_tool() -> Html {
 
             let p = match decode_jwt_part(parts[1]) {
                 Ok(s) => {
-                    let annotations = format_timestamp(
-                        &js_sys::JsString::from(s.as_str()),
-                    );
+                    let annotations = format_timestamp(&js_sys::JsString::from(s.as_str()));
                     match annotations {
                         Some(notes) => format!("{}\n\n// Timestamps:\n{}", s, notes),
                         None => s,
@@ -2401,28 +2391,39 @@ fn decode_base32(input: &str) -> Result<Vec<u8>, String> {
     let bytes: Vec<u8> = bits
         .chunks(8)
         .filter(|chunk| chunk.len() == 8)
-        .map(|chunk| {
-            chunk
-                .iter()
-                .fold(0u8, |acc, &bit| (acc << 1) | bit)
-        })
+        .map(|chunk| chunk.iter().fold(0u8, |acc, &bit| (acc << 1) | bit))
         .collect();
     Ok(bytes)
 }
 
-fn generate_totp(secret_b32: &str, time_step: u64, digits: u32, algorithm: &str) -> Result<String, String> {
+fn generate_totp(
+    secret_b32: &str,
+    time_step: u64,
+    digits: u32,
+    algorithm: &str,
+) -> Result<String, String> {
     let key = decode_base32(secret_b32)?;
     let now = js_sys::Date::now() as u64 / 1000;
     let counter = now / time_step;
     generate_hotp_code(&key, counter, digits, algorithm)
 }
 
-fn generate_hotp(secret_b32: &str, counter: u64, digits: u32, algorithm: &str) -> Result<String, String> {
+fn generate_hotp(
+    secret_b32: &str,
+    counter: u64,
+    digits: u32,
+    algorithm: &str,
+) -> Result<String, String> {
     let key = decode_base32(secret_b32)?;
     generate_hotp_code(&key, counter, digits, algorithm)
 }
 
-fn generate_hotp_code(key: &[u8], counter: u64, digits: u32, algorithm: &str) -> Result<String, String> {
+fn generate_hotp_code(
+    key: &[u8],
+    counter: u64,
+    digits: u32,
+    algorithm: &str,
+) -> Result<String, String> {
     use hmac::{Hmac, Mac};
 
     let counter_bytes = counter.to_be_bytes();
@@ -2475,7 +2476,7 @@ fn encode_base32(data: &[u8]) -> String {
         result.push(alphabet[val as usize] as char);
     }
     // Pad to multiple of 8
-    while result.len() % 8 != 0 {
+    while !result.len().is_multiple_of(8) {
         result.push('=');
     }
     result
@@ -2717,19 +2718,29 @@ fn describe_certificate(der: &[u8]) -> Result<String, String> {
     use x509_parser::extensions::ParsedExtension;
     use x509_parser::prelude::*;
 
-    let (_, cert) = X509Certificate::from_der(der).map_err(|e| format!("DER parse error: {}", e))?;
+    let (_, cert) =
+        X509Certificate::from_der(der).map_err(|e| format!("DER parse error: {}", e))?;
     let mut out = String::new();
-    out.push_str(&format!("Type:       X.509 Certificate (v{})\n", cert.version().0 + 1));
+    out.push_str(&format!(
+        "Type:       X.509 Certificate (v{})\n",
+        cert.version().0 + 1
+    ));
     out.push_str(&format!("Subject:    {}\n", cert.subject()));
     out.push_str(&format!("Issuer:     {}\n", cert.issuer()));
     out.push_str(&format!("Serial:     {}\n", cert.raw_serial_as_string()));
     out.push_str(&format!("Not before: {}\n", cert.validity().not_before));
     out.push_str(&format!("Not after:  {}\n", cert.validity().not_after));
-    out.push_str(&format!("Sig algo:   {}\n", cert.signature_algorithm.algorithm));
+    out.push_str(&format!(
+        "Sig algo:   {}\n",
+        cert.signature_algorithm.algorithm
+    ));
 
     let spki = &cert.tbs_certificate.subject_pki;
     out.push_str(&format!("Key algo:   {}\n", spki.algorithm.algorithm));
-    out.push_str(&format!("Key bits:   {}\n", spki.subject_public_key.data.len() * 8));
+    out.push_str(&format!(
+        "Key bits:   {}\n",
+        spki.subject_public_key.data.len() * 8
+    ));
 
     let mut sans: Vec<String> = Vec::new();
     let mut key_usage: Option<String> = None;
@@ -2747,18 +2758,32 @@ fn describe_certificate(der: &[u8]) -> Result<String, String> {
                 key_usage = Some(format!("{:?}", ku));
             }
             ParsedExtension::ExtendedKeyUsage(eku) => {
-                if eku.server_auth { ext_key_usage.push("serverAuth".into()); }
-                if eku.client_auth { ext_key_usage.push("clientAuth".into()); }
-                if eku.code_signing { ext_key_usage.push("codeSigning".into()); }
-                if eku.email_protection { ext_key_usage.push("emailProtection".into()); }
-                if eku.time_stamping { ext_key_usage.push("timeStamping".into()); }
-                if eku.ocsp_signing { ext_key_usage.push("ocspSigning".into()); }
+                if eku.server_auth {
+                    ext_key_usage.push("serverAuth".into());
+                }
+                if eku.client_auth {
+                    ext_key_usage.push("clientAuth".into());
+                }
+                if eku.code_signing {
+                    ext_key_usage.push("codeSigning".into());
+                }
+                if eku.email_protection {
+                    ext_key_usage.push("emailProtection".into());
+                }
+                if eku.time_stamping {
+                    ext_key_usage.push("timeStamping".into());
+                }
+                if eku.ocsp_signing {
+                    ext_key_usage.push("ocspSigning".into());
+                }
             }
             ParsedExtension::BasicConstraints(bc) => {
                 basic = Some(format!(
                     "CA={} pathlen={}",
                     bc.ca,
-                    bc.path_len_constraint.map(|v| v.to_string()).unwrap_or_else(|| "-".into())
+                    bc.path_len_constraint
+                        .map(|v| v.to_string())
+                        .unwrap_or_else(|| "-".into())
                 ));
             }
             _ => {}
@@ -2786,14 +2811,20 @@ fn describe_certificate(der: &[u8]) -> Result<String, String> {
 fn describe_csr(der: &[u8]) -> Result<String, String> {
     use x509_parser::prelude::*;
 
-    let (_, csr) = X509CertificationRequest::from_der(der)
-        .map_err(|e| format!("CSR parse error: {}", e))?;
+    let (_, csr) =
+        X509CertificationRequest::from_der(der).map_err(|e| format!("CSR parse error: {}", e))?;
     let info = &csr.certification_request_info;
     let mut out = String::new();
     out.push_str("Type:       PKCS#10 Certificate Signing Request\n");
     out.push_str(&format!("Subject:    {}\n", info.subject));
-    out.push_str(&format!("Sig algo:   {}\n", csr.signature_algorithm.algorithm));
-    out.push_str(&format!("Key algo:   {}\n", info.subject_pki.algorithm.algorithm));
+    out.push_str(&format!(
+        "Sig algo:   {}\n",
+        csr.signature_algorithm.algorithm
+    ));
+    out.push_str(&format!(
+        "Key algo:   {}\n",
+        info.subject_pki.algorithm.algorithm
+    ));
     out.push_str(&format!(
         "Key bits:   {}\n",
         info.subject_pki.subject_public_key.data.len() * 8
@@ -2809,7 +2840,11 @@ fn x509_tool() -> Html {
     let on_source_input = {
         let source = source.clone();
         Callback::from(move |e: InputEvent| {
-            let val = e.target().unwrap().unchecked_into::<HtmlTextAreaElement>().value();
+            let val = e
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlTextAreaElement>()
+                .value();
             storage::set("x509_source", &val);
             source.set(val);
         })
