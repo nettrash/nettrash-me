@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Exchange — Privacy Policy</title>
+    <meta name="description" content="Privacy policy for the Exchange Android app by nettrash." />
+    <meta name="robots" content="index,follow" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous" />
+    <style>
+        body {
+            font-family: "Roboto", system-ui, -apple-system, sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.65;
+        }
+        main {
+            max-width: 820px;
+            margin: 3rem auto;
+            padding: 2.25rem 2.5rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            font-weight: 300;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        h2 {
+            font-weight: 400;
+            margin-top: 2rem;
+            font-size: 1.25rem;
+        }
+        .meta {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        table {
+            width: 100%;
+            margin: 1rem 0;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #e6e6e6;
+            padding: 0.6rem 0.75rem;
+            vertical-align: top;
+            font-size: 0.95rem;
+        }
+        th {
+            background: #f4f4f4;
+            font-weight: 600;
+            text-align: left;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 0.05rem 0.35rem;
+            border-radius: 3px;
+            font-size: 0.92em;
+            color: #0d3a8a;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #888;
+            font-size: 0.85rem;
+        }
+        a { color: #0d47a1; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Privacy Policy</h1>
+        <p class="meta">
+            <strong>Effective date:</strong> 16 May 2026 &middot;
+            <strong>Applies to:</strong> Exchange — the Android app published by nettrash on Google Play
+            (<code>me.nettrash.exchange</code>), and the same upload-key-signed APK side-loaded from
+            <a href="https://nettrash.me/play/exchange/exchange-latest.apk">nettrash.me/play/exchange/exchange-latest.apk</a>.
+        </p>
+
+        <p>
+            This policy is versioned alongside the app's source code; the most
+            recent commit on <code>main</code> is authoritative.
+        </p>
+
+        <h2>TL;DR</h2>
+        <p>
+            Exchange <strong>does not collect, transmit, sell, or share any
+            personal data</strong>. It contains no analytics, no advertising
+            SDKs, no third-party trackers, and no remote servers operated by
+            us. Your private keys, your recipients, and every message you
+            encrypt or decrypt stay on your device.
+        </p>
+        <p>If that already answers your question, you don't need to read the rest.</p>
+
+        <h2>What Exchange does</h2>
+        <p>
+            Exchange is an end-to-end encryption tool. You type a message,
+            pick a recipient whose public key you have on file, and the app
+            hands back a single base64 line — the <code>EXC2:</code>
+            envelope. You paste that line into whichever messenger you
+            already use (Signal, Telegram, WhatsApp, SMS, e-mail, anything
+            that carries text). Only the recipient can read it; the
+            signature proves it came from you. Decryption works the same
+            way in reverse: paste an envelope you received, see the
+            plaintext.
+        </p>
+        <p>
+            Exchange does not send messages itself. The carrier app you
+            paste into is the one that handles delivery; Exchange is never
+            in the loop.
+        </p>
+
+        <h2>What we collect</h2>
+        <p>
+            <strong>Nothing.</strong> Exchange does not transmit any data
+            about you to us or to any third party. There is no account to
+            create, no email to register, and no telemetry pinging home from
+            the app.
+        </p>
+        <p>
+            <strong>The app does not even request the
+            <code>android.permission.INTERNET</code> permission.</strong> It
+            cannot open a socket. Every byte that leaves the app does so
+            because you, the user, told a different app (your messenger,
+            mail client, browser) to carry it.
+        </p>
+        <p>
+            The cryptographic primitives Exchange uses
+            (Curve25519 X25519 / Ed25519, ChaCha20-Poly1305, HKDF-SHA256,
+            PBKDF2-HMAC-SHA256) are provided by the bundled BouncyCastle
+            library and run entirely on-device. Random bytes come from the
+            Android system <code>SecureRandom</code>. QR-code generation
+            and decoding use ZXing, also on-device.
+        </p>
+
+        <h2>Data stored on your device</h2>
+        <p>
+            Exchange keeps two pieces of state, both strictly local to your
+            device:
+        </p>
+        <ul>
+            <li>
+                <strong>Your identity</strong> — a 64-byte private-key blob
+                (32 bytes of X25519 + 32 bytes of Ed25519). It is wrapped
+                under an AES-256/GCM key generated inside the
+                <strong>Android Keystore</strong>, which on supported
+                hardware sits inside the TEE (Trusted Execution Environment)
+                or StrongBox. The wrapped ciphertext lives in the app's
+                private <code>exchange.identity.v1</code> SharedPreferences
+                file. Even a forensic dump of the device's user partition
+                yields ciphertext only — without arbitrary code execution
+                on the device, the underlying keys cannot be lifted.
+            </li>
+            <li>
+                <strong>Your recipient list</strong> — a local SQLite
+                database managed by Android's Room library at
+                <code>/data/data/me.nettrash.exchange/databases/exchange.db</code>.
+                Each row contains the display name you assigned, the
+                contact's two public keys, an 8-byte fingerprint derived
+                from those keys, your free-form notes, and a creation
+                timestamp. On a non-rooted device, no other app can read it.
+            </li>
+        </ul>
+        <p>
+            <strong>Auto Backup is disabled</strong>
+            (<code>android:allowBackup="false"</code>) and the
+            <code>data_extraction_rules.xml</code> file additionally
+            excludes every storage domain (files, databases,
+            shared-preferences, external storage, root). The identity and
+            recipient database <em>cannot</em> leave the device via any
+            Google-managed backup, device-transfer, or restore channel.
+        </p>
+        <p>
+            If you want to move your identity to another device, Exchange
+            offers two explicit, end-to-end-encrypted paths — see
+            <em>Backup &amp; transfer</em> below.
+        </p>
+        <p>Deleting the app, or clearing its storage from
+            <em>Settings → Apps → Exchange → Storage</em>, removes
+            everything Exchange has ever written: the identity blob, the
+            Keystore wrapping key, and the recipient database.
+        </p>
+
+        <h2>Backup &amp; transfer</h2>
+        <p>
+            Both flows below produce ciphertext that you, and only you,
+            can decrypt. Neither involves any server, and neither leaves
+            the device automatically.
+        </p>
+        <ul>
+            <li>
+                <strong>Passphrase backup</strong>
+                (<code>EXCBKP1:&lt;base64&gt;</code>). Your identity and
+                your recipient list are JSON-serialised, AEAD-encrypted
+                with ChaCha20-Poly1305 under a key derived from your
+                passphrase via 600,000 iterations of PBKDF2-HMAC-SHA256,
+                and emitted as one base64 line. Save the line wherever
+                you keep your other secrets (a password manager works
+                well); paste it back into <em>Settings → Import identity
+                </em> on a future device. There is no way for us — or
+                anyone else — to decrypt the blob without your passphrase.
+            </li>
+            <li>
+                <strong>In-person identity QR</strong>
+                (<code>EXCQR1:&lt;base64&gt;</code>). For two devices you
+                physically hold at the same time, Exchange can render the
+                identity blob as a QR code encrypted under a fresh
+                32-byte symmetric key that is embedded in the QR itself.
+                The receiving phone's camera reads it once, decrypts, and
+                overwrites its local identity after you confirm the
+                fingerprint matches. The QR is the secret; keep it
+                visible only to the second device.
+            </li>
+        </ul>
+
+        <h2>Permissions Exchange asks for, and what each one is used for</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Permission</th>
+                    <th>Used for</th>
+                    <th>Scope</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Camera</strong> (<code>android.permission.CAMERA</code>)</td>
+                    <td>
+                        Scanning QR codes — either a contact's public key
+                        bundle (when adding a recipient) or an identity
+                        transfer QR (when receiving an identity from your
+                        other device).
+                    </td>
+                    <td>
+                        Frames are decoded on-device by ZXing. Nothing is
+                        recorded; no image is written to disk; nothing is
+                        transmitted.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>Several familiar permissions are <em>not</em> requested:</p>
+        <ul>
+            <li>
+                <strong>Internet</strong>
+                (<code>android.permission.INTERNET</code>) — not declared.
+                The app cannot open a socket. Every smart action that
+                opens a URL is delegated to the system, which launches
+                your browser; the network request is performed by the
+                browser, not by Exchange.
+            </li>
+            <li>
+                <code>READ_CONTACTS</code> / <code>WRITE_CONTACTS</code> —
+                Exchange does not read or write your address book. The
+                recipient list is internal to the app.
+            </li>
+            <li>
+                <code>READ_MEDIA_IMAGES</code> /
+                <code>READ_EXTERNAL_STORAGE</code> — Exchange does not
+                import pictures or scan QRs from your photo library; QR
+                codes are read live through the camera.
+            </li>
+            <li>
+                <code>ACCESS_FINE_LOCATION</code> /
+                <code>ACCESS_COARSE_LOCATION</code> — never requested.
+                Exchange has no use for your location.
+            </li>
+        </ul>
+
+        <h2>Share-to-Exchange and deep links</h2>
+        <p>
+            Beyond pasting into the Decrypt screen by hand, Exchange can
+            receive envelopes through Android's normal sharing surfaces:
+        </p>
+        <ul>
+            <li>
+                <strong>Share Sheet</strong>
+                (<code>ACTION_SEND</code> with <code>text/plain</code>).
+                When you long-press an <code>EXC2:</code> line in any
+                messenger and choose <em>Share → Exchange</em>, the system
+                passes the text to Exchange. The text is held in memory,
+                decrypted with your identity, and shown on the Decrypt
+                screen. Nothing is persisted unless you copy the
+                plaintext out.
+            </li>
+            <li>
+                <strong>App Links</strong>
+                (<code>https://exchange.nettrash.me/msg?p=&hellip;</code>
+                and the <code>exc2://&hellip;</code> custom scheme). Tap
+                such a link and Android opens Exchange directly with the
+                envelope pre-loaded for decryption. The system intent
+                verifier confirms the link belongs to Exchange by fetching
+                <code>https://exchange.nettrash.me/.well-known/assetlinks.json</code>
+                on install — that fetch is performed by Play Services, not
+                by Exchange.
+            </li>
+        </ul>
+
+        <h2>Third-party services</h2>
+        <p>
+            <strong>None operating off the device.</strong> Exchange ships
+            with the BouncyCastle cryptographic library, the ZXing QR
+            library, the Jetpack libraries (Compose, Material 3, Room,
+            CameraX, Navigation, DataStore), and the Google Android
+            Material Components library — solely for the splash-window
+            theme. None of them contact the network at runtime in this
+            app. There are no analytics tools (Firebase, Mixpanel,
+            Sentry, etc.), no advertising SDKs (AdMob, Meta, AppLovin,
+            etc.), no crash reporters that phone home, and no attribution
+            providers.
+        </p>
+        <p>
+            Specifically, the <strong>Google Advertising ID</strong> is
+            <strong>not</strong> requested, accessed, or used. Exchange
+            declares this on its Google Play Data Safety form.
+        </p>
+
+        <h2>Tracking</h2>
+        <p>
+            Exchange does not "track" you in any sense Google Play
+            recognises in its Data Safety taxonomy: it does not link any
+            data collected in the app with data from other apps,
+            websites, or offline sources to build a user profile, and it
+            does not share any data with data brokers. Exchange is
+            therefore declared with <strong>Data not collected</strong>
+            and <strong>Data not shared</strong> on its Google Play Data
+            Safety form.
+        </p>
+
+        <h2>Children's privacy</h2>
+        <p>
+            Exchange is rated for general audiences (Everyone / PEGI 3)
+            and is suitable for all ages. We do not knowingly collect
+            personal information from children, because we do not collect
+            personal information from anyone. Exchange is not a member of
+            Google's Designed for Families programme — the app is a
+            general-purpose utility, not directed at children under 13.
+        </p>
+
+        <h2>International data transfers</h2>
+        <p>
+            Because Exchange does not transmit personal data anywhere,
+            there are no cross-border transfers to disclose under the
+            GDPR, UK GDPR, CCPA, LGPD, or similar regimes.
+        </p>
+
+        <h2>Your rights</h2>
+        <p>Because we hold no data about you:</p>
+        <ul>
+            <li>There is <strong>no record to access</strong> under GDPR Article 15 / CCPA "right to know".</li>
+            <li>There is <strong>no record to delete</strong> under GDPR Article 17 / CCPA "right to delete" (the local identity and recipient database are yours alone — clearing the app's storage or uninstalling the app removes them entirely).</li>
+            <li>There is <strong>no record to correct</strong> under GDPR Article 16.</li>
+            <li>There is <strong>nothing being sold or shared</strong> under CCPA / CPRA, so no opt-out is required.</li>
+        </ul>
+        <p>
+            If you'd like confirmation in writing that we hold no data
+            about you, email the address below and we will reply.
+        </p>
+
+        <h2>Cryptographic protocol</h2>
+        <p>
+            The on-the-wire envelope format (<code>EXC2</code>), the
+            passphrase backup format (<code>EXCBKP1</code>), and the
+            identity-transfer QR format (<code>EXCQR1</code>) are fully
+            specified and open. They are byte-compatible with the iOS
+            Exchange app of the same name. The reference implementation
+            and its property-based test suite are published under the MIT
+            licence at
+            <a href="https://github.com/nettrash/exchange-android">github.com/nettrash/exchange-android</a>
+            and
+            <a href="https://github.com/nettrash/exchange-ios">github.com/nettrash/exchange-ios</a>.
+        </p>
+
+        <h2>Changes to this policy</h2>
+        <p>
+            If a future version of Exchange ever changes any of the above
+            — adds analytics, integrates a third-party SDK, transmits
+            data off-device, or requests new permissions — this document
+            will be updated <em>in the same release</em> and the
+            <strong>Effective date</strong> at the top will be bumped.
+            The full history is visible in the project's
+            <code>git log</code> on GitHub:
+            <a href="https://github.com/nettrash/exchange-android/commits/main">github.com/nettrash/exchange-android/commits/main</a>.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+            For privacy questions, please email
+            <a href="mailto:nettrash@nettrash.me">nettrash@nettrash.me</a>.
+        </p>
+
+        <footer>
+            <a href="https://nettrash.me/">← nettrash.me</a>
+        </footer>
+    </main>
+</body>
+</html>
