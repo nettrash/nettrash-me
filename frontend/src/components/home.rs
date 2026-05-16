@@ -845,6 +845,11 @@ fn play_tab() -> Html {
                                    download="scan-latest.apk">
                                     { "Download APK" }
                                 </a>
+                                <a href="https://play.google.com/apps/testing/me.nettrash.scan"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-outline-success">
+                                    { "Join test" }
+                                </a>
                                 <a href="https://github.com/nettrash/Scan.Android" target="_blank"
                                    rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
