@@ -835,6 +835,12 @@ fn play_tab() -> Html {
                                    class="btn btn-sm btn-success">
                                     { "Get it on Google Play" }
                                 </a>
+                                <a href="/play/exchange/exchange-latest.apk"
+                                   rel="noopener noreferrer"
+                                   class="btn btn-sm btn-outline-success"
+                                   download="exchange-latest.apk">
+                                    { "Download APK" }
+                                </a>
                                 <a href="https://play.google.com/apps/testing/me.nettrash.exchange"
                                    target="_blank" rel="noopener noreferrer"
                                    class="btn btn-sm btn-outline-success">
@@ -857,6 +863,13 @@ fn play_tab() -> Html {
                                 </a>
                                 <span class="badge bg-light text-dark">{ "Free" }</span>
                             </div>
+                            <p class="text-muted small mt-2 mb-0" style="font-size:0.78em;">
+                                { "APK is for users who can't wait for the next Play \
+                                   rollout. Enable \"Install from unknown sources\" for \
+                                   your browser, install, and Android will keep it up \
+                                   to date the next time it sees the same package on \
+                                   Play. Same upload key as the Play build." }
+                            </p>
                         </div>
                     </div>
                 </div>
