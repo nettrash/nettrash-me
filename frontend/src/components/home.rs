@@ -674,6 +674,60 @@ fn app_store_tab() -> Html {
                     </div>
                 </div>
 
+                // Geo
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="geo-icon.png"
+                             alt="Geo app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://apps.apple.com/us/app/nettrash-geo/id6745029130"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "Geo" }
+                                </a>
+                                <span class="badge bg-info ms-2" style="font-size:0.7em;">{ "iOS" }</span>
+                                <span class="badge bg-secondary ms-1" style="font-size:0.7em;">{ "watchOS" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "A mountain companion for the outdoors, with an Apple Watch \
+                                   companion. A map of where you stand, an augmented-reality view \
+                                   that labels the peaks around you straight through the camera, a \
+                                   \"Nearby\" list of named summits pulled from OpenStreetMap with \
+                                   distance and bearing, and a barometer-driven altitude graph \
+                                   that syncs across your devices via iCloud. Location and sensors \
+                                   are read on-device; the only network calls are map tiles and an \
+                                   anonymous nearby-peaks query. No accounts. No ads. No trackers." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://apps.apple.com/us/app/nettrash-geo/id6745029130"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-dark">
+                                    { "Download on the App Store" }
+                                </a>
+                                <a href="https://github.com/nettrash/Geo" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/geo/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/geo/support.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Support" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     }
@@ -925,6 +979,76 @@ fn play_tab() -> Html {
                                     { "Source" }
                                 </a>
                                 <a href="https://nettrash.me/play/scan/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                            <p class="text-muted small mt-2 mb-0" style="font-size:0.78em;">
+                                { "APK is for users who can't wait for the next Play \
+                                   rollout. Enable \"Install from unknown sources\" for \
+                                   your browser, install, and Android will keep it up \
+                                   to date the next time it sees the same package on \
+                                   Play. Same upload key as the Play build." }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                // Geo.Android
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="geo-android-icon.png"
+                             alt="Geo for Android app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://play.google.com/store/apps/details?id=me.nettrash.geo"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "Geo" }
+                                </a>
+                                <span class="badge bg-success ms-2" style="font-size:0.7em;">{ "Android" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "A mountain companion for the outdoors. A map of where you \
+                                   stand, an augmented-reality view that labels the peaks around \
+                                   you straight through the camera, a \"Nearby\" list of named \
+                                   summits pulled from OpenStreetMap with distance and bearing, \
+                                   and a barometer-driven altitude graph with a home-screen \
+                                   widget. Location and sensors are read on-device; the only \
+                                   network calls are map tiles and an anonymous nearby-peaks \
+                                   query. No accounts. No ads. No trackers." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://play.google.com/store/apps/details?id=me.nettrash.geo"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-success">
+                                    { "Get it on Google Play" }
+                                </a>
+                                // Direct APK side-load — exists because Google's
+                                // closed-testing-then-production rollout makes new
+                                // builds slow to land on Play. Same signed artefact
+                                // as the Play upload (see assets/play/geo/README.md).
+                                <a href="/play/geo/geo-latest.apk"
+                                   rel="noopener noreferrer"
+                                   class="btn btn-sm btn-outline-success"
+                                   download="geo-latest.apk">
+                                    { "Download APK" }
+                                </a>
+                                <a href="https://play.google.com/apps/testing/me.nettrash.geo"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-outline-success">
+                                    { "Join test" }
+                                </a>
+                                <a href="https://github.com/nettrash/Geo.Android" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/play/geo/privacy.html"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
                                     { "Privacy" }
