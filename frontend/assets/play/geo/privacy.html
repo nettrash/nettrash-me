@@ -29,7 +29,7 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Effective date:</strong> 28 April 2026 &middot;
+            <strong>Effective date:</strong> 17 June 2026 &middot;
             <strong>Applies to:</strong> Geo — the Android app published by nettrash on Google Play
             (<code>me.nettrash.geo</code>).
         </p>
@@ -38,7 +38,7 @@
 
         <h2>TL;DR</h2>
         <p>
-            Geo doesn't collect any personal information about you, doesn't create accounts, and doesn't use analytics, advertising, or trackers. The only data that ever leaves your device is what's necessary to render the things you ask the app to render: a few network requests to display the map, and an approximate-location query to OpenStreetMap when the app looks up nearby mountain peaks. Nothing is sent to servers operated by us — we have no servers.
+            Geo doesn't collect any personal information about you, doesn't create accounts, and doesn't use analytics, advertising, or trackers. The only data that ever leaves your device is what's necessary to render the things you ask the app to render: a few network requests to display the map, plus approximate-location queries to OpenStreetMap and Open-Meteo when the app looks up nearby peaks, the terrain skyline and the local reference pressure. Nothing is sent to servers operated by us — we have no servers, and everything you record stays on your device.
         </p>
 
         <h2>What the app accesses, and what each access does</h2>
@@ -48,20 +48,24 @@
         </p>
         <ol>
             <li>Show your current position on the in-app map.</li>
-            <li>Compute distances and bearings to known peaks for the AR view and the "Nearby" list.</li>
-            <li>Build the Overpass API query described below.</li>
+            <li>Compute distances, bearings and the true-north compass arrow to known peaks for the AR view, the "Nearby" list and the summit-log proximity check.</li>
+            <li>De-trend the barometric storm-warning tendency by altitude (so a climb isn't mistaken for a pressure drop).</li>
+            <li>Build the Overpass and Open-Meteo queries described below.</li>
         </ol>
-
         <p>
-            <strong>Background location</strong> (<code>ACCESS_BACKGROUND_LOCATION</code>) — declared so a future home-screen widget can refresh while the app is closed. <strong>At present the app does not use it for any active background polling.</strong> If a future release adds a background location-driven feature, this policy will be updated in the same release and the <em>Effective date</em> will move.
+            Geo uses location only while the app is in the foreground; it does <strong>not</strong> request <code>ACCESS_BACKGROUND_LOCATION</code> and does no background location polling.
         </p>
 
         <p>
-            <strong>Camera</strong> (<code>CAMERA</code>) — used by the AR view to overlay peak names on the camera feed. Frames are processed entirely on-device by ARCore; nothing is recorded or transmitted.
+            <strong>Camera</strong> (<code>CAMERA</code>) — used by the Nature (AR) view to overlay peak names on the camera feed and to capture the optional freeze-frame share image. Frames are processed entirely on-device by ARCore; nothing is recorded or transmitted, and the share image is created on-device and only leaves the app if you pick a destination in the Android share sheet.
         </p>
 
         <p>
-            <strong>High-rate sensors</strong> (<code>HIGH_SAMPLING_RATE_SENSORS</code>) — used to read the device's barometer and orientation sensors at the rate ARCore needs to keep peak labels stable on the camera. Sensor values stay on the device.
+            <strong>High-rate sensors</strong> (<code>HIGH_SAMPLING_RATE_SENSORS</code>) — used to read the device's barometer and orientation sensors at the rate ARCore needs to keep peak labels stable on the camera, and to drive the altimeter, trip recorder and storm-warning tendency. Sensor values stay on the device.
+        </p>
+
+        <p>
+            <strong>Notifications</strong> (<code>POST_NOTIFICATIONS</code>, Android 13+) — requested at first launch so Geo can post a single <em>local</em> "pressure falling fast" storm-warning advisory (on a dedicated <code>weather_alerts</code> channel) when the barometer drops sharply. These notifications are raised on the device by the app itself — there is no push server and no device token leaves the phone. Denying the permission simply disables the advisory; nothing else changes. There are no marketing or remote notifications.
         </p>
 
         <p>
@@ -71,7 +75,11 @@
         <h2>What goes over the network</h2>
 
         <p>
-            <strong>OpenStreetMap Overpass API</strong> (<code>https://overpass-api.de/api/interpreter</code>). When you open the Nature tab, the app sends an HTTPS request containing your approximate latitude/longitude and a search radius (typically 25–50 km) to fetch the list of nodes tagged <code>natural=peak</code> near you. The request body contains <em>only</em> those coordinates and the radius — no device identifiers, no Advertising ID, no account information. The Overpass API is a free, public service hosted by OpenStreetMap volunteers and governed by the <a href="https://osmfoundation.org/wiki/Privacy_Policy">OpenStreetMap Foundation Privacy Policy</a>.
+            <strong>OpenStreetMap Overpass API</strong> (<code>https://overpass-api.de/api/interpreter</code>). When you open the Nature tab, the app sends an HTTPS request containing your approximate latitude/longitude (quantised to a ~110&nbsp;m grid) and a 5&nbsp;km search radius to fetch the list of nodes tagged <code>natural=peak</code> near you. The request body contains <em>only</em> those coordinates and the radius — no device identifiers, no Advertising ID, no account information. Downloading an <em>offline expedition pack</em> issues the same kind of query once for the area you frame, at the radius you choose (5&nbsp;/&nbsp;10&nbsp;/&nbsp;50&nbsp;/&nbsp;100&nbsp;km). The Overpass API is a free, public service hosted by OpenStreetMap volunteers and governed by the <a href="https://osmfoundation.org/wiki/Privacy_Policy">OpenStreetMap Foundation Privacy Policy</a>.
+        </p>
+
+        <p>
+            <strong>Open-Meteo API</strong> (<code>https://api.open-meteo.com</code>). The Nature/AR view fetches terrain elevation (<code>/v1/elevation</code>) to draw the horizon skyline, and the barometer card fetches the local reference pressure / QNH (<code>/v1/forecast</code>) to calibrate altitude. Each request sends only approximate latitude/longitude (rounded to a ~110&nbsp;m grid) — no device identifiers, no Advertising ID, no account information. Downloading an offline expedition pack fetches the area's terrain elevation grid the same way so the skyline works with no signal. Open-Meteo is a free, open API; its handling is governed by the <a href="https://open-meteo.com/en/terms">Open-Meteo Terms</a>. (Earlier versions used the Open-Elevation endpoint, which was frequently unavailable; 1.1 moved to Open-Meteo for reliability.)
         </p>
 
         <p>
@@ -79,20 +87,30 @@
         </p>
 
         <p>
-            That's the entire list. There are no other servers contacted. There is no telemetry, no crash reporter, no advertising network, no attribution provider, no remote analytics.
+            That's the entire list. There are no other servers contacted. There is no telemetry, no crash reporter, no advertising network, no attribution provider, no remote analytics. The Sun panel's solar times are computed on-device with the NOAA algorithm and need no network.
         </p>
 
         <h2>Data stored on your device</h2>
         <p>
-            <strong>Pressure history</strong> — the device's barometer is sampled periodically and the readings are stored in a local Room database (<code>/data/data/me.nettrash.geo/databases/geo_database</code>) so the Stat tab and the home-screen widget can show altitude trends. This data never leaves the device, is not synced anywhere, and is removed when you uninstall the app or clear its storage in <em>Settings → Apps → Geo → Storage</em>.
+            <strong>Altitude / pressure history, trips and summits</strong> — the device's barometer is sampled periodically and the readings, together with the positions where they were taken, are stored in a local Room database (<code>/data/data/me.nettrash.geo/databases/geo_database</code>) so the Stat tab and the home-screen widget can show altitude trends, trip profiles and your logged ascents. <strong>This data never leaves the device and is not synced anywhere.</strong> History older than ~1 year is pruned automatically, a <em>Clear history</em> action on the Stat tab removes it on demand, and uninstalling the app or clearing its storage in <em>Settings → Apps → Geo → Storage</em> removes it entirely. A logged summit stores only the <em>peak's</em> public location and elevation plus your measured altitude and any note — never a track of where you actually were.
         </p>
         <p>
-            System Auto Backup is governed by <code>backup_rules.xml</code> in the app and is configured to back up nothing app-specific, so the local database is not mirrored to your Google Drive.
+            <strong>Offline expedition packs</strong> — the cached OpenStreetMap peaks and terrain-elevation (DEM) cells for an area you downloaded are stored as local files so the Nature (AR) view keeps working with no signal. Map tiles are <em>not</em> cached (Google Maps licensing). This cache is purely local; deleting a pack in the app, or uninstalling, removes it.
+        </p>
+        <p>
+            <strong>Known-elevation calibration</strong> — when you pin the altimeter to a marked elevation ("I am at X&nbsp;m"), the resulting reference pressure is stored in the app's DataStore so the home-screen widget and the background worker agree with the app. It contains no location and decays back to the live network value after a few hours.
+        </p>
+        <p>
+            <strong>System Auto Backup</strong> is governed by <code>backup_rules.xml</code> in the app and is configured to back up nothing app-specific, so the local database is not mirrored to your Google Drive.
+        </p>
+        <p>
+            The Wear OS companion stores its own pressure-history snapshot locally on the watch and exchanges it with the phone over the Wearable Data Layer when the two are paired; it is not synced to any server.
         </p>
 
         <h2>Permissions Geo does NOT request</h2>
         <p>Listing them explicitly because the negatives matter as much as the positives:</p>
         <ul>
+            <li><code>ACCESS_BACKGROUND_LOCATION</code> (the app does no background location polling)</li>
             <li><code>READ_CONTACTS</code>, <code>WRITE_CONTACTS</code></li>
             <li><code>READ_CALENDAR</code>, <code>WRITE_CALENDAR</code></li>
             <li><code>READ_MEDIA_IMAGES</code>, <code>READ_MEDIA_VIDEO</code></li>
@@ -109,7 +127,8 @@
             </thead>
             <tbody>
                 <tr><td>Google Maps SDK for Android</td><td>Coarse position + viewport requests for tile rendering</td><td>Google's</td></tr>
-                <tr><td>OpenStreetMap Overpass API</td><td>Approximate coordinates + search radius</td><td>OpenStreetMap Foundation's</td></tr>
+                <tr><td>OpenStreetMap Overpass API</td><td>~110&nbsp;m-quantised coordinates + search radius (5&nbsp;km live, up to 100&nbsp;km for an offline pack)</td><td>OpenStreetMap Foundation's</td></tr>
+                <tr><td>Open-Meteo API</td><td>~110&nbsp;m-quantised coordinates for terrain elevation + reference pressure (QNH)</td><td>Open-Meteo's</td></tr>
                 <tr><td>Google ARCore</td><td>Camera frames + IMU data, <strong>on-device only</strong></td><td>Google's</td></tr>
             </tbody>
         </table>
@@ -119,7 +138,7 @@
         </p>
 
         <p>
-            Geo declares <strong>Data not collected</strong> and <strong>Data not shared</strong> on its Google Play Data Safety form. The Overpass / Maps requests don't qualify as "collection" in Play's taxonomy because the requests are made by the app on your behalf to render features you asked for; the destinations don't operate as data brokers and the data isn't combined with other data sources to build a user profile.
+            Geo declares <strong>Data not collected</strong> and <strong>Data not shared</strong> on its Google Play Data Safety form. The Overpass / Open-Meteo / Maps requests don't qualify as "collection" in Play's taxonomy because the requests are made by the app on your behalf to render features you asked for; the destinations don't operate as data brokers and the data isn't combined with other data sources to build a user profile.
         </p>
 
         <h2>Children's privacy</h2>
@@ -129,14 +148,14 @@
 
         <h2>International data transfers</h2>
         <p>
-            The Overpass API and Google Maps endpoints are global services; requests may transit servers in any country. The data sent (coordinates + radius for Overpass, map-viewport requests for Maps) does not contain personal data under GDPR Article 4(1) when used in this app — it's not combined with any identifier we hold.
+            The Overpass, Open-Meteo and Google Maps endpoints are global services; requests may transit servers in any country. The data sent (quantised coordinates + radius for Overpass / Open-Meteo, map-viewport requests for Maps) does not contain personal data under GDPR Article 4(1) when used in this app — it's not combined with any identifier we hold.
         </p>
 
         <h2>Your rights</h2>
         <p>Because we hold no data about you:</p>
         <ul>
             <li>There is no record to access under GDPR Article 15 / CCPA "right to know".</li>
-            <li>There is no record to delete under GDPR Article 17 / CCPA "right to delete" (the local database is yours alone — clearing the app's storage or uninstalling removes it entirely).</li>
+            <li>There is no record to delete under GDPR Article 17 / CCPA "right to delete" — the local database (history, trips, summits) is yours alone; clearing the app's storage or uninstalling removes it entirely, and <em>Clear history</em> removes it from inside the app.</li>
             <li>There is no record to correct under GDPR Article 16.</li>
             <li>There is nothing being sold or shared under CCPA / CPRA, so no opt-out is required.</li>
         </ul>
@@ -151,7 +170,8 @@
 
         <h2>Contact</h2>
         <p>
-            Privacy questions: <a href="mailto:nettrash@nettrash.me">nettrash@nettrash.me</a>.
+            Privacy questions: <a href="mailto:nettrash@nettrash.me?subject=Geo%20privacy">nettrash@nettrash.me</a>.
+            For day-to-day support, see the <a href="support.html">Geo support page</a>.
         </p>
 
         <footer>

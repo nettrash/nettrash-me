@@ -34,7 +34,7 @@
         </p>
 
         <p class="lede">
-            Geo is a hiking instrument: live altitude, atmospheric pressure, and an augmented-reality view that names the mountains around you. This page covers the most common questions; if you don't find the answer, the email link at the bottom reaches a human.
+            Geo is a hiking instrument: live altitude, atmospheric pressure, a storm-warning barometer, an offline-capable augmented-reality view that names the mountains around you, plus a trip recorder and a summit log. This page covers the most common questions; if you don't find the answer, the email link at the bottom reaches a human.
         </p>
 
         <h2>Get in touch</h2>
@@ -51,22 +51,57 @@
             Geo reads altitude from the iPhone's barometric pressure sensor (<code>CMAltimeter</code>), which is gated by the system's <strong>Motion &amp; Fitness</strong> permission. Open <em>Settings → Privacy &amp; Security → Motion &amp; Fitness</em> and make sure Geo is enabled. iPhone models without a barometric sensor (e.g.&nbsp;the original iPhone&nbsp;SE) can't show barometric altitude; the GPS altitude reading is still shown when Location is granted.
         </p>
 
+        <h3>The altitude is off by tens of metres. Can I fix it?</h3>
+        <p>
+            Yes — barometric altitude drifts with the weather, so 1.1 adds <strong>known-elevation calibration</strong>. When you're at a point with a known height (a trailhead sign, a summit marker, a benchmark), tap the barometer card on the Info tab and enter "I am at X&nbsp;m". Geo pins the altimeter to that value instantly — no network needed — and shows a green <strong>calibrated</strong> badge. The pin gently decays over about six hours as the weather drifts and then reverts to the system reading, so a stale calibration can't silently bias your altitude. The calibrated value is shared with the home-screen widget so they always agree.
+        </p>
+
+        <h3>What is the "pressure falling fast" notification?</h3>
+        <p>
+            That's the <strong>storm warning</strong> — the classic mountaineering/sailing use of a barometer. Geo watches the 3-hour pressure tendency (corrected for any altitude you've gained, so a climb doesn't false-trigger it) and sends a single local notification when pressure drops sharply, which often precedes deteriorating weather. It alerts at most once per onset. To receive it, allow notifications when Geo first asks, or enable them later in <em>Settings → Geo → Notifications</em>; denying them just turns the advisory off. A live 3-hour trend chip also appears on the Info barometer card. Because background timing is throttled by iOS, treat the alert as best-effort, not a guarantee.
+        </p>
+
         <h3>Why are no peaks shown in the AR view?</h3>
         <p>
-            Peaks are looked up from Apple Maps and OpenStreetMap, both of which need network access. The AR view also assumes the camera has line of sight to the actual sky — pointing it at an interior wall will show the camera feed and a "Scanning" indicator but no peak labels. If you're indoors, point the camera out a window or step outside; if your area genuinely has no catalogued peaks within the 5&nbsp;km search radius, the view shows the horizon line by itself.
+            Peaks are looked up from OpenStreetMap, which needs network access. The Nature (AR) view also assumes the camera has line of sight to the actual sky — pointing it at an interior wall will show the camera feed and a "Scanning" indicator but no peak labels. If you're indoors, point the camera out a window or step outside. If your area genuinely has no catalogued peaks within the 5&nbsp;km search radius, the view shows the horizon line by itself. Heading somewhere with no signal? See offline expedition packs below.
+        </p>
+
+        <h3>How do offline expedition packs work?</h3>
+        <p>
+            Before you lose signal, pre-cache an area so the Nature (AR) view keeps naming peaks and drawing the terrain skyline on a no-signal summit. From the <strong>Info tab → "Manage offline areas"</strong> (or the <strong>Map tab</strong>, using the "Download a region" mode to frame an area on the map), download the area around a location at a 5&nbsp;/&nbsp;10&nbsp;/&nbsp;50&nbsp;/&nbsp;100&nbsp;km radius. Geo fetches that area's named peaks and the terrain elevation grid and stores them on-device; offline, those peaks and the skyline resolve from the cache with no live calls. Saved packs list their peak/cell counts and date, can be named and renamed, and are shown as circles on the Map tab. <strong>Map tiles aren't cached</strong> (Apple MapKit licensing), so the basemap still needs a connection — only the AR peaks and skyline work fully offline. Delete a pack any time from the same screen.
         </p>
 
         <h3>Why is the horizon line cyan instead of green?</h3>
         <p>
-            The green skyline is drawn from real terrain elevation data fetched from a public elevation database. When that database is briefly unreachable (slow network, the service is down), Geo falls back to a geometric sea-level horizon, drawn in cyan. Both track your camera correctly; the difference is how realistic the line is over distant mountains.
+            The green skyline is drawn from real terrain elevation data fetched from the Open-Meteo elevation API. When that service is briefly unreachable (slow network, the service is down) and you don't have an offline pack covering the area, Geo falls back to a geometric sea-level horizon, drawn in cyan. Both track your camera correctly; the difference is how realistic the line is over distant mountains. (1.1 switched the elevation source to Open-Meteo, which is much faster and more reliable than the previous provider, so the green skyline now loads in a second or two on a good connection.)
         </p>
 
-        <h3>Where is my altitude history stored, and how do I delete it?</h3>
+        <h3>How do I identify a peak in the AR view, or share the view?</h3>
         <p>
-            On your devices, and in your private iCloud. Altitude, pressure, and route history sync across iPhone and Apple Watch via CloudKit. Nothing is uploaded to any server the developer runs; the developer has no access to your data. Full details are in the <a href="privacy.html">privacy policy</a>.
+            Tap any peak label or marker to open its detail card — name, altitude, distance, bearing, coordinates, and a Directions button. Named peaks that form the skyline silhouette have their name and elevation welded right onto the green ridge line, joined by a thin leader line to the exact point on the horizon. To share what you're looking at, tap the shutter button: Geo freezes the current camera frame with the peak labels and skyline composited on top and hands it to the system share sheet. The capture is created entirely on-device and is only shared if you choose a destination.
+        </p>
+
+        <h3>What is the summit log, and how does the auto-detect work?</h3>
+        <p>
+            When you walk within roughly 500&nbsp;m of a known peak (a Seven Summit, a Snow Leopard peak, or other catalogued summit), Geo offers to log the ascent — it never logs automatically; you confirm. A logged summit records the date, the peak's elevation, your measured barometric altitude, and an optional note, and appears in the "Summits" trophy case on the Stat tab, each with a detail view (editable note, Directions, Delete, and a shareable summit card). Summits sync across your devices via your private iCloud. Only the <em>peak's</em> public location is stored or shared — never a record of where you actually were.
+        </p>
+
+        <h3>How do I record a trip?</h3>
+        <p>
+            On the Stat tab, tap to start the <strong>trip recorder</strong>; it wraps Geo's always-on barometer/GPS sampling into a named outing. Each trip shows total ascent and descent (with sub-3&nbsp;m sensor noise smoothed out so the numbers don't inflate), max/min altitude, distance, moving time, and an elevation profile. Recording survives an app restart, runs entirely on-device, and syncs through your private iCloud. Stop the trip from the same control when you're done.
+        </p>
+
+        <h3>Where is my history stored, and how do I delete it?</h3>
+        <p>
+            On your devices, and in your private iCloud. Your altitude/pressure/route history, recorded trips, and summit log sync across iPhone and Apple Watch via CloudKit. Nothing is uploaded to any server the developer runs; the developer has no access to your data. Full details are in the <a href="privacy.html">privacy policy</a>.
         </p>
         <p>
-            To delete the history: remove Geo from your iPhone and clear the Geo entry from <em>Settings → [your name] → iCloud → Manage Account Storage</em>.
+            To delete it: use <strong>Clear history</strong> on the Stat tab (and delete individual trips or summits from their detail views), or remove Geo from your iPhone and clear the Geo entry from <em>Settings → [your name] → iCloud → Manage Account Storage</em>. History older than about a year is also pruned automatically.
+        </p>
+
+        <h3>Which way is the peak? The compass arrow.</h3>
+        <p>
+            The closest- and highest-mountain cards on the Info tab show the true bearing to the peak ("117°&nbsp;SE") with an arrow that rotates to your live heading, so it always points at the summit — a low-power, AR-free way to find a peak. If the arrow wanders, you'll see a "calibrate compass" hint; move the phone in a figure-eight to settle the magnetometer. The compass runs only while the Info tab is open.
         </p>
 
         <h3>My Apple Watch complications stopped updating.</h3>
@@ -81,7 +116,7 @@
 
         <h3>I denied a permission. How do I re-enable it?</h3>
         <p>
-            Geo shows a banner across the top of the tab view explaining what's missing and offering a one-tap shortcut to Settings. Granting the permission there clears the banner immediately on return.
+            Geo shows a banner across the top of the tab view explaining what's missing and offering a one-tap shortcut to Settings. Granting the permission there clears the banner immediately on return. Notifications can be re-enabled the same way, from <em>Settings → Geo → Notifications</em>.
         </p>
 
         <h2>Reporting bugs</h2>

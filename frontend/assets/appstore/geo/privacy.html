@@ -29,7 +29,7 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Effective date:</strong> 4 May 2026 &middot;
+            <strong>Effective date:</strong> 17 June 2026 &middot;
             <strong>Applies to:</strong> Geo — the iOS app (with Apple Watch companion) published by nettrash on the App Store.
         </p>
 
@@ -37,7 +37,7 @@
 
         <h2>TL;DR</h2>
         <p>
-            Geo doesn't create accounts, doesn't run analytics, and doesn't display advertising. The only data that leaves your device is what's necessary to render the things you ask the app to render: a few network requests for map tiles and peak names, and quantised-coordinate queries to two public APIs that look up nearby mountains and the terrain elevation around you. Your altitude and pressure history is stored on your devices and in your private iCloud — and goes nowhere else.
+            Geo doesn't create accounts, doesn't run analytics, and doesn't display advertising. The only data that leaves your device is what's necessary to render the things you ask the app to render: a few network requests for map tiles, and quantised-coordinate queries to two public APIs that look up nearby mountains and the terrain elevation around you. Your altitude and pressure history, your recorded trips, and your summit log are stored on your devices and in your private iCloud — and go nowhere else. We run no servers and have no access to any of it.
         </p>
 
         <h2>What the app accesses, and what each access does</h2>
@@ -48,8 +48,9 @@
         </p>
         <ol>
             <li>Show your current position on the in-app map.</li>
-            <li>Compute distances and bearings to known peaks for the AR view and the "Nearby" list.</li>
-            <li>Build the Overpass and Open-Elevation API queries described below.</li>
+            <li>Compute distances, bearings and the true-north compass arrow to known peaks for the AR view, the "Nearby" list and the summit-log proximity check.</li>
+            <li>De-trend the barometric storm-warning tendency by altitude (so a climb isn't mistaken for a pressure drop).</li>
+            <li>Build the Overpass and Open-Meteo API queries described below.</li>
         </ol>
         <p>
             Geo does not request "Always" location authorisation. Background sampling of the barometer is performed by iOS's
@@ -57,11 +58,15 @@
         </p>
 
         <p>
-            <strong>Camera</strong> (<code>NSCameraUsageDescription</code>). Used by the AR view to overlay peak names on the camera feed. Frames are processed entirely on-device by ARKit; nothing is recorded or transmitted.
+            <strong>Camera</strong> (<code>NSCameraUsageDescription</code>). Used by the Nature (AR) view to overlay peak names on the camera feed and to capture the optional freeze-frame share image. Frames are processed entirely on-device by ARKit; nothing is recorded or transmitted, and the share image is created on-device and only leaves the app if you choose a destination in the system share sheet.
         </p>
 
         <p>
-            <strong>Motion &amp; Fitness</strong> (<code>NSMotionUsageDescription</code>). Reads the device's barometer and motion sensors so the app can compute altitude (from atmospheric pressure) and stabilise AR peak labels. Sensor values stay on the device.
+            <strong>Motion &amp; Fitness</strong> (<code>NSMotionUsageDescription</code>). Reads the device's barometer and motion sensors so the app can compute altitude (from atmospheric pressure), drive the trip recorder and storm-warning tendency, and stabilise AR peak labels. Sensor values stay on the device.
+        </p>
+
+        <p>
+            <strong>Notifications</strong> (requested at first launch). Geo asks permission to send <em>local</em> notifications so it can raise a single "pressure falling fast" storm-warning advisory when the barometer drops sharply. These notifications are scheduled on the device by the app itself — there is no push server, no device token leaves the phone, and denying the permission simply disables the advisory; nothing else changes. There are no marketing or remote notifications.
         </p>
 
         <p>
@@ -71,36 +76,42 @@
         <h2>What goes over the network</h2>
 
         <p>
-            <strong>Apple MapKit.</strong> The Map view uses MapKit to render map tiles and your-location pin, and <code>MKLocalSearch</code> to find nearby mountain points of interest. Apple is the data controller for those requests; data flow and Apple's use of it are governed by the <a href="https://www.apple.com/legal/privacy/">Apple Privacy Policy</a> and the on-device privacy preferences you control in <em>Settings → Privacy &amp; Security → Location Services → Maps</em>.
+            <strong>Apple MapKit.</strong> The Map view uses MapKit to render map tiles and your-location pin. Apple is the data controller for those requests; data flow and Apple's use of it are governed by the <a href="https://www.apple.com/legal/privacy/">Apple Privacy Policy</a> and the on-device privacy preferences you control in <em>Settings → Privacy &amp; Security → Location Services → Maps</em>. MapKit on iOS doesn't require an API key and routes all requests through Apple's privacy-preserving infrastructure.
         </p>
 
         <p>
-            <strong>OpenStreetMap Overpass API</strong> (<code>https://overpass-api.de/api/interpreter</code>). When you open the Nature tab, the app sends an HTTPS request containing your <em>quantised</em> latitude/longitude (rounded to three decimal places, ~100&nbsp;m) and a search radius (5&nbsp;km) to fetch the list of nodes tagged <code>natural=peak</code> near you. The request body contains <em>only</em> those coordinates and the radius — no device identifiers, no IDFA, no account information. The Overpass API is a free, public service hosted by OpenStreetMap volunteers and governed by the <a href="https://osmfoundation.org/wiki/Privacy_Policy">OpenStreetMap Foundation Privacy Policy</a>.
+            <strong>OpenStreetMap Overpass API</strong> (<code>https://overpass-api.de/api/interpreter</code>). When you open the Nature tab, the app sends an HTTPS request containing your <em>quantised</em> latitude/longitude (rounded to three decimal places, ~110&nbsp;m) and a 5&nbsp;km search radius to fetch the list of nodes tagged <code>natural=peak</code> near you. The request body contains <em>only</em> those coordinates and the radius — no device identifiers, no IDFA, no account information — and is sent with a descriptive <code>User-Agent</code> and a client-side timeout. Downloading an <em>offline expedition pack</em> (Info tab → "Manage offline areas", or the Map tab "Download a region" mode) issues the same kind of query once for the area you frame, at the radius you choose (5&nbsp;/&nbsp;10&nbsp;/&nbsp;50&nbsp;/&nbsp;100&nbsp;km), so the peaks can be cached on-device for no-signal use. The Overpass API is a free, public service hosted by OpenStreetMap volunteers and governed by the <a href="https://osmfoundation.org/wiki/Privacy_Policy">OpenStreetMap Foundation Privacy Policy</a>.
         </p>
 
         <p>
-            <strong>Open-Elevation</strong> (<code>https://api.open-elevation.com/api/v1/lookup</code>). When you open the Nature tab, the app fetches terrain elevation samples around you so the horizon line can trace the real visible skyline instead of a flat sea-level circle. Each sample point is computed from your <em>quantised</em> coordinate (same ~100&nbsp;m rounding) and posted in batches of up to 100. No device identifier or account information accompanies the request.
+            <strong>Open-Meteo Elevation API</strong> (<code>https://api.open-meteo.com/v1/elevation</code>). When you open the Nature tab — or when you download an offline expedition pack — the app fetches terrain elevation samples around you so the horizon line can trace the real visible skyline instead of a flat sea-level circle. Each sample point is computed from your <em>quantised</em> coordinate (same ~110&nbsp;m rounding) and requested in batches. No device identifier or account information accompanies the request. Open-Meteo is a free, open API; its handling is governed by the <a href="https://open-meteo.com/en/terms">Open-Meteo Terms</a>. (Earlier versions used the Open-Elevation endpoint, which was frequently unavailable; 1.1 moved to Open-Meteo for reliability.)
         </p>
 
         <p>
-            <strong>iCloud (CloudKit).</strong> If you are signed into iCloud, your altitude, pressure, and route history syncs to your other Apple devices through Apple's
-            <code>NSPersistentCloudKitContainer</code> infrastructure, in your private iCloud database. The developer has no access to that data and runs no servers that receive it. iCloud sync is end-to-end private under Apple's terms; turning iCloud off in Settings stops the sync without deleting the on-device copy.
+            <strong>iCloud (CloudKit).</strong> If you are signed into iCloud, your altitude/pressure/route history, your recorded <em>trips</em>, and your <em>summit log</em> sync to your other Apple devices through Apple's
+            <code>NSPersistentCloudKitContainer</code> infrastructure, in your private iCloud database. The developer has no access to that data and runs no servers that receive it. iCloud sync is private under Apple's terms; turning iCloud off in Settings stops the sync without deleting the on-device copy. A logged summit stores only the <em>peak's</em> public location and elevation plus your measured barometric altitude and any note — never a track of where you actually were.
         </p>
 
         <p>
-            That's the entire list. There is no telemetry, no crash reporter, no advertising network, no attribution provider, no remote analytics.
+            That's the entire list. There is no telemetry, no crash reporter, no advertising network, no attribution provider, no remote analytics. The Sun panel's solar times are computed on-device with the NOAA algorithm and need no network.
         </p>
 
         <h2>Data stored on your device</h2>
         <p>
-            <strong>Altitude / pressure history</strong> — the device's barometer is sampled periodically and the readings, together with the GPS positions where they were taken, are stored in a local Core Data store inside the app's sandbox so the Stat tab, the home-screen widget, and the Watch complications can show altitude trends. The store is mirrored to your private iCloud through CloudKit when iCloud is signed in. Uninstalling the app removes the local copy; deleting the data from
+            <strong>Altitude / pressure history, trips and summits</strong> — the device's barometer is sampled periodically and the readings, together with the GPS positions where they were taken, are stored in a local Core Data store inside the app's sandbox so the Stat tab, the home-screen widget, and the Watch complications can show altitude trends, trip profiles and your logged ascents. The store is mirrored to your private iCloud through CloudKit when iCloud is signed in. History older than ~1 year is pruned automatically, and a <em>Clear history</em> action on the Stat tab removes it on demand. Uninstalling the app removes the local copy; deleting the data from
             <em>Settings → [your name] → iCloud → Manage Account Storage</em> removes the iCloud copy.
+        </p>
+        <p>
+            <strong>Offline expedition packs</strong> — the cached OpenStreetMap peaks and terrain-elevation (DEM) cells for an area you downloaded are stored as local files in the app's sandbox so the Nature (AR) view keeps working with no signal. Map tiles are <em>not</em> cached (MapKit licensing). This cache is purely local and is not synced through CloudKit; deleting a pack from the app, or uninstalling, removes it.
+        </p>
+        <p>
+            <strong>Known-elevation calibration</strong> — when you pin the altimeter to a marked elevation ("I am at X&nbsp;m"), the resulting correction is stored as a small, time-decaying offset in the shared app group (<code>group.me.nettrash.Geo</code>) so the widget agrees with the app. It contains no location and reverts to the system value after a few hours.
         </p>
         <p>The Apple Watch companion stores its own pressure-history snapshot locally on the Watch and shares it with the iPhone via WatchConnectivity when the two are paired and reachable.</p>
 
         <h2>App Tracking Transparency</h2>
         <p>
-            Geo does not "track" you in the sense Apple's <em>App Tracking Transparency</em> framework defines: it does not link any data collected in the app with data from other apps, websites, or offline sources to build a user profile, and it does not share any data with data brokers. Geo therefore does not present an ATT prompt. The app ships a <code>PrivacyInfo.xcprivacy</code> manifest in every binary (main app, iPhone widget, Watch app, Watch widget) declaring <code>NSPrivacyTracking = false</code> and the Required-Reason API codes for the three system APIs it uses (UserDefaults <code>CA92.1</code>, file timestamp <code>C617.1</code>, system boot time <code>35F9.1</code>, disk space <code>E174.1</code>).
+            Geo does not "track" you in the sense Apple's <em>App Tracking Transparency</em> framework defines: it does not link any data collected in the app with data from other apps, websites, or offline sources to build a user profile, and it does not share any data with data brokers. Geo therefore does not present an ATT prompt. The app ships a <code>PrivacyInfo.xcprivacy</code> manifest in every binary (main app, iPhone widget, Watch app, Watch widget) declaring <code>NSPrivacyTracking = false</code> and the Required-Reason API codes for the system APIs it uses (UserDefaults <code>CA92.1</code>, file timestamp <code>C617.1</code>, system boot time <code>35F9.1</code>, disk space <code>E174.1</code>).
         </p>
 
         <h2>Third-party services</h2>
@@ -109,11 +120,11 @@
                 <tr><th>Service</th><th>What it sees</th><th>Whose policy applies</th></tr>
             </thead>
             <tbody>
-                <tr><td>Apple MapKit</td><td>Coarse position + viewport requests for tile rendering, peak POI search</td><td>Apple's</td></tr>
-                <tr><td>OpenStreetMap Overpass API</td><td>~100&nbsp;m-quantised coordinates + 5&nbsp;km search radius</td><td>OpenStreetMap Foundation's</td></tr>
-                <tr><td>Open-Elevation</td><td>~100&nbsp;m-quantised sample coordinates for terrain elevation</td><td>Open-Elevation's</td></tr>
+                <tr><td>Apple MapKit</td><td>Coarse position + viewport requests for tile rendering</td><td>Apple's</td></tr>
+                <tr><td>OpenStreetMap Overpass API</td><td>~110&nbsp;m-quantised coordinates + search radius (5&nbsp;km live, up to 100&nbsp;km for an offline pack)</td><td>OpenStreetMap Foundation's</td></tr>
+                <tr><td>Open-Meteo Elevation API</td><td>~110&nbsp;m-quantised sample coordinates for terrain elevation</td><td>Open-Meteo's</td></tr>
                 <tr><td>Apple ARKit</td><td>Camera frames + IMU data, <strong>on-device only</strong></td><td>Apple's</td></tr>
-                <tr><td>Apple iCloud (CloudKit)</td><td>The encrypted CoreData store for sync between your devices</td><td>Apple's</td></tr>
+                <tr><td>Apple iCloud (CloudKit)</td><td>Your private CoreData store (history, trips, summits) for sync between your devices</td><td>Apple's</td></tr>
             </tbody>
         </table>
 
@@ -128,14 +139,14 @@
 
         <h2>International data transfers</h2>
         <p>
-            The Overpass and Open-Elevation endpoints are global services; requests may transit servers in any country. The data sent (quantised coordinates + radius) does not contain personal data under GDPR Article 4(1) when used in this app — it's not combined with any identifier we hold. MapKit and CloudKit requests are routed through Apple's infrastructure under Apple's standard privacy controls.
+            The Overpass and Open-Meteo endpoints are global services; requests may transit servers in any country. The data sent (quantised coordinates + radius) does not contain personal data under GDPR Article 4(1) when used in this app — it's not combined with any identifier we hold. MapKit and CloudKit requests are routed through Apple's infrastructure under Apple's standard privacy controls.
         </p>
 
         <h2>Your rights</h2>
         <p>Because we hold no data about you:</p>
         <ul>
             <li>There is no record to access under GDPR Article 15 / CCPA "right to know".</li>
-            <li>There is no record to delete under GDPR Article 17 / CCPA "right to delete" — the local altitude / pressure history is yours alone, and you can remove it by uninstalling the app and clearing the Geo entry from iCloud storage.</li>
+            <li>There is no record to delete under GDPR Article 17 / CCPA "right to delete" — the local history, trips and summit log are yours alone, and you can remove them with <em>Clear history</em>, by deleting individual trips/summits, or by uninstalling the app and clearing the Geo entry from iCloud storage.</li>
             <li>There is no record to correct under GDPR Article 16.</li>
             <li>There is nothing being sold or shared under CCPA / CPRA, so no opt-out is required.</li>
         </ul>
