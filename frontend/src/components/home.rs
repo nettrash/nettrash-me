@@ -728,6 +728,62 @@ fn app_store_tab() -> Html {
                     </div>
                 </div>
 
+                // md
+                // TODO(md): replace the idXXXXXXXXXX placeholder below with
+                // md's real App Store ID from App Store Connect.
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="md-icon.png"
+                             alt="md app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://apps.apple.com/us/app/nettrash-md/idXXXXXXXXXX"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "md" }
+                                </a>
+                                <span class="badge bg-info ms-2" style="font-size:0.7em;">{ "iOS" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "The simplest Markdown editor for iPhone and iPad. Write \
+                                   Markdown on one side and watch it render on the other, or \
+                                   flip between Edit and Preview. A live preview covering \
+                                   headings, bold, italic, code, links, task lists, tables, \
+                                   fenced code blocks and quotes; a warm typewriter look; and \
+                                   print or share a themed PDF. Built on Apple's document \
+                                   system, so your files live in Files or your own iCloud \
+                                   Drive. No third-party code. No accounts. No servers. No \
+                                   trackers." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://apps.apple.com/us/app/nettrash-md/idXXXXXXXXXX"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-dark">
+                                    { "Download on the App Store" }
+                                </a>
+                                <a href="https://github.com/nettrash/md" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/md/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/md/support.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Support" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     }
@@ -838,6 +894,62 @@ fn mac_app_store_tab() -> Html {
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
                                     { "Privacy" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                // md
+                // TODO(md): replace the idXXXXXXXXXX placeholder below with
+                // md's real App Store ID (same universal-app ID as iOS).
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="md-icon.png"
+                             alt="md app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://apps.apple.com/us/app/nettrash-md/idXXXXXXXXXX?platform=mac"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "md" }
+                                </a>
+                                <span class="badge bg-dark ms-2" style="font-size:0.7em;">{ "Mac" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "The simplest Markdown editor for the Mac — a native macOS \
+                                   app. Write Markdown on one side and watch it render on the \
+                                   other, or switch to a full-window Edit or Preview. Real \
+                                   macOS document handling: open and save anywhere with \
+                                   autosave, and native Rename, Move To and Duplicate from the \
+                                   title bar. A live preview covering headings, lists, task \
+                                   lists, tables, code blocks and quotes; a warm typewriter \
+                                   look; print or share a themed PDF. Sandboxed. No third-party \
+                                   code. No accounts. No servers. No trackers." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://apps.apple.com/us/app/nettrash-md/idXXXXXXXXXX?platform=mac"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-dark">
+                                    { "Download on the Mac App Store" }
+                                </a>
+                                <a href="https://github.com/nettrash/md.macOS" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/md/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/md/support.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Support" }
                                 </a>
                                 <span class="badge bg-light text-dark">{ "Free" }</span>
                             </div>
