@@ -79,36 +79,67 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Last updated:</strong> 30 June 2026 &middot;
-            <strong>Applies to:</strong> md — the Markdown editor published by nettrash on the App Store. The same product runs on iPhone and iPad (iOS / iPadOS) and on Mac (a native macOS app). This policy is versioned alongside the app's source code; the most recent commit on <code>main</code> is authoritative.
+            <strong>Last updated:</strong> 14 July 2026 &middot;
+            <strong>Applies to:</strong> md 1.2 — the Markdown editor published by nettrash on the App Store. The same product runs on iPhone and iPad (iOS / iPadOS) and on Mac (a native macOS app). This policy is versioned alongside the app's source code; the most recent commit on <code>main</code> is authoritative.
         </p>
 
         <h2>TL;DR</h2>
         <p>
             md <strong>does not collect, transmit, sell, or share any
             data</strong>. It contains no analytics, no advertising SDKs, no
-            third-party trackers, and no servers operated by us. The documents
-            you open and edit stay where you put them — on your device or Mac,
-            in Files / Finder, or in <em>your own</em> iCloud Drive. The app
-            makes no network connections of its own.
+            trackers, and no servers operated by us — we operate no servers at
+            all. The documents you open and edit stay where you put them — on
+            your device or Mac, in Files / Finder, or in <em>your own</em>
+            iCloud Drive. The app's only network activity is fetching images
+            that <em>your own documents</em> reference by a remote URL, so they
+            can appear in the preview and in what you print or export. Nothing
+            about you is ever sent anywhere.
         </p>
         <p>If that already answers your question, you don't need to read the rest.</p>
 
         <h2>What we collect</h2>
         <p>
             <strong>Nothing.</strong> md has no account to create, no email to
-            register, and no telemetry pinging home from the app. There are no
-            servers in this picture and the app opens no network connections of
-            its own.
+            register, and no telemetry pinging home. There are no servers in
+            this picture. The app initiates exactly one kind of network request,
+            and only on your behalf: downloading an image that
+            <em>your document</em> points at by remote URL
+            (<code>![…](https://…)</code>). See <em>Network use</em> below.
+        </p>
+
+        <h2>Network use</h2>
+        <p>
+            One and only one thing in md causes a network request: an image your
+            own document references by a remote URL. It is fetched when that
+            document is rendered — in the live preview, and also when you print
+            it or export it to PDF or EPUB, because the printed page has to show
+            the same picture the preview does.
+        </p>
+        <p>
+            The request goes directly to whatever host <em>your document</em>
+            names. That host sees your device's IP address and a normal HTTP
+            request, exactly as it would if you had opened the same URL in a web
+            browser — that is unavoidable for any app that displays a remote
+            image, and it is the only reason md touches the network. We are not
+            party to it: no request is ever made to us, because there is nothing
+            of ours to make it to. If your document references no remote images,
+            md makes no network requests at all. Local images (files next to the
+            document, or inside your book folder) are read from disk and involve
+            no network.
+        </p>
+        <p>
+            There is no telemetry, no analytics, no crash reporting, no ads, and
+            no tracking of any kind.
         </p>
 
         <h2>Your documents</h2>
         <p>
             md is a document editor. The files you open, create and save are
             handled entirely by Apple's system document architecture
-            (<code>DocumentGroup</code> / <code>FileDocument</code>) and are
-            stored wherever you choose — locally on your device or Mac, in the
-            Files app / Finder, or in iCloud Drive. We never see them.
+            (<code>DocumentGroup</code> / <code>FileDocument</code> on
+            iOS / iPadOS, <code>NSDocument</code> on Mac) and are stored wherever
+            you choose — locally on your device or Mac, in the Files app /
+            Finder, or in iCloud Drive. We never see them.
         </p>
         <p>
             If you store a document in iCloud Drive, it syncs through
@@ -116,33 +147,137 @@
             We have no access to your documents under any circumstance.
         </p>
         <p>
-            The app stores one small preference on-device — your last-used
-            Edit / Split / Preview layout, per window — via the standard system
-            preferences store. It never leaves your device and contains no
-            personal information.
+            Documents saved in a legacy text encoding (UTF-16 with a byte-order
+            mark, or Windows-1251) are decoded on-device when you open them. No
+            part of that happens off the device.
         </p>
+
+        <h2>Writer mode and books</h2>
+        <p>
+            In writer mode a <strong>book is simply a folder you pick</strong> on
+            your own storage: its subfolders are chapters, the Markdown files
+            inside them are articles, and both are ordered by name. Creating,
+            renaming, reordering and deleting chapters and articles are ordinary
+            file operations in that folder — reordering writes the new order back
+            into the file names. Compiling the book into a single PDF, or
+            exporting it as an EPUB 3 file, happens entirely on-device and writes
+            only to the destination you choose.
+        </p>
+        <p>
+            md never uploads a book, indexes it, or copies it anywhere. It only
+            touches the folder you handed it, and only while that book is open.
+        </p>
+        <p>
+            The example documents — and the sample book — are bundled inside the
+            app. Opening one downloads nothing; unpacking the sample book writes
+            it to a folder you choose.
+        </p>
+        <p>
+            <strong>Private author notes.</strong> An HTML comment placed
+            <em>on its own line</em> whose text begins with <code>note:</code> —
+            for example <code>&lt;!-- note: fix this later --&gt;</code> — is
+            treated as your private note: it is listed for you in the app but is
+            kept out of the preview, out of print, and out of every PDF and EPUB
+            you export. This applies only to comments that start their own line;
+            a comment written inline in the middle of a line is left alone and
+            renders as part of your text, so don't rely on an inline comment to
+            hide anything.
+        </p>
+
+        <h2>Printing, PDF and EPUB</h2>
+        <p>
+            Print, Share Rendered PDF, Export as PDF and Export as EPUB all run
+            on-device through the system print engine and produce real
+            <strong>A4 pages</strong>. Pagination is line-aware, so no line of
+            text is sliced in half at a page boundary; a diagram taller than a
+            single page can still be split across pages. A line containing only
+            <code>\newpage</code> (or <code>\pagebreak</code>) starts a fresh
+            page.
+        </p>
+        <p>
+            Printed and exported pages are always <strong>white with dark
+            ink</strong>, whichever theme you use in the app — the theme affects
+            the screen, never the page. The resulting file goes only where you
+            send it: the destination you pick, or the share sheet you choose.
+        </p>
+
+        <h2>Third-party code</h2>
+        <p>
+            md uses <strong>no third-party Swift packages</strong> — no
+            dependency manager, no analytics or advertising SDK, nothing that
+            phones home.
+        </p>
+        <p>
+            To render math and diagrams, the app <strong>bundles a small set of
+            open-source JavaScript engines</strong> inside the app itself:
+            <strong>KaTeX</strong> (math), <strong>Mermaid</strong> (diagrams),
+            <strong>Viz.js / Graphviz</strong> and <strong>PlantUML</strong>.
+            They run <strong>on your device, offline</strong>, inside the web view
+            that draws the preview and the printed page. They ship in the app
+            bundle: nothing is downloaded at runtime, no CDN is contacted, and
+            your document's contents are never sent to any service to be rendered.
+        </p>
+
+        <h2>What the app stores on your device</h2>
+        <p>
+            md keeps a few small settings in the standard system preferences
+            store. All of it is local, none of it is personal, and none of it is
+            transmitted anywhere:
+        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Stored</th>
+                    <th>Why</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Your view layout (Edit / Split / Preview)</td>
+                    <td>So the app opens the way you left it.</td>
+                </tr>
+                <tr>
+                    <td>A pointer to the book folder you picked — a security-scoped bookmark</td>
+                    <td>So writer mode can reopen your book without asking you to find the folder again. It identifies a location you chose; closing the book discards it.</td>
+                </tr>
+                <tr>
+                    <td>Mac only: which article was open last</td>
+                    <td>So the book reopens on the article you were writing.</td>
+                </tr>
+                <tr>
+                    <td>Mac only: whether articles open in separate windows</td>
+                    <td>A window-behaviour preference.</td>
+                </tr>
+            </tbody>
+        </table>
 
         <h2>Permissions</h2>
         <p>
-            md requests <strong>no special permissions</strong> — no camera,
-            microphone, contacts, location, photo-library, or network access.
-            File access is mediated entirely by the system:
+            md asks for <strong>no camera, microphone, contacts, location, or
+            photo-library access</strong>. It does need the network — but only for
+            the remote images described above. File access is mediated entirely
+            by the system:
         </p>
         <table>
             <thead>
                 <tr>
                     <th>Platform</th>
-                    <th>How files are accessed</th>
+                    <th>What the app is allowed to do</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td><strong>iPhone / iPad</strong></td>
-                    <td>Files are chosen through the system document browser. The app is sandboxed and only ever sees the documents you explicitly open or create.</td>
+                    <td>Files and book folders are chosen through the system document browser / folder picker. The app is sandboxed and only ever sees the documents and the book folder you explicitly open or create.</td>
                 </tr>
                 <tr>
                     <td><strong>Mac</strong></td>
-                    <td>The app runs in the macOS <strong>App Sandbox</strong> and requests only user-selected file access (<code>com.apple.security.files.user-selected.read-write</code>): it can read and write the documents you open or save, and nothing else.</td>
+                    <td>
+                        The app runs in the macOS <strong>App Sandbox</strong> and holds exactly three entitlements:
+                        <code>com.apple.security.files.user-selected.read-write</code> — read and write the documents and book folder you pick, and nothing else;
+                        <code>com.apple.security.print</code> — without it the system print panel's Print button stays disabled;
+                        <code>com.apple.security.network.client</code> — required for the preview's web view to launch inside the sandbox at all, and used for the one real network request md makes: fetching a remote image your document references.
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -161,8 +296,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>Contact info, identifiers, usage data, diagnostics, location, content you create</td><td>No — none of it leaves your device except where <em>you</em> place a file in your own iCloud Drive.</td></tr>
-                <tr><td>Analytics / advertising / tracking</td><td>None. The app contains no such SDKs.</td></tr>
+                <tr><td>Contact info, identifiers, usage data, diagnostics, location, content you create</td><td>No — none of it leaves your device except where <em>you</em> place a file in your own iCloud Drive, or where <em>your</em> document asks for an image from a host you named.</td></tr>
+                <tr><td>Analytics / advertising / tracking</td><td>None. The app contains no such SDKs and performs no tracking.</td></tr>
             </tbody>
         </table>
 

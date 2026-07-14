@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>md — Support</title>
-    <meta name="description" content="Support, contact information, and troubleshooting for the md Markdown editor (iOS, iPadOS, macOS) by nettrash." />
+    <meta name="description" content="Support, contact information, and troubleshooting for md 1.2, the Markdown editor (iOS, iPadOS, macOS) by nettrash." />
     <meta name="robots" content="index,follow" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
@@ -89,16 +89,19 @@
     <main>
         <h1>md — Support</h1>
         <p class="meta">
-            <strong>Last updated:</strong> 30 June 2026 &middot;
-            <strong>Applies to:</strong> md — the Markdown editor published by nettrash on the App Store, running on iPhone, iPad (iOS / iPadOS) and Mac (a native macOS app).
+            <strong>Last updated:</strong> 14 July 2026 &middot;
+            <strong>Applies to:</strong> md <strong>1.2</strong> — the Markdown editor published by nettrash on the App Store, running on iPhone, iPad (iOS / iPadOS) and Mac (a native macOS app).
         </p>
 
         <p>
             md is the simplest Markdown editor for iPhone, iPad and Mac: write
             Markdown on one side and see it rendered on the other, with a warm
-            typewriter look. This page is the single place to reach the
-            developer for issues, general feedback, or feature requests, and to
-            find answers to common questions before you do.
+            typewriter look. Version 1.2 adds a writer mode for whole
+            <em>books</em>, A4 PDFs and EPUB export, math and diagrams, a table
+            of contents, private author notes and a live word count. This page
+            is the single place to reach the developer for issues, general
+            feedback, or feature requests, and to find answers to common
+            questions before you do.
         </p>
 
         <h2>Contact</h2>
@@ -127,10 +130,14 @@
 
         <h2>What md does</h2>
         <ul>
-            <li>Opens, edits and saves <code>.md</code> / <code>.markdown</code> files (and plain text) through Apple's document system — in Files / Finder or your own iCloud Drive, with autosave.</li>
-            <li>Renders a live preview covering headings, <strong>bold</strong> / <em>italic</em> / <code>inline code</code> / links / strikethrough, bullet / numbered / task lists (with nesting), fenced code blocks, block quotes, GitHub-style tables, and thematic breaks.</li>
-            <li>Offers three layouts — Edit, Split (side by side), and Preview — remembered per window.</li>
-            <li>Prints or shares the rendered document as a themed PDF, or shares the raw Markdown source.</li>
+            <li>Opens, edits and saves <code>.md</code> / <code>.markdown</code> files (and plain text) through Apple's document system — in Files / Finder or your own iCloud Drive, with autosave. Files written in legacy encodings (Windows-1251, or UTF-16 with a byte-order mark) open and round-trip correctly.</li>
+            <li>Renders a live preview covering headings, <strong>bold</strong> / <em>italic</em> / <code>inline code</code> / links / strikethrough, bullet / numbered / task lists (with nesting), fenced code blocks, block quotes, GitHub-style tables, thematic breaks, and images — including images your document references by remote URL.</li>
+            <li>Draws TeX / LaTeX math (<code>$…$</code>, <code>$$…$$</code>, <code>```math</code>) and Mermaid, PlantUML and Graphviz diagrams. These render <strong>on your device</strong>, offline, from engines bundled inside the app.</li>
+            <li>Offers three layouts — Edit, Split (side by side) and Preview — with the editor and preview scrolling in sync in Split. Split needs a wide window: it appears on iPad (and in landscape), and always on Mac; on iPhone you switch between Edit and Preview. Your chosen layout is remembered.</li>
+            <li>Shows a table of contents (Contents), a list of your private author notes, and a live word and character count.</li>
+            <li>Prints, shares or exports the rendered document as a <strong>PDF of real A4 pages</strong>, or shares the raw Markdown source.</li>
+            <li><strong>Writer mode:</strong> open a folder as a <em>book</em> — subfolders are chapters, Markdown files are articles — create, rename, reorder and delete them, compile the whole book to one PDF, or export it as EPUB 3.</li>
+            <li>Ships built-in example documents and a sample book you can unpack and edit (Examples).</li>
         </ul>
 
         <h2>Frequently asked questions</h2>
@@ -152,8 +159,11 @@
         <p>
             Wherever you put them. md never moves your documents to a server —
             there isn't one. Files live on your device or Mac, in Files /
-            Finder, or in your own iCloud Drive if you choose that location.
-            See the <a href="privacy.html">Privacy Policy</a> for details.
+            Finder, or in your own iCloud Drive if you choose that location. A
+            book is likewise just a folder <em>you</em> chose, and its chapters
+            and articles are ordinary folders and <code>.md</code> files you can
+            open in any other app. See the
+            <a href="privacy.html">Privacy Policy</a> for details.
         </p>
 
         <h3>How do I rename or move a document?</h3>
@@ -163,6 +173,99 @@
             native macOS document commands. <strong>On iPhone / iPad</strong>,
             rename and move in the Files app or the document browser; the app
             also offers a <em>Rename…</em> command in its share menu.
+        </p>
+
+        <h3>What is writer mode, and how do I start a book?</h3>
+        <p>
+            A <strong>book</strong> is simply a folder you pick: its subfolders
+            are <em>chapters</em>, the Markdown files inside are
+            <em>articles</em>, and they are ordered by file name (a numeric
+            prefix like <code>01-intro.md</code> first, then alphabetically).
+            Nothing is imported or copied into the app.
+        </p>
+        <p>
+            <strong>On Mac:</strong> <em>File → New Book…</em> creates one,
+            <em>File → Open Book…</em> opens an existing folder, and
+            <em>File → Show Book</em> (⇧⌘B) brings the book window back.
+            <strong>On iPhone / iPad:</strong> the launch screen offers
+            <em>Show Book</em>, <em>Open Book…</em> and <em>New Book…</em> next
+            to New Document (on a narrow screen they may sit behind a
+            <em>More…</em> button); tapping an article opens it in the editor.
+            The same actions live in the editor's <em>Book</em> menu.
+        </p>
+        <p>
+            Inside a book you can create, rename, reorder (Move Up / Move Down)
+            and delete chapters and articles. Reordering is <em>written back to
+            the file names</em> — the group is renumbered with <code>01-</code>,
+            <code>02-</code> prefixes — so the order is real and visible in
+            Finder or Files, not a private list kept by the app.
+        </p>
+
+        <h3>How do I turn a book into a PDF or an EPUB?</h3>
+        <p>
+            With a book open, use <em>Share Book as PDF</em> / <em>Export Book
+            as PDF…</em> to compile the whole book into a single PDF — a title
+            page, then every chapter and article in reading order, each starting
+            on a fresh page — or <em>Export as EPUB…</em> to package it as a
+            standard <strong>EPUB 3</strong> with a proper table of contents,
+            which opens in Apple Books and other readers. Math and Mermaid /
+            PlantUML diagrams are rendered by md's own offline engines and
+            embedded as images, so they show up in any reader. On Mac these
+            commands are in the <em>File</em> menu (and in the book window's
+            share menu); on iPhone / iPad they are in the book navigator's
+            share menu.
+        </p>
+
+        <h3>What do printed and exported PDFs look like?</h3>
+        <p>
+            Real <strong>A4 pages</strong>, produced by the system print engine
+            — the same output whether you print, share the rendered PDF, or use
+            <em>Export as PDF…</em>. Pagination is line-aware, so no line of
+            text is sliced in half at a page boundary. (A single diagram taller
+            than a page can still be split across pages — there is nowhere else
+            for it to go.) Put <code>\newpage</code> (or <code>\pagebreak</code>)
+            on a line of its own to start a fresh page exactly where you want
+            one; the preview shows it as a dashed rule.
+        </p>
+        <p>
+            Printed and exported pages are always <strong>white with dark
+            ink</strong>, whichever theme you write in — a manuscript prints as
+            a manuscript. The warm paper and the dark theme are for the screen.
+            The old "one long content-tall page" export (and the "PDF Layout"
+            setting that chose it) was removed in 1.2.
+        </p>
+
+        <h3>Where did the Mac window's toolbar go?</h3>
+        <p>
+            In 1.2 the document window has <strong>no toolbar</strong> — the
+            menu bar is the chrome, as on a Mac it should be. <em>View</em>
+            switches Edit / Split / Preview (⌘1 / ⌘2 / ⌘3), the <em>Go</em> menu
+            jumps to headings, to your private notes and between a book's
+            articles (⌃⌘↑ / ⌃⌘↓), and <em>File</em> carries the book, share,
+            export and print commands. Document windows and the book window can
+            also go full screen (the green button, ⌃⌘F). The book window keeps
+            its own workspace toolbar.
+        </p>
+
+        <h3>How do math and diagrams work — do they need a network?</h3>
+        <p>
+            No. md bundles the rendering engines inside the app and runs them in
+            the preview's web view <strong>on your device</strong>: KaTeX for
+            math, Mermaid, Viz.js / Graphviz and PlantUML for diagrams. Nothing
+            is downloaded at run time and nothing is sent to a diagram service —
+            it works in airplane mode. See the <em>Software Bill of
+            Materials</em> below.
+        </p>
+
+        <h3>What are private author notes?</h3>
+        <p>
+            An HTML comment <strong>on a line of its own</strong> whose text
+            begins with <code>note:</code> — for example
+            <code>&lt;!-- note: rewrite this scene --&gt;</code> — is treated as
+            the writer's private note. It is listed in the Notes menu, jumps you
+            to that spot in the editor, and never appears in the preview, the
+            PDF, the EPUB or print. A comment written <em>inline</em>, inside a
+            paragraph, is not a note and still renders as part of the text.
         </p>
 
         <h3>My Markdown punctuation isn't being "corrected" — is that a bug?</h3>
@@ -184,9 +287,33 @@
 
         <h3>Does md collect any data about me?</h3>
         <p>
-            No. md ships with no analytics, no third-party SDKs, and no servers
-            operated by us, and makes no network connections of its own. Full
-            details are in the <a href="privacy.html">Privacy Policy</a>.
+            No. md contains no analytics, no advertising or tracking SDKs, and
+            there are no servers operated by us. Its App Store privacy label is
+            <strong>"Data Not Collected"</strong>, with no tracking.
+        </p>
+
+        <h3>Then what does md use the network for?</h3>
+        <p>
+            Exactly one thing: fetching an image that <em>your own document</em>
+            references by a remote URL (<code>![…](https://…)</code>). That
+            happens when the image is drawn — in the preview, and also when you
+            print or export to PDF or EPUB. The request goes to whatever host
+            your document names, and that host sees your device's IP address,
+            just as it would if you opened the same URL in a browser. It carries
+            no identifying data beyond a normal HTTP request, and no data of
+            yours is ever sent anywhere. Documents with no remote images make no
+            network requests at all.
+        </p>
+
+        <h3>What does md store on my device besides my files?</h3>
+        <p>
+            Only a few small settings, all local, none personal, none
+            transmitted: your Edit / Split / Preview layout; and, when a book is
+            open, a pointer to the folder you picked (a security-scoped
+            bookmark), which article you had open last, and — on Mac — whether
+            articles open in separate windows. Closing the book discards the
+            folder pointer. Full details are in the
+            <a href="privacy.html">Privacy Policy</a>.
         </p>
 
         <h2>Reporting a bug</h2>
@@ -211,10 +338,39 @@
 
         <h2>Software Bill of Materials</h2>
         <p>
-            md is built entirely on Apple's first-party frameworks
+            The app itself is written against Apple's frameworks
             (<code>SwiftUI</code>, <code>UIKit</code> / <code>AppKit</code>,
             <code>WebKit</code>, <code>UniformTypeIdentifiers</code>) with a
-            hand-written Markdown parser and <strong>no third-party SDKs</strong>.
+            hand-written Markdown parser, and depends on
+            <strong>no third-party Swift packages</strong> — there is no
+            SwiftPM or CocoaPods manifest to resolve.
+        </p>
+        <p>
+            It does, however, <strong>bundle four open-source JavaScript
+            engines</strong>, which render math and diagrams inside the
+            preview's web view, on device and offline:
+        </p>
+        <ul>
+            <li><strong>KaTeX</strong> — TeX / LaTeX math.</li>
+            <li><strong>Mermaid</strong> — Mermaid diagrams.</li>
+            <li><strong>Viz.js / Graphviz</strong> — Graphviz (DOT) graphs.</li>
+            <li><strong>PlantUML</strong> — PlantUML diagrams.</li>
+        </ul>
+        <p>
+            They ship inside the app bundle; nothing is downloaded at run time
+            and no rendering is done on anyone's server. The same engines
+            produce the images embedded in exported PDFs and EPUBs.
+        </p>
+        <p>
+            On Mac the app runs in the App Sandbox and holds exactly three
+            entitlements: user-selected file read/write
+            (<code>com.apple.security.files.user-selected.read-write</code>),
+            printing (<code>com.apple.security.print</code>), and network client
+            (<code>com.apple.security.network.client</code>) — which a sandboxed
+            <code>WKWebView</code> requires in order to launch at all, and which
+            is also what fetches the remote images your documents reference.
+        </p>
+        <p>
             The full source is published at
             <a href="https://github.com/nettrash/md">github.com/nettrash/md</a>
             (iOS / iPadOS) and

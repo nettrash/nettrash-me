@@ -79,8 +79,8 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Effective date:</strong> 2 July 2026 &middot;
-            <strong>Applies to:</strong> md — the Markdown editor published by nettrash on Google Play
+            <strong>Effective date:</strong> 14 July 2026 &middot;
+            <strong>Applies to:</strong> md 1.2 — the Markdown editor published by nettrash on Google Play
             (<code>me.nettrash.md</code>), and the same upload-key-signed APK side-loaded from
             <a href="https://nettrash.me/play/md/md-latest.apk">nettrash.me/play/md/md-latest.apk</a>.
         </p>
@@ -92,22 +92,56 @@
 
         <h2>TL;DR</h2>
         <p>
-            md <strong>does not collect, transmit, sell, or share any
-            data</strong>. It contains no analytics, no advertising SDKs, no
-            third-party trackers, and no remote servers operated by us. The
-            documents you open and edit stay where you put them — on your
-            device or in whatever storage location you pick — and the app
-            makes no network connections of its own.
+            md <strong>collects no data at all</strong> — nothing is
+            transmitted to us, sold, or shared. There are no analytics, no
+            advertising SDKs, no crash reporters, no third-party trackers, and
+            <strong>no servers operated by us</strong>. The documents and books
+            you open and edit stay where you put them — on your device or in
+            whatever storage location you pick.
         </p>
+        <p>
+            Two things are worth knowing precisely, because a blanket "no
+            network, no libraries" claim would be untrue:
+        </p>
+        <ul>
+            <li>
+                md makes exactly <strong>one</strong> kind of network request:
+                fetching an image that <em>your own document</em> references by
+                a remote URL. It happens in the preview <em>and</em> when
+                printing or exporting to PDF or EPUB. The request goes to
+                whatever host your document names, and that host sees your
+                device's IP address — exactly as it would if you opened the
+                same image in a browser. Nothing else is ever sent anywhere.
+            </li>
+            <li>
+                md bundles several <strong>open-source JavaScript engines</strong>
+                (KaTeX, Mermaid, Viz.js/Graphviz, PlantUML) to render maths and
+                diagrams. They run <strong>on your device, offline</strong>,
+                inside the preview's web view; they ship inside the app and
+                nothing about them is downloaded at runtime.
+            </li>
+        </ul>
         <p>If that already answers your question, you don't need to read the rest.</p>
 
         <h2>What we collect</h2>
         <p>
             <strong>Nothing.</strong> md has no account to create, no email to
-            register, and no telemetry pinging home from the app. There are no
-            servers in this picture, and the app opens no network connections of
-            its own — it does not even request the <code>INTERNET</code>
-            permission, so its process cannot open a socket.
+            register, and no telemetry pinging home. There are no servers in
+            this picture: md never contacts a service of ours, because none
+            exists.
+        </p>
+        <p>
+            md declares the <code>INTERNET</code> permission for exactly one
+            purpose: downloading images that a document references by remote URL
+            (<code>![…](https://…)</code>), so that they can be displayed in the
+            preview and included when you print or export to PDF or EPUB. Those
+            requests go directly to whatever host the document names, carry no
+            identifying data beyond an ordinary HTTP request, and happen only
+            for documents that reference such images. A document with no remote
+            images produces no network traffic at all. If the URL matters to
+            you, remember that the host you (or the document's author) chose can
+            see your IP address; use local image files if you'd rather it
+            couldn't.
         </p>
 
         <h2>Your documents</h2>
@@ -128,28 +162,72 @@
             documents under any circumstance.
         </p>
 
+        <h2>Writer mode and books</h2>
+        <p>
+            A <strong>book</strong> in md is simply a folder <em>you</em> pick
+            with the system folder picker: its subfolders are chapters, its
+            Markdown files are articles, and both are ordered by name. Creating,
+            renaming, reordering and deleting chapters and articles are ordinary
+            file operations — reordering writes the new order back into the file
+            names — performed on the folder you granted access to, and nowhere
+            else. Compiling a book into one PDF, or exporting it as an EPUB 3
+            file, happens entirely on your device; the result is written to the
+            destination you choose in the picker.
+        </p>
+        <p>
+            The same is true of every other authoring feature: the table of
+            contents, live word and character counts, synchronized split
+            scrolling, private author notes, and the bundled examples (including
+            the sample book) are all computed locally from the text in front of
+            you. <strong>Private author notes</strong> — an HTML comment on its
+            own line whose text begins with <code>note:</code>, i.e.
+            <code>&lt;!-- note: … --&gt;</code> — are exactly as private as the
+            file that holds them: md keeps them out of the rendered preview,
+            print, PDF and EPUB output, but they remain plain text inside your
+            own document, so anyone you send that <code>.md</code> file to can
+            read them. (An HTML comment written <em>inline</em>, in the middle of
+            a line, is not treated as a note: it stays in the text and appears,
+            verbatim, in the rendered page and the PDF.)
+        </p>
+
         <h2>Data stored on your device</h2>
         <p>
-            md keeps <strong>no app-private user data</strong> — no database, no
-            settings file, no cache of your content. It stores no accounts and
-            no history. Aside from the documents you save (which live in the
-            locations <em>you</em> choose through the picker, not inside the
-            app), the only thing md retains is transient UI state such as the
-            current Edit / Split / Preview layout, held in the app's saved
-            instance state. None of it leaves your device, and none of it
-            contains personal information.
+            md stores a small amount of app-private state — all of it local, none
+            of it personal, none of it transmitted:
+        </p>
+        <ul>
+            <li>
+                The <strong>view layout</strong> (Edit / Split / Preview), held in
+                the app's saved instance state so the editor survives a rotation
+                or a fold. It is not written to disk, and a cold start opens on
+                the default layout.
+            </li>
+            <li>
+                A <strong>pointer to the book folder you picked</strong>, if you
+                use writer mode: the persisted Storage Access Framework tree URI
+                (and, for a book created with <em>New Book…</em>, the name of the
+                subfolder inside it), kept in the app's <code>SharedPreferences</code>.
+                It is a reference to a location you chose, not a copy of your
+                content, and closing the book discards it.
+            </li>
+        </ul>
+        <p>
+            There is no account, no analytics store, no usage history, and no
+            cache of your documents' content. Your documents themselves live in
+            the locations <em>you</em> chose through the picker, not inside the
+            app.
         </p>
         <p>
             The app manifest leaves Android's <strong>Auto Backup</strong> at
-            its default (<code>allowBackup="true"</code>). Because md keeps no
-            app-private user data, Auto Backup has nothing app-specific of
-            consequence to capture; whatever the system does back up goes to
-            <em>your own</em> Google account, encrypted, and never to us.
+            its default (<code>allowBackup="true"</code>). The only app-private
+            data it could capture is the handful of preferences listed above;
+            whatever the system backs up goes to <em>your own</em> Google
+            account, encrypted, and never to us.
         </p>
 
         <h2>Permissions md asks for</h2>
         <p>
-            <strong>None.</strong> md declares no Android permissions at all:
+            <strong>One.</strong> md declares a single Android permission:
         </p>
         <table>
             <thead>
@@ -161,7 +239,7 @@
             <tbody>
                 <tr>
                     <td><code>INTERNET</code> / network access</td>
-                    <td>No. The app makes no network calls; printing renders the document in an <em>offscreen</em> WebView from local HTML the app builds itself — nothing is loaded from the network.</td>
+                    <td>Yes — solely so that images your documents reference by remote URL can be fetched, both for the preview and for printing / PDF / EPUB export. The app calls no services of ours (there are none) and uploads nothing. The page being rendered is local HTML md builds itself from your text; the only thing it may load from the network is those images.</td>
                 </tr>
                 <tr>
                     <td>Storage (<code>READ_/WRITE_EXTERNAL_STORAGE</code>, <code>READ_MEDIA_*</code>)</td>
@@ -174,24 +252,65 @@
             </tbody>
         </table>
         <p>
-            Documents are opened three ways, all of them system-mediated: the
-            in-app <em>Open</em> / <em>Save</em> pickers
+            Documents and books are opened four ways, all of them
+            system-mediated: the in-app <em>Open</em> / <em>Save</em> pickers
             (<code>OpenDocument</code> / <code>CreateDocument</code>, with the
-            access you grant persisted so md can reopen that file); a Markdown or
-            text file handed to md from a file manager or another app
-            (<code>ACTION_VIEW</code>, "Open with md"); and text shared into md
-            to start a new document (<code>ACTION_SEND</code>). In every case md
-            only ever receives the item you chose.
+            access you grant persisted so md can reopen that file); the folder
+            picker used by <em>Open Book…</em> / <em>New Book…</em>
+            (<code>OpenDocumentTree</code>, which grants md the folder you chose
+            and its contents); a Markdown or text file handed to md from a file
+            manager or another app (<code>ACTION_VIEW</code>, "Open with md");
+            and text shared into md to start a new document
+            (<code>ACTION_SEND</code>). In every case md only ever receives the
+            item you chose.
         </p>
 
-        <h2>Third-party services</h2>
+        <h2>Printing, PDF and EPUB</h2>
         <p>
-            <strong>None operating off the device.</strong> md is built entirely
-            on Google's first-party Jetpack / Compose libraries with a
-            hand-written Markdown parser and <strong>no third-party SDKs</strong>.
-            There are no analytics tools (Firebase, Mixpanel, Sentry, etc.), no
-            advertising SDKs (AdMob, Meta, AppLovin, etc.), no crash reporters
-            that phone home, and no attribution providers.
+            <em>Share Rendered PDF…</em>, <em>Export as PDF…</em> and
+            <em>Print…</em> hand your document to the Android print engine, which
+            produces real A4 pages; pagination is line-aware, so no line of text
+            is sliced across a page boundary (a diagram taller than a page can
+            still be split). A <code>\newpage</code> or <code>\pagebreak</code> on
+            a line of its own starts a fresh page. Printed and exported pages are
+            white with dark ink whichever theme you use. Exporting a book
+            compiles it into a single PDF, or into an EPUB 3 file.
+        </p>
+        <p>
+            All of this runs on your device. A PDF you share is staged in the
+            app's private cache and handed to the share sheet through a
+            <code>FileProvider</code>, which grants the app <em>you</em> pick a
+            one-off read of that one file and nothing else. Rendering may fetch
+            remote images your document references, exactly as described above;
+            nothing is uploaded.
+        </p>
+
+        <h2>Third-party services and libraries</h2>
+        <p>
+            <strong>No third-party service receives anything.</strong> There are
+            no analytics tools (Firebase, Mixpanel, Sentry, etc.), no advertising
+            SDKs (AdMob, Meta, AppLovin, etc.), no crash reporters that phone
+            home, and no attribution providers. md has no back end.
+        </p>
+        <p>
+            To be exact about what <em>is</em> in the app: md's Kotlin code takes
+            no third-party Gradle dependencies beyond AndroidX / Jetpack Compose
+            and Google's Material components, and the Markdown parser is
+            hand-written. It does, however, <strong>bundle several open-source
+            JavaScript engines</strong> so that maths and diagrams can be
+            rendered <em>offline</em> inside the preview's web view:
+        </p>
+        <ul>
+            <li><strong>KaTeX</strong> — mathematical notation.</li>
+            <li><strong>Mermaid</strong> — diagrams.</li>
+            <li><strong>Viz.js / Graphviz</strong> — graph diagrams.</li>
+            <li><strong>PlantUML</strong> — UML diagrams.</li>
+        </ul>
+        <p>
+            These are open-source components shipped <em>inside</em> the app.
+            They execute locally on your device, send nothing anywhere, and
+            nothing about them is downloaded at runtime — the app works with the
+            network switched off, apart from remote images.
         </p>
         <p>
             The <strong>Google Advertising ID</strong> is <strong>not</strong>
@@ -219,9 +338,15 @@
 
         <h2>International data transfers</h2>
         <p>
-            Because md does not transmit personal data anywhere, there are no
-            cross-border transfers to disclose under the GDPR, UK GDPR, CCPA,
-            LGPD, or similar regimes.
+            md sends no personal data to us or to anyone on our behalf — we
+            operate no servers and receive nothing — so there are no
+            cross-border transfers by us to disclose under the GDPR, UK GDPR,
+            CCPA, LGPD, or similar regimes. The single exception to note for
+            completeness: if <em>your own</em> document references a remote
+            image, your device requests that image directly from the host named
+            in the document, which may be in another country and which will see
+            your IP address, as with any web request you make. That connection
+            is between you and that host; we are not party to it.
         </p>
 
         <h2>Your rights</h2>

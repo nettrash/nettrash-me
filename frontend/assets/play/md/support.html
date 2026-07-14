@@ -89,7 +89,8 @@
         <p class="meta">
             <strong>Applies to:</strong> md — the Markdown editor
             published by nettrash on Google Play
-            (<code>me.nettrash.md</code>).
+            (<code>me.nettrash.md</code>), version 1.2.<br />
+            <strong>Last updated:</strong> 14 July 2026.
         </p>
 
         <div class="contact-card">
@@ -108,9 +109,12 @@
         <p>
             md is the simplest Markdown editor for Android: write Markdown on one
             side and watch it render on the other, or flip between Edit and
-            Preview, all in a warm typewriter look. It opens, edits and saves
-            your own files through Android's document system — nothing lives on a
-            server, because there isn't one.
+            Preview, all in a warm typewriter look. Since 1.2 it is also a
+            <strong>writer's tool</strong> — a whole book, kept as an ordinary
+            folder of Markdown files, that you can compile to a single PDF or
+            export as an EPUB. It opens, edits and saves your own files through
+            Android's document system — nothing lives on a server, because there
+            isn't one.
         </p>
 
         <h2>Quick start</h2>
@@ -126,21 +130,30 @@
             <li>
                 Open <em>Save</em> from the overflow (⋮) menu. The first save on
                 a new document asks where to put it and what to call it; after
-                that, <em>Save</em> writes back to the same file.
+                that, <em>Save</em> writes back to the same file. md also
+                autosaves about a second after you stop typing.
             </li>
             <li>
                 To edit an existing file, choose <em>Open…</em> from the overflow
                 menu, or tap a <code>.md</code> / <code>.markdown</code> file in
                 a file manager and pick <em>md</em> ("Open with md").
             </li>
+            <li>
+                New to md? <em>Examples</em> in the overflow menu opens the
+                bundled sample documents, and <em>Example Book…</em> unpacks a
+                complete sample book you can open in writer mode.
+            </li>
         </ol>
 
         <h2>What md does</h2>
         <ul>
-            <li>Opens, edits and saves <code>.md</code> / <code>.markdown</code> files (and plain text) through Android's Storage Access Framework — the document is written back to wherever you chose to keep it.</li>
-            <li>Renders a live preview covering headings, <strong>bold</strong> / <em>italic</em> / <code>inline code</code> / links / strikethrough, bullet / numbered / task lists (with nesting), fenced code blocks, block quotes, GitHub-style tables, and thematic breaks.</li>
-            <li>Offers a width-adaptive layout switch — <strong>Edit</strong> and <strong>Preview</strong> on a phone, plus <strong>Split</strong> (side by side, re-rendering as you type) on a tablet, unfolded foldable, or large screen.</li>
-            <li>Prints the rendered document, or exports it as a themed PDF, through Android's print system; shares the raw Markdown source through the system share sheet.</li>
+            <li>Opens, edits and saves <code>.md</code> / <code>.markdown</code> files (and plain text) through Android's Storage Access Framework — the document is written back to wherever you chose to keep it. Legacy encodings open correctly too: UTF-16 with a byte-order mark, and Windows-1251.</li>
+            <li>Renders a live preview covering headings, <strong>bold</strong> / <em>italic</em> / <code>inline code</code> / links / strikethrough, bullet / numbered / task lists (with nesting), fenced code blocks, block quotes, GitHub-style tables, thematic breaks, and images — including images your document references by a remote URL.</li>
+            <li>Renders <strong>math and diagrams</strong> in the preview — LaTeX math, Mermaid diagrams, Graphviz and PlantUML — drawn on your device, offline, by open-source engines bundled inside the app. Nothing is sent away to be rendered.</li>
+            <li>Offers a width-adaptive layout switch — <strong>Edit</strong> and <strong>Preview</strong> on a phone, plus <strong>Split</strong> (side by side, re-rendering as you type, with the two panes scrolling in step) on a tablet, unfolded foldable, large screen or landscape phone.</li>
+            <li>Gives writers a table of contents, a live word and character count, and private author notes that stay out of the rendered output.</li>
+            <li><strong>Writer mode:</strong> open a folder as a book, manage its chapters and articles, compile the whole book into one PDF, or export it as an EPUB 3.</li>
+            <li>Prints the rendered document, exports it as a PDF, or shares a rendered PDF — real A4 pages, produced on-device through Android's print system. <em>Share Source…</em> shares the raw Markdown text through the system share sheet.</li>
         </ul>
 
         <h2>Common tasks</h2>
@@ -167,8 +180,9 @@
             <em>Save</em> writes back to the current file. If there's nowhere
             writable yet (a brand-new document, or a file opened read-only), it
             falls through to a <em>Save As…</em> picker so you can choose the
-            name and location. md also flushes a writable, edited document when
-            you send the app to the background, so you rarely lose work.
+            name and location. Once the document has a home, md autosaves it
+            about a second after you stop typing, and again when you send the
+            app to the background — so you rarely lose work.
         </p>
 
         <h3>Switch layout</h3>
@@ -177,17 +191,77 @@
             <em>Preview</em>, and — where the screen is wide enough — <em>Split</em>.
             On a phone in portrait there isn't room for two side-by-side panes,
             so only Edit and Preview are offered; rotate to landscape, unfold a
-            foldable, or run md on a tablet and Split appears. The choice is
-            remembered.
+            foldable, or run md on a tablet and Split appears. In Split the two
+            panes scroll in step, so the preview follows the line you're
+            writing. The choice is remembered.
         </p>
 
-        <h3>Print or share</h3>
+        <h3>Write a book (writer mode)</h3>
         <p>
-            From the overflow menu, <em>Print / Save as PDF…</em> hands the
-            rendered document to Android's print dialog — pick a printer, or
-            choose <em>Save as PDF</em> to export a themed PDF that matches light
-            or dark mode. <em>Share Source…</em> sends the raw Markdown text
-            through the system share sheet.
+            A book in md is simply <strong>a folder you pick</strong> — no
+            database, no import. Choose <em>Open Book…</em> from the overflow
+            menu to adopt an existing folder, or <em>New Book…</em> to create
+            one. Inside it, <strong>subfolders are chapters</strong> and
+            <strong>Markdown files are articles</strong>, ordered by name.
+            <em>Show Book</em> brings the navigator back; <em>Close Book</em>
+            puts it away.
+        </p>
+        <p>
+            From the navigator you can create, rename, reorder and delete
+            chapters and articles. Reordering is written back to the file names
+            themselves, so the order you see in md is the order you see in any
+            file manager, and the book stays readable without md.
+        </p>
+
+        <h3>Compile a book to PDF or EPUB</h3>
+        <p>
+            In the book navigator's overflow menu, <em>Export as PDF…</em>
+            compiles the entire book — every chapter and article, in order —
+            into one PDF, and <em>Share as PDF</em> sends that same compiled PDF
+            through the share sheet. <em>Export as EPUB…</em> writes a real
+            EPUB 3 with the same reading order, which you can open in any
+            e-reader.
+        </p>
+
+        <h3>Print, export a PDF, or share</h3>
+        <p>
+            From the editor's overflow menu: <em>Print…</em> hands the rendered
+            document to Android's print dialog, <em>Export as PDF…</em> writes a
+            PDF to a location you pick, and <em>Share Rendered PDF…</em> sends
+            one through the share sheet. All three produce real <strong>A4
+            pages</strong> from Android's print engine — pagination is
+            line-aware, so no line of text is ever sliced in half at a page
+            boundary. <em>Share Source…</em> sends the raw Markdown text instead.
+        </p>
+        <p>
+            Put <code>\newpage</code> (or <code>\pagebreak</code>) on a line of
+            its own to force a fresh page. Printed and exported pages are always
+            <strong>white with dark ink</strong>, whichever theme you are using
+            on screen — the page is meant for paper, not for your display.
+        </p>
+
+        <h3>Math and diagrams</h3>
+        <p>
+            The preview renders LaTeX math (KaTeX), Mermaid diagrams, Graphviz
+            (Viz.js) and PlantUML. These are open-source engines
+            <strong>bundled inside the app</strong> and run on your device — the
+            app downloads nothing to draw them, and they work with no network at
+            all. They render in exported PDFs and EPUBs as well as on screen.
+            One caveat: line-aware pagination protects lines of text, but a
+            diagram taller than a single page can still be split across pages.
+        </p>
+
+        <h3>Private author notes</h3>
+        <p>
+            An HTML comment <strong>on a line of its own</strong> whose text
+            begins with <code>note:</code> — for example
+            <code>&lt;!-- note: check this date --&gt;</code> — is treated as a
+            private note: it is kept out of the rendered preview, print, PDF and
+            EPUB, and collected in the notes panel so you can jump between them.
+            The condition matters: an HTML comment written <em>inline</em>,
+            inside a line of text, is not a note — it stays in the text and shows
+            up, verbatim, in the rendered page, the PDF and the printout. Put a
+            note on its own line, or it is not private.
         </p>
 
         <h2>Frequently asked questions</h2>
@@ -230,10 +304,37 @@
 
         <h3>Does md collect any data about me?</h3>
         <p>
-            No. md ships with no analytics, no third-party SDKs, and no servers
-            operated by us; it declares no permissions at all and makes no
-            network connections of its own. Full details are in the
+            No. md collects no data and does no tracking — that is exactly what
+            its Play <em>Data safety</em> answer says. There are no analytics,
+            no advertising, no crash-reporting SDKs, and no servers operated by
+            us for md to talk to, because none exist. Full details are in the
             <a href="privacy.html">Privacy Policy</a>.
+        </p>
+
+        <h3>Then why does md ask for the <code>INTERNET</code> permission?</h3>
+        <p>
+            For exactly one thing: <strong>fetching an image that your own
+            document references by a remote URL</strong>. If you write
+            <code>![](https://example.com/pic.png)</code>, md has to ask
+            <code>example.com</code> for that picture — in the preview, and also
+            when you print, export a PDF, or export an EPUB, since the image has
+            to appear on the page. That host then sees your device's IP address,
+            exactly as it would if you had opened the link in a browser. It is
+            your document that decides whether this ever happens: a document with
+            no remote images causes no network traffic at all. Nothing else is
+            uploaded, and nothing is sent to us.
+        </p>
+
+        <h3>What does md remember between launches?</h3>
+        <p>
+            Almost nothing. In writer mode it keeps a pointer to the book folder
+            you picked — a persisted Storage Access Framework tree URI, in the
+            app's private preferences (and, for a book created with
+            <em>New Book…</em>, that folder's name) — so the book is still there
+            next time. The Edit / Split / Preview choice survives a rotation or a
+            fold, but not a cold start. All of it is local, none of it is
+            personal, and none of it is transmitted anywhere. Closing the book
+            discards the folder pointer.
         </p>
 
         <h2>Troubleshooting</h2>
@@ -261,40 +362,94 @@
         </div>
 
         <div class="troubleshoot">
-            <p><strong>Print / Save as PDF shows nothing to print</strong></p>
+            <p><strong>Print or Export as PDF shows nothing to print</strong></p>
             <p>
-                The preview is generated from the current document. If the
-                document is empty, the print output is empty too — add some
-                content first. The PDF is produced entirely on-device through an
-                offscreen WebView; no network access is involved.
+                The printed page is generated from the current document. If the
+                document is empty, the output is empty too — add some content
+                first. The PDF is produced entirely on-device through an
+                offscreen WebView and Android's print engine; the only thing
+                ever fetched from the network is an image your document itself
+                references by a remote URL.
+            </p>
+        </div>
+
+        <div class="troubleshoot">
+            <p><strong>An image in my document doesn't appear</strong></p>
+            <p>
+                A remote image (<code>https://…</code>) needs a working
+                connection to the host your document names — offline, or if that
+                host is unreachable, it can't be drawn, on screen or in an
+                export. Images stored beside your document load without any
+                network. Math and diagrams are different: they are rendered by
+                engines bundled in the app and always work offline.
+            </p>
+        </div>
+
+        <div class="troubleshoot">
+            <p><strong>A diagram is cut in half across two PDF pages</strong></p>
+            <p>
+                Pagination is line-aware, so no <em>line of text</em> is sliced
+                at a page boundary — but a single diagram taller than one A4 page
+                has to break somewhere. Shorten the diagram, or put
+                <code>\newpage</code> on its own line just before it so it starts
+                on a fresh page with a full page of room.
+            </p>
+        </div>
+
+        <div class="troubleshoot">
+            <p><strong>I can't find my book's chapters</strong></p>
+            <p>
+                A book is a plain folder: its <em>subfolders</em> are chapters
+                and the <code>.md</code> files inside are articles, ordered by
+                name. If a chapter looks empty, check that the Markdown files
+                really are inside that subfolder. md rewrites file names when you
+                reorder, so the order in the app always matches the order on disk.
             </p>
         </div>
 
         <h2>Privacy &amp; security</h2>
         <p>
-            md holds no data about you. It declares no Android permissions,
-            requests no <code>INTERNET</code> permission and cannot open a
-            socket, and has no analytics, advertising, or crash-reporting SDKs.
-            Your documents live wherever you saved them through the system
-            picker; md keeps no app-private copy. Full statement:
+            md collects no data about you and does not track you. It has no
+            analytics, advertising or crash-reporting SDKs, and there is no
+            server of ours anywhere in the picture. Its only Android permission
+            is <code>INTERNET</code>, declared for the single purpose described
+            above: fetching an image your own document references by a remote
+            URL, in the preview and when printing or exporting. Your documents
+            live wherever you saved them through the system picker; md keeps no
+            copy of their contents. It does store one small local setting — in
+            writer mode, a pointer to the book folder you picked — which is never
+            transmitted.
+            Full statement:
             <a href="https://nettrash.me/play/md/privacy.html">Privacy Policy</a>.
         </p>
 
         <h2>Cross-platform</h2>
         <p>
             md on Android is a port of the iOS / iPadOS and macOS app of the same
-            name. The Markdown parser is byte-faithful across all of them, so a
-            document you write on one renders identically on the others. There is
-            no account and nothing to sync — you move documents yourself, as
-            ordinary files, through whatever storage you already use.
+            name, and 1.2 brings the same feature set to all three: writer mode
+            and books, book-to-PDF and EPUB export, A4 printing, math and
+            diagrams, notes, and the table of contents. The Markdown parser is
+            byte-faithful across all of them, so a document you write on one
+            renders identically on the others, and a book is only a folder — copy
+            it across and it opens. There is no account and nothing to sync — you
+            move documents yourself, as ordinary files, through whatever storage
+            you already use.
         </p>
 
         <h2>Open source</h2>
         <p>
-            md is built entirely on Google's first-party Jetpack / Compose
-            libraries with a hand-written Markdown parser and
-            <strong>no third-party SDKs</strong>. Source code and issue tracker
-            live at
+            md is built on Google's first-party Jetpack / Compose libraries and
+            AndroidX, with a hand-written Markdown parser and <strong>no
+            third-party Gradle dependencies beyond AndroidX</strong>. The one
+            exception, and it is deliberate: the preview's web view renders math
+            and diagrams with four <strong>open-source JavaScript engines that
+            ship inside the app</strong> — KaTeX for math, Mermaid for diagrams,
+            Viz.js (Graphviz) and PlantUML. They are bundled, not downloaded:
+            they run on your device, offline, and send nothing anywhere. The same
+            four are bundled in the iOS and macOS versions.
+        </p>
+        <p>
+            Source code and issue tracker live at
             <a href="https://github.com/nettrash/md.Android">github.com/nettrash/md.Android</a>
             for Android;
             <a href="https://github.com/nettrash/md">github.com/nettrash/md</a>
