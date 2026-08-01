@@ -29,28 +29,29 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Effective date:</strong> 17 June 2026 &middot;
+            <strong>Effective date:</strong> 1 August 2026 &middot;
             <strong>Applies to:</strong> Geo — the iOS app (with Apple Watch companion) published by nettrash on the App Store.
         </p>
 
-        <p>This policy is versioned alongside the app's source code; the most recent commit on <code>main</code> is authoritative.</p>
+        <p>This policy is versioned alongside the app's source code; the most recent commit on <code>master</code> is authoritative.</p>
 
         <h2>TL;DR</h2>
         <p>
-            Geo doesn't create accounts, doesn't run analytics, and doesn't display advertising. The only data that leaves your device is what's necessary to render the things you ask the app to render: a few network requests for map tiles, and quantised-coordinate queries to two public APIs that look up nearby mountains and the terrain elevation around you. Your altitude and pressure history, your recorded trips, and your summit log are stored on your devices and in your private iCloud — and go nowhere else. We run no servers and have no access to any of it.
+            Geo doesn't create accounts, doesn't run analytics, and doesn't display advertising. The only data that leaves your device is what's necessary to render the things you ask the app to render: a few network requests for map tiles, quantised-coordinate queries to two public APIs that look up nearby mountains and their ground elevation, and one parameterless request to NOAA for the planetary K index that carries nothing about you at all. Your altitude and pressure history, your recorded trips, and your summit log are stored on your devices and in your private iCloud — and go nowhere else. We run no servers and have no access to any of it.
         </p>
 
         <h2>What the app accesses, and what each access does</h2>
 
         <p>
             <strong>Location — When In Use</strong>
-            (<code>NSLocationWhenInUseUsageDescription</code>). Granted via the system Location Services prompt the first time you open the Map or Nature tab. Used exclusively to:
+            (<code>NSLocationWhenInUseUsageDescription</code>). Requested via the system Location Services prompt the first time you launch the app, because the Info tab you land on is itself a live position readout. Used exclusively to:
         </p>
         <ol>
             <li>Show your current position on the in-app map.</li>
-            <li>Compute distances, bearings and the true-north compass arrow to known peaks for the AR view, the "Nearby" list and the summit-log proximity check.</li>
+            <li>Compute distances, bearings and the true-north compass arrow to known peaks for the Nature view, the closest- and highest-mountain cards on the Info tab, and the summit-log proximity check.</li>
             <li>De-trend the barometric storm-warning tendency by altitude (so a climb isn't mistaken for a pressure drop).</li>
             <li>Build the Overpass and Open-Meteo API queries described below.</li>
+            <li>Work out your magnetic latitude — and from it the local compass, GPS and aurora consequences shown on the Magnetic Conditions card. That calculation runs on the device and its result is never sent anywhere.</li>
         </ol>
         <p>
             Geo does not request "Always" location authorisation. Background sampling of the barometer is performed by iOS's
@@ -58,7 +59,7 @@
         </p>
 
         <p>
-            <strong>Camera</strong> (<code>NSCameraUsageDescription</code>). Used by the Nature (AR) view to overlay peak names on the camera feed and to capture the optional freeze-frame share image. Frames are processed entirely on-device by ARKit; nothing is recorded or transmitted, and the share image is created on-device and only leaves the app if you choose a destination in the system share sheet.
+            <strong>Camera</strong> (<code>NSCameraUsageDescription</code>). Used by the Nature (AR) view to overlay peak names on the camera feed and, when you tap the shutter, to capture the optional freeze-frame share image. Frames are processed entirely on-device by ARKit and the live feed itself is never recorded or transmitted. The shutter composites the frozen frame with the peak labels into a single image held in memory and hands it straight to the system share sheet — the app writes no file of its own — so it only leaves the app if you choose a destination there. Saving it to Photos is one of those destinations: iOS asks for add-only photo access the first time (<code>NSPhotoLibraryAddUsageDescription</code>), which lets Geo add that one image and never lets it read your library.
         </p>
 
         <p>
@@ -66,7 +67,7 @@
         </p>
 
         <p>
-            <strong>Notifications</strong> (requested at first launch). Geo asks permission to send <em>local</em> notifications so it can raise a single "pressure falling fast" storm-warning advisory when the barometer drops sharply. These notifications are scheduled on the device by the app itself — there is no push server, no device token leaves the phone, and denying the permission simply disables the advisory; nothing else changes. There are no marketing or remote notifications.
+            <strong>Notifications</strong> (requested at first launch). Geo asks permission to send <em>local</em> notifications. There are two. The <strong>storm warning</strong> is a single "pressure falling fast" advisory raised when the barometer drops sharply. The <strong>aurora alert</strong> tells you when the auroral oval could reach your latitude tonight; it is <strong>off by default</strong>, behind a switch in the Magnetic Conditions card's "What this means" sheet — until you turn it on that path issues no request and reads no position — and once on it fires at most once in any 20 hours. The alert is worked out from the last fix the app already recorded, so it starts no background location of its own. Both are scheduled on the device by the app itself — there is no push server, no device token leaves the phone, and denying the permission simply disables the advisories; nothing else changes. There are no marketing or remote notifications.
         </p>
 
         <p>
@@ -84,7 +85,11 @@
         </p>
 
         <p>
-            <strong>Open-Meteo Elevation API</strong> (<code>https://api.open-meteo.com/v1/elevation</code>). When you open the Nature tab — or when you download an offline expedition pack — the app fetches terrain elevation samples around you so the horizon line can trace the real visible skyline instead of a flat sea-level circle. Each sample point is computed from your <em>quantised</em> coordinate (same ~110&nbsp;m rounding) and requested in batches. No device identifier or account information accompanies the request. Open-Meteo is a free, open API; its handling is governed by the <a href="https://open-meteo.com/en/terms">Open-Meteo Terms</a>. (Earlier versions used the Open-Elevation endpoint, which was frequently unavailable; 1.1 moved to Open-Meteo for reliability.)
+            <strong>Open-Meteo Elevation API</strong> (<code>https://api.open-meteo.com/v1/elevation</code>). When you open the Nature tab — or when you download an offline expedition pack — the app looks up the ground elevation of nearby peaks (for any whose OpenStreetMap entry doesn't already carry one) and of your own vantage point, so it can tell which summits rise above your horizon and place their labels at the right height. Each sample point is computed from a <em>quantised</em> coordinate (same ~110&nbsp;m rounding) and requested in batches. No device identifier or account information accompanies the request. Open-Meteo is a free, open API; its handling is governed by the <a href="https://open-meteo.com/en/terms">Open-Meteo Terms</a>. (Earlier versions used the Open-Elevation endpoint, which was frequently unavailable; 1.1 moved to Open-Meteo for reliability.)
+        </p>
+
+        <p>
+            <strong>NOAA Space Weather Prediction Center</strong> (<code>https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json</code>). The Magnetic Conditions card on the Info tab fetches the planetary K index — one global number describing geomagnetic activity, published in 3-hour steps — so it can tell you how much a geomagnetic storm may be disturbing your compass and GPS, and whether the aurora could be visible from your latitude. <strong>This request carries no location, no identifiers and no query string of any kind: it is the same fixed URL for every user of the app, byte for byte, and nothing about you is sent.</strong> Everything the card says about <em>your</em> position — your magnetic latitude, which way to look, when it gets dark — is computed on your device from that one global number and never leaves it. It is made at most once per 3-hour step, while you have the Info tab open; if you switch aurora alerts on, the same parameterless request also rides the app-refresh background task, and with alerts off that background path makes no request at all. The response is public-domain data published by the U.S. National Oceanic and Atmospheric Administration. Geo is not affiliated with, or endorsed by, NOAA.
         </p>
 
         <p>
@@ -93,7 +98,7 @@
         </p>
 
         <p>
-            That's the entire list. There is no telemetry, no crash reporter, no advertising network, no attribution provider, no remote analytics. The Sun panel's solar times are computed on-device with the NOAA algorithm and need no network.
+            That's the entire list: MapKit, Overpass, Open-Meteo and NOAA SWPC, plus your own iCloud. No other servers are contacted. There is no telemetry, no crash reporter, no advertising network, no attribution provider, no remote analytics. The Sun panel's solar times are computed on-device with the published NOAA solar algorithm and need no network — that is a formula, unrelated to the space-weather request above.
         </p>
 
         <h2>Data stored on your device</h2>
@@ -102,10 +107,13 @@
             <em>Settings → [your name] → iCloud → Manage Account Storage</em> removes the iCloud copy.
         </p>
         <p>
-            <strong>Offline expedition packs</strong> — the cached OpenStreetMap peaks and terrain-elevation (DEM) cells for an area you downloaded are stored as local files in the app's sandbox so the Nature (AR) view keeps working with no signal. Map tiles are <em>not</em> cached (MapKit licensing). This cache is purely local and is not synced through CloudKit; deleting a pack from the app, or uninstalling, removes it.
+            <strong>Offline expedition packs</strong> — the cached OpenStreetMap peaks (name, coordinate and elevation) for an area you downloaded are stored as local files in the app's sandbox so the Nature (AR) view keeps naming peaks with no signal. Map tiles are <em>not</em> cached (MapKit licensing). This cache is purely local and is not synced through CloudKit; deleting a pack from the app, or uninstalling, removes it.
         </p>
         <p>
             <strong>Known-elevation calibration</strong> — when you pin the altimeter to a marked elevation ("I am at X&nbsp;m"), the resulting correction is stored as a small, time-decaying offset in the shared app group (<code>group.me.nettrash.Geo</code>) so the widget agrees with the app. It contains no location and reverts to the system value after a few hours.
+        </p>
+        <p>
+            <strong>Space-weather cache</strong> — the last planetary K-index product fetched from NOAA is kept in a small JSON file (<code>SpaceWeatherCache.json</code>) in the app's Caches directory so the Magnetic Conditions card still resolves with no signal. It is the same global, public index every user receives: it holds no location and nothing about you, and it is not synced through CloudKit.
         </p>
         <p>The Apple Watch companion stores its own pressure-history snapshot locally on the Watch and shares it with the iPhone via WatchConnectivity when the two are paired and reachable.</p>
 
@@ -122,7 +130,8 @@
             <tbody>
                 <tr><td>Apple MapKit</td><td>Coarse position + viewport requests for tile rendering</td><td>Apple's</td></tr>
                 <tr><td>OpenStreetMap Overpass API</td><td>~110&nbsp;m-quantised coordinates + search radius (5&nbsp;km live, up to 100&nbsp;km for an offline pack)</td><td>OpenStreetMap Foundation's</td></tr>
-                <tr><td>Open-Meteo Elevation API</td><td>~110&nbsp;m-quantised sample coordinates for terrain elevation</td><td>Open-Meteo's</td></tr>
+                <tr><td>Open-Meteo Elevation API</td><td>~110&nbsp;m-quantised coordinates to look up peak / vantage-point ground elevation</td><td>Open-Meteo's</td></tr>
+                <tr><td>NOAA Space Weather Prediction Center</td><td><strong>Nothing</strong> — a fixed URL with no query string, byte-identical for every user, returning the global planetary K index</td><td>Public domain (U.S. Government work); NOAA's</td></tr>
                 <tr><td>Apple ARKit</td><td>Camera frames + IMU data, <strong>on-device only</strong></td><td>Apple's</td></tr>
                 <tr><td>Apple iCloud (CloudKit)</td><td>Your private CoreData store (history, trips, summits) for sync between your devices</td><td>Apple's</td></tr>
             </tbody>
@@ -139,7 +148,7 @@
 
         <h2>International data transfers</h2>
         <p>
-            The Overpass and Open-Meteo endpoints are global services; requests may transit servers in any country. The data sent (quantised coordinates + radius) does not contain personal data under GDPR Article 4(1) when used in this app — it's not combined with any identifier we hold. MapKit and CloudKit requests are routed through Apple's infrastructure under Apple's standard privacy controls.
+            The Overpass, Open-Meteo and NOAA endpoints are global services; requests may transit servers in any country. The data sent (quantised coordinates + radius for Overpass and Open-Meteo, and nothing at all for NOAA) does not contain personal data under GDPR Article 4(1) when used in this app — it's not combined with any identifier we hold. MapKit and CloudKit requests are routed through Apple's infrastructure under Apple's standard privacy controls.
         </p>
 
         <h2>Your rights</h2>

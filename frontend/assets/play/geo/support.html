@@ -155,53 +155,43 @@
         <h3>Why are no peaks shown in the AR view?</h3>
         <p>
             Peaks are looked up from OpenStreetMap, which needs network access, and
-            the Nature (AR) view needs ARCore plus a clear line of sight to the sky.
-            Pointing the camera at an interior wall shows the camera feed and a
-            "Scanning…" indicator but no peak labels — point it out a window or step
-            outside. If your area genuinely has no catalogued peaks within the
-            5&nbsp;km search radius, the view shows the horizon line by itself.
-            Heading somewhere with no signal? See offline expedition packs below.
+            the Nature (AR) view needs ARCore plus a clear view toward the horizon —
+            indoors, point the camera out a window or step outside. A peak is only
+            labelled if it's actually above your horizon (a nearby ridge, or simply
+            the curve of the Earth, can hide a distant summit) and catalogued in
+            OpenStreetMap; when there's nothing to show, the view displays the horizon
+            line by itself. You can also raise the minimum-altitude slider on the side
+            of the view to hide the smaller peaks. Heading somewhere with no signal?
+            See offline expedition packs below.
         </p>
 
         <h3>How do offline expedition packs work?</h3>
         <p>
             Before you lose signal, pre-cache an area so the Nature (AR) view keeps
-            naming peaks and drawing the terrain skyline on a no-signal summit. From
-            the <strong>Info tab → "Manage offline areas"</strong> (or the
+            naming peaks on a no-signal summit. From the
+            <strong>Info tab → "Manage offline areas"</strong> (or the
             <strong>Map tab</strong>, using "Download a region" to frame an area on
             the map), download the area around a location at a 5&nbsp;/&nbsp;10&nbsp;/&nbsp;50&nbsp;/&nbsp;100&nbsp;km
-            radius. Geo fetches that area's named peaks and the terrain-elevation grid
-            and stores them on the device; offline, those peaks and the skyline
-            resolve from the cache with no live calls. Saved packs list their
-            peak/cell counts and date, can be named and renamed, and are shown as
-            circles on the Map tab. <strong>Map tiles aren't cached</strong> (Google
-            Maps licensing), so the basemap still needs a connection — only the AR
-            peaks and skyline work fully offline. Delete a pack any time from the
-            same screen.
-        </p>
-
-        <h3>Why is the horizon line a different colour / flat?</h3>
-        <p>
-            The terrain skyline is drawn from real elevation data fetched from the
-            Open-Meteo elevation API. When that service is briefly unreachable and you
-            don't have an offline pack covering the area, Geo falls back to a
-            geometric sea-level horizon. Both track your camera correctly; the
-            difference is how realistic the line is over distant mountains. (Geo 1.1
-            switched the elevation source to Open-Meteo, which is much faster and more
-            reliable than the previous provider.)
+            radius. Geo fetches that area's named peaks and stores them on the device;
+            offline, those peaks resolve from the cache with no live calls and appear
+            in the camera out to about 80&nbsp;km. Saved packs list their peak count
+            and date, can be named, renamed and updated (re-downloaded to pick up
+            newly-added peaks), and are shown as circles on the Map tab.
+            <strong>Map tiles aren't cached</strong> (Google Maps licensing), so the
+            basemap still needs a connection — only the AR peaks work fully offline.
+            Delete a pack any time from the same screen.
         </p>
 
         <h3>How do I identify a peak in the AR view, or share the view?</h3>
         <p>
-            Tap any peak label or marker to open its detail sheet — name, altitude,
-            distance, bearing, coordinates, and a Directions button. Named peaks that
-            form the skyline silhouette have their name and elevation welded right
-            onto the ridge line, joined by a thin leader line to the exact point on
-            the horizon. To share what you're looking at, tap the shutter button: Geo
-            freezes the current camera frame with the peak labels and skyline
-            composited on top and shares it through the Android share sheet. The
-            capture is created entirely on-device and only leaves the app if you pick
-            a destination.
+            Tap any peak label to open its detail sheet — name, altitude, distance,
+            bearing, coordinates, and a Directions button. Each visible peak is marked
+            by a thin line rising from its summit to a small tilted card showing its
+            name and altitude, so the label points at the peak without covering it. To
+            share what you're looking at, tap the shutter button: Geo freezes the
+            current camera frame with the peak labels composited on top and shares it
+            through the Android share sheet. The capture is created entirely on-device
+            and only leaves the app if you pick a destination.
         </p>
 
         <h3>What is the summit log, and how does the auto-detect work?</h3>
@@ -308,7 +298,7 @@
             <p>
                 The Map tab needs a network connection (map tiles are never cached for
                 offline use, by Google Maps licensing). Offline expedition packs cover
-                the AR peaks and skyline, not the basemap. If the map is blank even
+                the AR peaks, not the basemap. If the map is blank even
                 online, check that the device has a working connection and try
                 reopening the tab.
             </p>
@@ -318,8 +308,10 @@
         <p>
             Geo holds no account and no data about you. Everything you record stays on
             your device; the only network calls are to render maps, look up nearby
-            peaks (OpenStreetMap), and fetch terrain elevation and reference pressure
-            (Open-Meteo). There are no analytics, advertising, or crash-reporting SDKs.
+            peaks (OpenStreetMap), look up ground elevation and reference pressure
+            (Open-Meteo), and fetch the planetary K index for the Magnetic Conditions
+            card (NOAA) — a fixed address that carries no coordinates and nothing else
+            about you. There are no analytics, advertising, or crash-reporting SDKs.
             Full statement:
             <a href="privacy.html">Privacy Policy</a>.
         </p>

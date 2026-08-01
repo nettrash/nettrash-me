@@ -29,35 +29,36 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Effective date:</strong> 17 June 2026 &middot;
+            <strong>Effective date:</strong> 1 August 2026 &middot;
             <strong>Applies to:</strong> Geo — the Android app published by nettrash on Google Play
             (<code>me.nettrash.geo</code>).
         </p>
 
-        <p>This policy is versioned alongside the app's source code; the most recent commit on <code>main</code> is authoritative.</p>
+        <p>This policy is versioned alongside the app's source code; the most recent commit on <code>master</code> is authoritative.</p>
 
         <h2>TL;DR</h2>
         <p>
-            Geo doesn't collect any personal information about you, doesn't create accounts, and doesn't use analytics, advertising, or trackers. The only data that ever leaves your device is what's necessary to render the things you ask the app to render: a few network requests to display the map, plus approximate-location queries to OpenStreetMap and Open-Meteo when the app looks up nearby peaks, the terrain skyline and the local reference pressure. Nothing is sent to servers operated by us — we have no servers, and everything you record stays on your device.
+            Geo doesn't collect any personal information about you, doesn't create accounts, and doesn't use analytics, advertising, or trackers. The only data that ever leaves your device is what's necessary to render the things you ask the app to render: a few network requests to display the map, plus approximate-location queries to OpenStreetMap and Open-Meteo when the app looks up nearby peaks, their ground elevation and the local reference pressure, and a parameterless request to NOAA for the planetary K index that carries nothing about you at all. Nothing is sent to servers operated by us — we have no servers, and everything you record stays on your device.
         </p>
 
         <h2>What the app accesses, and what each access does</h2>
 
         <p>
-            <strong>Precise location</strong> (<code>ACCESS_FINE_LOCATION</code>, <code>ACCESS_COARSE_LOCATION</code>) — granted at runtime when you first open the Map or Nature tab. Used exclusively to:
+            <strong>Precise location</strong> (<code>ACCESS_FINE_LOCATION</code>, <code>ACCESS_COARSE_LOCATION</code>) — requested at runtime the first time you launch the app, because the Info tab you land on is itself a live position readout. Used exclusively to:
         </p>
         <ol>
             <li>Show your current position on the in-app map.</li>
-            <li>Compute distances, bearings and the true-north compass arrow to known peaks for the AR view, the "Nearby" list and the summit-log proximity check.</li>
+            <li>Compute distances, bearings and the true-north compass arrow to known peaks for the Nature view, the closest- and highest-mountain cards on the Info tab, and the summit-log proximity check.</li>
             <li>De-trend the barometric storm-warning tendency by altitude (so a climb isn't mistaken for a pressure drop).</li>
             <li>Build the Overpass and Open-Meteo queries described below.</li>
+            <li>Work out your magnetic latitude — and from it the local compass, GPS and aurora consequences shown on the Magnetic Conditions card. That calculation runs on the device and its result is never sent anywhere.</li>
         </ol>
         <p>
             Geo uses location only while the app is in the foreground; it does <strong>not</strong> request <code>ACCESS_BACKGROUND_LOCATION</code> and does no background location polling.
         </p>
 
         <p>
-            <strong>Camera</strong> (<code>CAMERA</code>) — used by the Nature (AR) view to overlay peak names on the camera feed and to capture the optional freeze-frame share image. Frames are processed entirely on-device by ARCore; nothing is recorded or transmitted, and the share image is created on-device and only leaves the app if you pick a destination in the Android share sheet.
+            <strong>Camera</strong> (<code>CAMERA</code>) — used by the Nature (AR) view to overlay peak names on the camera feed and, when you tap the shutter, to capture the optional freeze-frame share image. Frames are processed entirely on-device by ARCore and the live feed itself is never recorded or transmitted. The shutter composites the frozen frame with the peak labels into a PNG written to the app's own private cache (<code>cacheDir/shared</code>, pruned automatically after an hour); the image is then handed to the Android share sheet, and only the destination <em>you</em> pick there receives it, through a one-time read grant for that single file. Geo never uploads it, and it asks for no media permissions, so it cannot read images already on your device.
         </p>
 
         <p>
@@ -65,7 +66,7 @@
         </p>
 
         <p>
-            <strong>Notifications</strong> (<code>POST_NOTIFICATIONS</code>, Android 13+) — requested at first launch so Geo can post a single <em>local</em> "pressure falling fast" storm-warning advisory (on a dedicated <code>weather_alerts</code> channel) when the barometer drops sharply. These notifications are raised on the device by the app itself — there is no push server and no device token leaves the phone. Denying the permission simply disables the advisory; nothing else changes. There are no marketing or remote notifications.
+            <strong>Notifications</strong> (<code>POST_NOTIFICATIONS</code>, Android 13+) — requested at first launch so Geo can post <em>local</em> advisories. There are two. The <strong>storm warning</strong> (on a dedicated <code>weather_alerts</code> channel) is a single "pressure falling fast" notice raised when the barometer drops sharply. The <strong>aurora alert</strong> (on its own <code>space_weather</code> channel, so you can silence one without losing the other) tells you when the auroral oval could reach your latitude tonight; it is <strong>off by default</strong>, nothing is fetched and no background work is scheduled until you switch it on in the Magnetic Conditions card, it fires at most once in any 20 hours, and switching it off cancels that background work again. The alert is worked out from the last fix the app already recorded, so it starts no background location of its own. Both are raised on the device by the app itself — there is no push server and no device token leaves the phone. Denying the permission simply disables the advisories; nothing else changes. There are no marketing or remote notifications.
         </p>
 
         <p>
@@ -79,7 +80,7 @@
         </p>
 
         <p>
-            <strong>Open-Meteo API</strong> (<code>https://api.open-meteo.com</code>). The Nature/AR view fetches terrain elevation (<code>/v1/elevation</code>) to draw the horizon skyline, and the barometer card fetches the local reference pressure / QNH (<code>/v1/forecast</code>) to calibrate altitude. Each request sends only approximate latitude/longitude (rounded to a ~110&nbsp;m grid) — no device identifiers, no Advertising ID, no account information. Downloading an offline expedition pack fetches the area's terrain elevation grid the same way so the skyline works with no signal. Open-Meteo is a free, open API; its handling is governed by the <a href="https://open-meteo.com/en/terms">Open-Meteo Terms</a>. (Earlier versions used the Open-Elevation endpoint, which was frequently unavailable; 1.1 moved to Open-Meteo for reliability.)
+            <strong>Open-Meteo API</strong> (<code>https://api.open-meteo.com</code>). The Nature/AR view looks up the ground elevation of nearby peaks and of your own vantage point (<code>/v1/elevation</code>) so it can tell which summits rise above your horizon and place their labels at the right height, and the barometer card fetches the local reference pressure / QNH (<code>/v1/forecast</code>) to calibrate altitude. Each request sends only approximate latitude/longitude (rounded to a ~110&nbsp;m grid) — no device identifiers, no Advertising ID, no account information. Downloading an offline expedition pack resolves the area's peak elevations the same way so the view works with no signal. Open-Meteo is a free, open API; its handling is governed by the <a href="https://open-meteo.com/en/terms">Open-Meteo Terms</a>. (Earlier versions used the Open-Elevation endpoint, which was frequently unavailable; 1.1 moved to Open-Meteo for reliability.)
         </p>
 
         <p>
@@ -87,7 +88,11 @@
         </p>
 
         <p>
-            That's the entire list. There are no other servers contacted. There is no telemetry, no crash reporter, no advertising network, no attribution provider, no remote analytics. The Sun panel's solar times are computed on-device with the NOAA algorithm and need no network.
+            <strong>NOAA Space Weather Prediction Center</strong> (<code>https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json</code>). The Magnetic Conditions card on the Info tab fetches the planetary K index — one global number describing geomagnetic activity, published in 3-hour steps — so it can tell you how much a geomagnetic storm may be disturbing your compass and GPS, and whether the aurora could be visible from your latitude. <strong>This request carries no location, no identifiers and no query string of any kind: it is the same fixed URL for every user of the app, byte for byte, and nothing about you is sent.</strong> Everything the card says about <em>your</em> position — your magnetic latitude, which way to look, when it gets dark — is computed on your device from that one global number and never leaves it. With aurora alerts off, the request is made only while you have the Info tab open, at most once per 3-hour step; switching alerts on adds the same parameterless request on a 3-hourly background schedule, and switching them off cancels it. The response is public-domain data published by the U.S. National Oceanic and Atmospheric Administration. Geo is not affiliated with, or endorsed by, NOAA.
+        </p>
+
+        <p>
+            That's the entire list: Overpass, Open-Meteo, NOAA SWPC and the Maps SDK. No other servers are contacted. There is no telemetry, no crash reporter, no advertising network, no attribution provider, no remote analytics. The Sun panel's solar times are computed on-device with the published NOAA solar algorithm and need no network — that is a formula, unrelated to the space-weather request above.
         </p>
 
         <h2>Data stored on your device</h2>
@@ -95,13 +100,16 @@
             <strong>Altitude / pressure history, trips and summits</strong> — the device's barometer is sampled periodically and the readings, together with the positions where they were taken, are stored in a local Room database (<code>/data/data/me.nettrash.geo/databases/geo_database</code>) so the Stat tab and the home-screen widget can show altitude trends, trip profiles and your logged ascents. <strong>This data never leaves the device and is not synced anywhere.</strong> History older than ~1 year is pruned automatically, a <em>Clear history</em> action on the Stat tab removes it on demand, and uninstalling the app or clearing its storage in <em>Settings → Apps → Geo → Storage</em> removes it entirely. A logged summit stores only the <em>peak's</em> public location and elevation plus your measured altitude and any note — never a track of where you actually were.
         </p>
         <p>
-            <strong>Offline expedition packs</strong> — the cached OpenStreetMap peaks and terrain-elevation (DEM) cells for an area you downloaded are stored as local files so the Nature (AR) view keeps working with no signal. Map tiles are <em>not</em> cached (Google Maps licensing). This cache is purely local; deleting a pack in the app, or uninstalling, removes it.
+            <strong>Offline expedition packs</strong> — the cached OpenStreetMap peaks (with their ground elevations) for an area you downloaded are stored as local files so the Nature (AR) view keeps naming peaks with no signal. Map tiles are <em>not</em> cached (Google Maps licensing). This cache is purely local; deleting a pack in the app, or uninstalling, removes it.
         </p>
         <p>
             <strong>Known-elevation calibration</strong> — when you pin the altimeter to a marked elevation ("I am at X&nbsp;m"), the resulting reference pressure is stored in the app's DataStore so the home-screen widget and the background worker agree with the app. It contains no location and decays back to the live network value after a few hours.
         </p>
         <p>
-            <strong>System Auto Backup</strong> is governed by <code>backup_rules.xml</code> in the app and is configured to back up nothing app-specific, so the local database is not mirrored to your Google Drive.
+            <strong>Space-weather cache</strong> — the last planetary K-index product fetched from NOAA is kept in a small JSON file (<code>space_weather.json</code>) in the app's private storage so the Magnetic Conditions card still resolves with no signal. It is the same global, public index every user receives: it holds no location and nothing about you.
+        </p>
+        <p>
+            <strong>System Auto Backup.</strong> Geo leaves Android's standard Auto Backup switched on (<code>android:allowBackup="true"</code>), so your device's own backup service may include the app's local data in the backup it makes to <em>your</em> Google account and restore it when you set up a new device. That copy is yours: it goes to your account, we are never sent it and cannot read it, and it is governed by <a href="https://developer.android.com/guide/topics/data/autobackup">Android's Auto Backup behaviour</a> and Google's privacy policy rather than by us. If you would rather it didn't happen, turn backup off for the device — or for Geo specifically — in your Android settings.
         </p>
         <p>
             The Wear OS companion stores its own pressure-history snapshot locally on the watch and exchanges it with the phone over the Wearable Data Layer when the two are paired; it is not synced to any server.
@@ -128,7 +136,8 @@
             <tbody>
                 <tr><td>Google Maps SDK for Android</td><td>Coarse position + viewport requests for tile rendering</td><td>Google's</td></tr>
                 <tr><td>OpenStreetMap Overpass API</td><td>~110&nbsp;m-quantised coordinates + search radius (5&nbsp;km live, up to 100&nbsp;km for an offline pack)</td><td>OpenStreetMap Foundation's</td></tr>
-                <tr><td>Open-Meteo API</td><td>~110&nbsp;m-quantised coordinates for terrain elevation + reference pressure (QNH)</td><td>Open-Meteo's</td></tr>
+                <tr><td>Open-Meteo API</td><td>~110&nbsp;m-quantised coordinates to look up peak / vantage-point ground elevation + reference pressure (QNH)</td><td>Open-Meteo's</td></tr>
+                <tr><td>NOAA Space Weather Prediction Center</td><td><strong>Nothing</strong> — a fixed URL with no query string, byte-identical for every user, returning the global planetary K index</td><td>Public domain (U.S. Government work); NOAA's</td></tr>
                 <tr><td>Google ARCore</td><td>Camera frames + IMU data, <strong>on-device only</strong></td><td>Google's</td></tr>
             </tbody>
         </table>
@@ -138,7 +147,7 @@
         </p>
 
         <p>
-            Geo declares <strong>Data not collected</strong> and <strong>Data not shared</strong> on its Google Play Data Safety form. The Overpass / Open-Meteo / Maps requests don't qualify as "collection" in Play's taxonomy because the requests are made by the app on your behalf to render features you asked for; the destinations don't operate as data brokers and the data isn't combined with other data sources to build a user profile.
+            Geo declares <strong>Data not collected</strong> and <strong>Data not shared</strong> on its Google Play Data Safety form. The Overpass / Open-Meteo / Maps requests don't qualify as "collection" in Play's taxonomy because the requests are made by the app on your behalf to render features you asked for; the destinations don't operate as data brokers and the data isn't combined with other data sources to build a user profile. The NOAA space-weather request doesn't even reach that argument: it is a fixed URL that carries no data about you whatsoever.
         </p>
 
         <h2>Children's privacy</h2>
@@ -148,7 +157,7 @@
 
         <h2>International data transfers</h2>
         <p>
-            The Overpass, Open-Meteo and Google Maps endpoints are global services; requests may transit servers in any country. The data sent (quantised coordinates + radius for Overpass / Open-Meteo, map-viewport requests for Maps) does not contain personal data under GDPR Article 4(1) when used in this app — it's not combined with any identifier we hold.
+            The Overpass, Open-Meteo, NOAA and Google Maps endpoints are global services; requests may transit servers in any country. The data sent (quantised coordinates + radius for Overpass / Open-Meteo, map-viewport requests for Maps, and nothing at all for NOAA) does not contain personal data under GDPR Article 4(1) when used in this app — it's not combined with any identifier we hold.
         </p>
 
         <h2>Your rights</h2>
@@ -165,7 +174,7 @@
 
         <h2>Changes to this policy</h2>
         <p>
-            If a future version of Geo changes any of the above — adds analytics, integrates a third-party SDK, adds a new network endpoint, or starts using a permission for a new purpose — this document will be updated <em>in the same release</em> and the <em>Effective date</em> will be bumped. Full history: <a href="https://github.com/nettrash/Geo.Android/commits/main/play/PRIVACY_POLICY.md">github.com/nettrash/Geo.Android/commits/main/play/PRIVACY_POLICY.md</a>.
+            If a future version of Geo changes any of the above — adds analytics, integrates a third-party SDK, adds a new network endpoint, or starts using a permission for a new purpose — this document will be updated <em>in the same release</em> and the <em>Effective date</em> will be bumped. Full history: <a href="https://github.com/nettrash/Geo.Android/commits/master/play/PRIVACY_POLICY.md">github.com/nettrash/Geo.Android/commits/master/play/PRIVACY_POLICY.md</a>.
         </p>
 
         <h2>Contact</h2>

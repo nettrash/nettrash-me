@@ -63,22 +63,17 @@
 
         <h3>Why are no peaks shown in the AR view?</h3>
         <p>
-            Peaks are looked up from OpenStreetMap, which needs network access. The Nature (AR) view also assumes the camera has line of sight to the actual sky — pointing it at an interior wall will show the camera feed and a "Scanning" indicator but no peak labels. If you're indoors, point the camera out a window or step outside. If your area genuinely has no catalogued peaks within the 5&nbsp;km search radius, the view shows the horizon line by itself. Heading somewhere with no signal? See offline expedition packs below.
+            Peaks are looked up from OpenStreetMap, which needs network access. The Nature (AR) view also needs a clear view toward the horizon — indoors, point the camera out a window or step outside. A peak is only labelled if it's actually above your horizon (a nearby ridge, or simply the curve of the Earth, can hide a distant summit) and catalogued in OpenStreetMap; when there's nothing to show, the view displays the horizon line by itself. You can also raise the minimum-altitude slider on the side of the view to hide the smaller peaks. Heading somewhere with no signal? See offline expedition packs below.
         </p>
 
         <h3>How do offline expedition packs work?</h3>
         <p>
-            Before you lose signal, pre-cache an area so the Nature (AR) view keeps naming peaks and drawing the terrain skyline on a no-signal summit. From the <strong>Info tab → "Manage offline areas"</strong> (or the <strong>Map tab</strong>, using the "Download a region" mode to frame an area on the map), download the area around a location at a 5&nbsp;/&nbsp;10&nbsp;/&nbsp;50&nbsp;/&nbsp;100&nbsp;km radius. Geo fetches that area's named peaks and the terrain elevation grid and stores them on-device; offline, those peaks and the skyline resolve from the cache with no live calls. Saved packs list their peak/cell counts and date, can be named and renamed, and are shown as circles on the Map tab. <strong>Map tiles aren't cached</strong> (Apple MapKit licensing), so the basemap still needs a connection — only the AR peaks and skyline work fully offline. Delete a pack any time from the same screen.
-        </p>
-
-        <h3>Why is the horizon line cyan instead of green?</h3>
-        <p>
-            The green skyline is drawn from real terrain elevation data fetched from the Open-Meteo elevation API. When that service is briefly unreachable (slow network, the service is down) and you don't have an offline pack covering the area, Geo falls back to a geometric sea-level horizon, drawn in cyan. Both track your camera correctly; the difference is how realistic the line is over distant mountains. (1.1 switched the elevation source to Open-Meteo, which is much faster and more reliable than the previous provider, so the green skyline now loads in a second or two on a good connection.)
+            Before you lose signal, pre-cache an area so the Nature (AR) view keeps naming peaks on a no-signal summit. From the <strong>Info tab → "Manage offline areas"</strong> (or the <strong>Map tab</strong>, using the "Download a region" mode to frame an area on the map), download the area around a location at a 5&nbsp;/&nbsp;10&nbsp;/&nbsp;50&nbsp;/&nbsp;100&nbsp;km radius. Geo fetches that area's named peaks and stores them on-device; offline, those peaks resolve from the cache with no live calls and appear in the camera out to about 80&nbsp;km. Saved packs list their peak count and date, can be named, renamed and updated (re-downloaded to pick up newly-added peaks), and are shown as circles on the Map tab. <strong>Map tiles aren't cached</strong> (Apple MapKit licensing), so the basemap still needs a connection — only the AR peaks work fully offline. Delete a pack any time from the same screen.
         </p>
 
         <h3>How do I identify a peak in the AR view, or share the view?</h3>
         <p>
-            Tap any peak label or marker to open its detail card — name, altitude, distance, bearing, coordinates, and a Directions button. Named peaks that form the skyline silhouette have their name and elevation welded right onto the green ridge line, joined by a thin leader line to the exact point on the horizon. To share what you're looking at, tap the shutter button: Geo freezes the current camera frame with the peak labels and skyline composited on top and hands it to the system share sheet. The capture is created entirely on-device and is only shared if you choose a destination.
+            Tap any peak label to open its detail card — name, altitude, distance, bearing, coordinates, and a Directions button. Each visible peak is marked by a thin line rising from its summit to a small tilted card showing its name and altitude, so the label points at the peak without covering it. To share what you're looking at, tap the shutter button: Geo freezes the current camera frame with the peak labels composited on top and hands it to the system share sheet. The capture is created entirely on-device and is only shared if you choose a destination.
         </p>
 
         <h3>What is the summit log, and how does the auto-detect work?</h3>
@@ -111,7 +106,7 @@
 
         <h3>The widget shows stale altitude.</h3>
         <p>
-            iPhone widgets refresh on the system's schedule (typically every couple of minutes) and Geo additionally requests an immediate refresh whenever it captures a new barometer reading. If you've just opened the app for the first time, give the widget a minute to catch up. To force a refresh: long-press the widget, choose <em>Edit Widget</em>, and re-confirm.
+            iPhone widgets refresh on the system's schedule, and Geo asks for its next fallback refresh about 15 minutes out. That's deliberate: iOS grants a widget only a few dozen reloads a day, so asking every couple of minutes spends the allowance by lunchtime and leaves the widget stale for the rest of it. Geo additionally requests an immediate refresh whenever it captures a new barometer reading, and every refresh — however it was triggered — takes a live barometer sample. If you've just opened the app for the first time, give the widget a minute to catch up. To force a refresh: long-press the widget, choose <em>Edit Widget</em>, and re-confirm.
         </p>
 
         <h3>I denied a permission. How do I re-enable it?</h3>
