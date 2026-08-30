@@ -739,7 +739,7 @@ fn app_store_tab() -> Html {
                              style="width:96px;height:96px;flex-shrink:0;" />
                         <div style="flex:1;">
                             <h5 class="card-title mb-1">
-                                <a href="https://apps.apple.com/us/app/nettrash-md/idXXXXXXXXXX"
+                                <a href="https://apps.apple.com/us/app/nettrash-md/id6785397346"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-decoration-none">
                                     { "md" }
@@ -758,7 +758,7 @@ fn app_store_tab() -> Html {
                                    trackers." }
                             </p>
                             <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
-                                <a href="https://apps.apple.com/us/app/nettrash-md/idXXXXXXXXXX"
+                                <a href="https://apps.apple.com/us/app/nettrash-md/id6785397346"
                                    target="_blank" rel="noopener noreferrer"
                                    class="btn btn-sm btn-dark">
                                     { "Download on the App Store" }
@@ -774,6 +774,59 @@ fn app_store_tab() -> Html {
                                     { "Privacy" }
                                 </a>
                                 <a href="https://nettrash.me/appstore/md/support.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Support" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                // Family Connect
+                // TODO(familyconnect): replace the idXXXXXXXXXX placeholder below
+                // with Family Connect's real App Store ID from App Store Connect.
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="familyconnect-icon.png"
+                             alt="Family Connect app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://apps.apple.com/us/app/nettrash-family-connect/id6803248652"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "Family Connect" }
+                                </a>
+                                <span class="badge bg-info ms-2" style="font-size:0.7em;">{ "iOS" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "A private messenger for one household, on a server you can run \
+                                   yourself. Group and one-to-one chats, photos, videos, voice \
+                                   notes, files, shared locations, polls, a shared sticker board, \
+                                   birthdays, and voice and video calls. No public directory and no \
+                                   strangers \u{2014} you join a family with an invite code and the \
+                                   owner's approval. No ads, no analytics, no trackers." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://apps.apple.com/us/app/nettrash-family-connect/id6803248652"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-dark">
+                                    { "Download on the App Store" }
+                                </a>
+                                <a href="https://github.com/nettrash/family.connect" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/familyconnect/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/familyconnect/support.html"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
                                     { "Support" }
@@ -912,7 +965,7 @@ fn mac_app_store_tab() -> Html {
                              style="width:96px;height:96px;flex-shrink:0;" />
                         <div style="flex:1;">
                             <h5 class="card-title mb-1">
-                                <a href="https://apps.apple.com/us/app/nettrash-md/idXXXXXXXXXX?platform=mac"
+                                <a href="https://apps.apple.com/us/app/nettrash-md/id6785397346?platform=mac"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-decoration-none">
                                     { "md" }
@@ -931,7 +984,7 @@ fn mac_app_store_tab() -> Html {
                                    code. No accounts. No servers. No trackers." }
                             </p>
                             <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
-                                <a href="https://apps.apple.com/us/app/nettrash-md/idXXXXXXXXXX?platform=mac"
+                                <a href="https://apps.apple.com/us/app/nettrash-md/id6785397346?platform=mac"
                                    target="_blank" rel="noopener noreferrer"
                                    class="btn btn-sm btn-dark">
                                     { "Download on the Mac App Store" }
@@ -947,6 +1000,59 @@ fn mac_app_store_tab() -> Html {
                                     { "Privacy" }
                                 </a>
                                 <a href="https://nettrash.me/appstore/md/support.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Support" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                // Family Connect
+                // TODO(familyconnect): replace the idXXXXXXXXXX placeholder below
+                // with Family Connect's real App Store ID from App Store Connect.
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="familyconnect-icon.png"
+                             alt="Family Connect app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://apps.apple.com/us/app/nettrash-family-connect/id6803248652?platform=mac"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "Family Connect" }
+                                </a>
+                                <span class="badge bg-primary ms-2" style="font-size:0.7em;">{ "macOS" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "A private messenger for one household, on a server you can run \
+                                   yourself. Group and one-to-one chats, photos, videos, voice \
+                                   notes, files, shared locations, polls, a shared sticker board, \
+                                   birthdays, and voice and video calls. No public directory and no \
+                                   strangers \u{2014} you join a family with an invite code and the \
+                                   owner's approval. No ads, no analytics, no trackers." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://apps.apple.com/us/app/nettrash-family-connect/id6803248652?platform=mac"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-dark">
+                                    { "View in the Mac App Store" }
+                                </a>
+                                <a href="https://github.com/nettrash/family.connect" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/familyconnect/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <a href="https://nettrash.me/appstore/familyconnect/support.html"
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
                                     { "Support" }
@@ -1251,6 +1357,58 @@ fn play_tab() -> Html {
                                    to date the next time it sees the same package on \
                                    Play. Same upload key as the Play build." }
                             </p>
+                        </div>
+                    </div>
+                </div>
+
+                // Family Connect (Android)
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="familyconnect-android-icon.png"
+                             alt="Family Connect for Android app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://play.google.com/store/apps/details?id=me.nettrash.familyconnect"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "Family Connect" }
+                                </a>
+                                <span class="badge bg-success ms-2" style="font-size:0.7em;">{ "Android" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "A private messenger for one household, on a server you can run \
+                                   yourself. Group and one-to-one chats, photos, videos, voice \
+                                   notes, files, shared locations, polls, a shared sticker board, \
+                                   birthdays, and voice and video calls. Talks to the same server \
+                                   as the iPhone and Mac apps, so a family can mix phones. No \
+                                   public directory and no strangers. No ads, no analytics, no \
+                                   trackers." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://play.google.com/store/apps/details?id=me.nettrash.familyconnect"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-dark">
+                                    { "Get it on Google Play" }
+                                </a>
+                                <a href="https://github.com/nettrash/family.connect" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/play/familyconnect/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <a href="https://nettrash.me/play/familyconnect/support.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Support" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
                         </div>
                     </div>
                 </div>
