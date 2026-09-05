@@ -1389,8 +1389,24 @@ fn play_tab() -> Html {
                             <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
                                 <a href="https://play.google.com/store/apps/details?id=me.nettrash.familyconnect"
                                    target="_blank" rel="noopener noreferrer"
-                                   class="btn btn-sm btn-dark">
+                                   class="btn btn-sm btn-success">
                                     { "Get it on Google Play" }
+                                </a>
+                                // Direct APK side-load — exists because Google's
+                                // closed-testing-then-production rollout makes new
+                                // builds slow to land on Play. Same signed artefact
+                                // as the Play upload, and the same `nettrash` flavour
+                                // (see assets/play/familyconnect/README.md).
+                                <a href="/play/familyconnect/familyconnect-latest.apk"
+                                   rel="noopener noreferrer"
+                                   class="btn btn-sm btn-outline-success"
+                                   download="familyconnect-latest.apk">
+                                    { "Download APK" }
+                                </a>
+                                <a href="https://play.google.com/apps/testing/me.nettrash.familyconnect"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-outline-success">
+                                    { "Join test" }
                                 </a>
                                 <a href="https://github.com/nettrash/family.connect" target="_blank"
                                    rel="noopener noreferrer"
@@ -1409,6 +1425,13 @@ fn play_tab() -> Html {
                                 </a>
                                 <span class="badge bg-light text-dark">{ "Free" }</span>
                             </div>
+                            <p class="text-muted small mt-2 mb-0" style="font-size:0.78em;">
+                                { "APK is for users who can't wait for the next Play \
+                                   rollout. Enable \"Install from unknown sources\" for \
+                                   your browser, install, and Android will keep it up \
+                                   to date the next time it sees the same package on \
+                                   Play. Same upload key as the Play build." }
+                            </p>
                         </div>
                     </div>
                 </div>
