@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>md — Support</title>
+    <meta name="description" content="Support, contact information, and troubleshooting for md 1.0 for Windows, the Markdown editor by nettrash on the Microsoft Store." />
+    <meta name="robots" content="index,follow" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous" />
+    <style>
+        body {
+            font-family: "Roboto", system-ui, -apple-system, sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.65;
+        }
+        main {
+            max-width: 820px;
+            margin: 3rem auto;
+            padding: 2.25rem 2.5rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            font-weight: 300;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        h2 {
+            font-weight: 400;
+            margin-top: 2rem;
+            font-size: 1.25rem;
+        }
+        h3 {
+            font-weight: 500;
+            margin-top: 1.5rem;
+            font-size: 1.05rem;
+        }
+        .meta {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        .contact-card {
+            background: #f4f8ff;
+            border: 1px solid #d6e4ff;
+            border-radius: 6px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0 1.5rem;
+        }
+        .contact-card dl {
+            margin: 0;
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            row-gap: 0.4rem;
+            column-gap: 1rem;
+        }
+        .contact-card dt {
+            font-weight: 600;
+            color: #444;
+        }
+        .contact-card dd {
+            margin: 0;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 0.05rem 0.35rem;
+            border-radius: 3px;
+            font-size: 0.92em;
+            color: #0d3a8a;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #888;
+            font-size: 0.85rem;
+        }
+        a { color: #0d47a1; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>md — Support</h1>
+        <p class="meta">
+            <strong>Last updated:</strong> 6 September 2026 &middot;
+            <strong>Applies to:</strong> md <strong>1.0</strong> for Windows — the Markdown editor published by nettrash on the Microsoft Store, running on Windows 11 (x64 and ARM64).
+        </p>
+
+        <p>
+            md is the simplest Markdown editor for Windows 11: write Markdown
+            on one side and see it rendered on the other, with a warm
+            typewriter look. Version 1.0 arrives with everything the editor's
+            other editions learned — a writer mode for whole <em>books</em>,
+            real-page PDFs at seven sizes, HTML, EPUB, LaTeX, SVG and
+            TextBundle export, math, chemistry, diagrams and charts drawn on
+            your PC, a table of contents, private author notes, a live word
+            count, and documents that reopen in the layout you left them in.
+            This page is the single place to reach the developer for issues,
+            general feedback, or feature requests, and to find answers to
+            common questions before you do.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+            md is built and maintained by an independent developer. The fastest
+            way to get a reply is by email; please include your Windows version
+            (<em>Settings → System → About</em>), whether your PC is x64 or
+            ARM64, and the app version from <em>Help → About md</em>.
+        </p>
+        <div class="contact-card">
+            <dl>
+                <dt>Email</dt>
+                <dd><a href="mailto:nettrash@nettrash.me?subject=md%20for%20Windows%20support">nettrash@nettrash.me</a></dd>
+                <dt>Issue tracker</dt>
+                <dd><a href="https://github.com/nettrash/md.win/issues">github.com/nettrash/md.win/issues</a></dd>
+                <dt>Developer</dt>
+                <dd>nettrash (independent developer)</dd>
+                <dt>Response time</dt>
+                <dd>Usually within a few business days. This is a one-person project, not a 24/7 helpdesk.</dd>
+            </dl>
+        </div>
+        <p>
+            For privacy-specific questions, see the
+            <a href="privacy.html">Privacy Policy</a>; the same email address
+            handles those requests.
+        </p>
+
+        <h2>What md does</h2>
+        <ul>
+            <li>Opens, edits and saves <code>.md</code> / <code>.markdown</code> files (and plain text) through the standard Windows file dialogs, file associations and drag and drop — on your PC or in your own cloud-synced folders — with autosave a second after you stop typing. Files written in legacy encodings (Windows-1251, or UTF-16 with a byte-order mark) open and round-trip correctly. <code>.puml</code>, <code>.gv</code> and <code>.textpack</code> files open too, and a <code>.textbundle</code> folder opens from <em>File → Open TextBundle Folder…</em>.</li>
+            <li>Renders a live preview covering headings, <strong>bold</strong> / <em>italic</em> / <code>inline code</code> / links / strikethrough, bullet / numbered / task lists (with nesting), fenced code with syntax highlighting, block quotes, GitHub-style tables, CSV / TSV blocks drawn as tables, thematic and page breaks, footnotes, YAML / TOML front matter, and images — including images your document references by remote URL.</li>
+            <li>Draws TeX / LaTeX math and mhchem chemistry (<code>$…$</code>, <code>$$…$$</code>, <code>```math</code>), Mermaid, Graphviz and PlantUML diagrams, and charts from a <code>```plot</code> block. These render <strong>on your PC</strong>, offline, from engines bundled inside the app — the plot block needs no engine at all.</li>
+            <li>Offers three layouts — Edit, Split (side by side, stacking when the window is narrow) and Preview — with the editor and preview scrolling in sync in Split, plus a full-screen Zen mode. Each document reopens in the layout you last used for it.</li>
+            <li>Shows a table of contents (<em>Go → Contents</em>), a list of your private author notes (<em>Go → Notes</em>), a live word and character count, and a Find bar (Ctrl+F).</li>
+            <li>Prints through the print preview inside the window, exports the rendered document as a <strong>PDF of real pages</strong> (A4, A5, US Letter, US Legal or a paperback trim), as self-contained HTML, EPUB 3, LaTeX or a TextBundle, saves a single diagram as SVG, and shares the PDF or the Markdown source through the Windows Share pane.</li>
+            <li><strong>Writer mode:</strong> open a folder as a <em>book</em> — subfolders are chapters, Markdown files are articles — create, rename, reorder and delete them, compile the whole book to one PDF, or export it as EPUB 3 or a LaTeX book.</li>
+            <li>Ships built-in example documents and a sample book you can unpack and edit (<em>File → Examples</em>).</li>
+        </ul>
+
+        <h2>Frequently asked questions</h2>
+
+        <h3>How do I create a new document?</h3>
+        <p>
+            <em>File → New</em> (Ctrl+N) opens an untitled window; save it
+            anywhere with <em>File → Save</em> (Ctrl+S), which asks for a name
+            and a place the first time. An untitled document is not autosaved
+            until it has a file — md asks before closing an unsaved one — and
+            from then on every change is written to the file a second after you
+            stop typing. The title shows <em>— Edited</em> until you press
+            Ctrl+S yourself; the autosave has already kept the file current.
+        </p>
+
+        <h3>Where are my files stored?</h3>
+        <p>
+            Wherever you put them. md never moves your documents to a server —
+            there isn't one. Files live on your PC, or in a folder your own
+            cloud provider syncs if you choose that location. A book is likewise
+            just a folder <em>you</em> chose, and its chapters and articles are
+            ordinary folders and <code>.md</code> files you can open in any other
+            app. See the <a href="privacy.html">Privacy Policy</a> for details.
+        </p>
+
+        <h3>How do I rename, move or duplicate a document?</h3>
+        <p>
+            From the <em>File</em> menu: <em>Rename…</em> keeps the extension
+            and changes only the name, <em>Move To…</em> picks a new folder,
+            <em>Duplicate</em> opens a copy as a new untitled window, and
+            <em>Revert to Saved</em> puts back the last text you saved with
+            Ctrl+S. You can also rename the file in File Explorer while it is
+            open — md follows it to the new name. There is no
+            <em>Versions</em> history: md keeps the file, not a stack of its
+            past states.
+        </p>
+
+        <h3>How do I make md the default app for Markdown files?</h3>
+        <p>
+            Right-click a <code>.md</code> file in File Explorer, choose
+            <em>Open with → Choose another app</em>, pick <strong>md</strong>
+            and tick <em>Always</em>; or set it under <em>Settings → Apps →
+            Default apps → md</em>. md registers <code>.md</code>,
+            <code>.markdown</code>, <code>.mdown</code>, <code>.markdn</code>
+            and <code>.mdtext</code> as its own, and offers itself for
+            <code>.txt</code>, <code>.puml</code>, <code>.plantuml</code>,
+            <code>.gv</code> and <code>.textpack</code>. md runs as a single
+            instance, so a double-click lands in the running app, and a file
+            that is already open just brings its window forward.
+        </p>
+
+        <h3>How do I open a TextBundle? And why not a .dot file?</h3>
+        <p>
+            A <code>.textpack</code> opens by double-click like any file. A
+            <code>.textbundle</code> is a <em>folder</em>, and Windows cannot
+            associate a folder with an app, so open it with <em>File → Open
+            TextBundle Folder…</em> or drop the folder on an md window. Both are
+            imported as their text, titled after the bundle, and never written
+            back — saving asks for a new <code>.md</code> location — so the
+            bundle's own images are never lost. The bundle's images are not
+            shown in the preview, on purpose: md's document is its text.
+        </p>
+        <p>
+            md deliberately does not claim <code>.dot</code>: Windows, like
+            macOS, treats a <code>.dot</code> as a Word template. Rename a
+            Graphviz file to <code>.gv</code> and it opens and renders as the
+            graph it describes; a <code>```dot</code> fence inside a document
+            is unaffected.
+        </p>
+
+        <h3>What is writer mode, and how do I start a book?</h3>
+        <p>
+            A <strong>book</strong> is simply a folder you pick: its subfolders
+            are <em>chapters</em>, the Markdown files inside are
+            <em>articles</em>, and they are ordered by file name (a numeric
+            prefix like <code>01-intro.md</code> first, then alphabetically).
+            Nothing is imported or copied into the app.
+        </p>
+        <p>
+            <em>Book → New Book…</em> creates one, <em>Book → Open Book…</em>
+            opens an existing folder, and <em>Book → Show Book</em>
+            (Ctrl+Shift+B) brings the book window back. The book window keeps
+            the structure in a sidebar and the selected article beside it in
+            Edit, Split or Preview; Ctrl+Alt+↑ and Ctrl+Alt+↓ step through the
+            articles in reading order. Inside a book you can create, rename,
+            reorder (Move Up / Move Down) and delete chapters and articles from
+            the right-click menu. Reordering is <em>written back to the file
+            names</em> — the group is renumbered with <code>01-</code>,
+            <code>02-</code> prefixes — so the order is real and visible in File
+            Explorer, not a private list kept by the app. md remembers the book
+            across launches and reopens on the article you were writing;
+            <em>Book → Close Book</em> forgets it (the folder is untouched).
+        </p>
+
+        <h3>How do I turn a book into a PDF or an EPUB?</h3>
+        <p>
+            With a book open, use <em>Book → Share Book as PDF</em> or
+            <em>Book → Export Book → PDF…</em> to compile the whole book into a
+            single PDF — a title page, then every chapter and article in reading
+            order, each starting on a fresh page — or <em>Export Book →
+            EPUB…</em> to package it as a standard <strong>EPUB 3</strong> with a
+            proper table of contents, which opens in any e-reader. Math and
+            Mermaid / Graphviz / PlantUML diagrams are rendered by md's own
+            offline engines and embedded as images, so they show up in any
+            reader; plots stay vector. <em>Export Book → LaTeX…</em> writes one
+            <code>book</code>-class <code>.tex</code> file, and <em>Print
+            Book…</em> prints it all.
+        </p>
+
+        <h3>What do printed and exported PDFs look like?</h3>
+        <p>
+            Real pages, produced by the Chromium renderer inside WebView2 — the
+            same output whether you use <em>Export as PDF…</em> or share the
+            rendered PDF. <em>File → Export → PDF Page Size</em> chooses
+            <strong>A4</strong> (the default), A5, US Letter, US Legal, or a
+            paperback trim (6 × 9″, 5 × 8″, 5.5 × 8.5″); the choice is
+            remembered and applies to the book compile too, and never touches
+            the preview, the HTML export or the EPUB. Pages carry half-inch
+            margins on every side. Pagination is line-aware, so no line of text
+            is sliced in half at a page boundary. (A single diagram taller than
+            a page can still be split across pages — there is nowhere else for
+            it to go.) Put <code>\newpage</code> (or <code>\pagebreak</code>) on
+            a line of its own to start a fresh page exactly where you want one;
+            the preview shows it as a dashed rule.
+        </p>
+        <p>
+            Printed and exported pages are always <strong>white with dark
+            ink</strong>, whichever theme you write in — a manuscript prints as
+            a manuscript. The warm paper and the dark theme are for the screen.
+            A PDF made on Windows and one made from the same document on a Mac
+            are the same pages and the same content, but not the same bytes:
+            the type is Georgia here rather than American Typewriter, which
+            Windows does not have, and a different renderer lays the lines out.
+        </p>
+
+        <h3>Why does my printout have a title and an address at the top?</h3>
+        <p>
+            <em>File → Print…</em> (Ctrl+P) shows Chromium's print preview
+            inside the md window; paper size and margins come from that dialog
+            and your printer. Its <em>Headers and footers</em> option starts
+            switched on and prints the document title and the page's address;
+            untick it once under <em>More settings</em> and the choice sticks
+            for every later print. Press <em>Done</em> to leave the preview.
+        </p>
+
+        <h3>Where are the commands? I don't see a toolbar.</h3>
+        <p>
+            The menu bar is the chrome, and every window carries one:
+            <em>File</em> holds documents, Share, Export and Print;
+            <em>Edit</em> the editing commands and Find; <em>View</em> switches
+            Edit / Split / Preview (Ctrl+1 / Ctrl+2 / Ctrl+3), Zen Mode
+            (Ctrl+Shift+Enter) and full screen (F11); <em>Book</em> the writer
+            mode; <em>Go</em> jumps to headings, to your private notes and
+            between a book's articles (Ctrl+Alt+↑ / Ctrl+Alt+↓);
+            <em>Window</em> lists the open windows; and <em>Help</em> has this
+            page, the privacy policy and <em>About md</em>. Only the book
+            window has a small toolbar of its own.
+        </p>
+
+        <h3>What does "The file changed on disk" mean?</h3>
+        <p>
+            Another program (a sync client, an editor, a script) wrote the file
+            while you had unsaved edits in md. Rather than overwrite either
+            version, md pauses autosave and offers <em>Reload from Disk</em>
+            (take the other program's version) or <em>Keep My Version</em>
+            (write yours back). If the file was changed while your copy was
+            clean, md simply reloads it. If a save fails while a window is
+            closing — a full disk, a locked file — md keeps your text beside
+            the document as <code>&lt;name&gt; (rescued)</code> with the
+            original extension (<code>Notes (rescued).md</code>) and tells you
+            so.
+        </p>
+
+        <h3>How do math and diagrams work — do they need a network?</h3>
+        <p>
+            No. md bundles the rendering engines inside the app and runs them in
+            the preview's WebView2 view <strong>on your PC</strong>: KaTeX with
+            mhchem for math and chemistry, Mermaid, Viz.js / Graphviz and
+            PlantUML for diagrams, and highlight.js for code. Charts from a
+            <code>```plot</code> block are drawn by md itself, with no engine at
+            all. Nothing is downloaded at run time and nothing is sent to a
+            diagram service — it works with the network off. See the
+            <em>Software Bill of Materials</em> below.
+        </p>
+
+        <h3>What are private author notes?</h3>
+        <p>
+            An HTML comment <strong>on a line of its own</strong> whose text
+            begins with <code>note:</code> — for example
+            <code>&lt;!-- note: rewrite this scene --&gt;</code> — is treated as
+            the writer's private note. It is listed under <em>Go → Notes</em>,
+            jumps you to that spot in the editor, and never appears in the
+            preview, the PDF, the EPUB or print. A comment written
+            <em>inline</em>, inside a paragraph, is not a note and still renders
+            as part of the text.
+        </p>
+
+        <h3>My Markdown punctuation isn't being "corrected" — is that a bug?</h3>
+        <p>
+            No, that's intentional. md edits Markdown <em>source</em>, so it
+            leaves quotes, dashes and dots exactly as typed — your
+            <code>"</code>, <code>--</code> and <code>...</code> stay literal so
+            the syntax isn't corrupted — and does not underline spelling either.
+        </p>
+
+        <h3>Why doesn't the preview show some advanced Markdown feature?</h3>
+        <p>
+            md's renderer covers everyday Markdown plus the common GitHub
+            extensions (task lists, tables, strikethrough, fenced code,
+            footnotes). It is a faithful, fast preview rather than a full
+            CommonMark engine, and it is the same renderer as the editor's other
+            editions, so a few rarely-used constructs render as plain text on
+            purpose: raw HTML is shown as the characters you typed, there are no
+            reference-style links, and a four-space indent continues a paragraph
+            rather than starting a code block. If something common renders
+            wrong, please report it (see Contact).
+        </p>
+
+        <h3>Does md collect any data about me?</h3>
+        <p>
+            No. md contains no analytics, no advertising or tracking SDKs, and
+            there are no servers operated by us. Nothing about you or your
+            documents is sent anywhere. The Microsoft Store and the WebView2
+            Runtime have their own, Microsoft-governed diagnostics; the
+            <a href="privacy.html">Privacy Policy</a> spells out exactly what
+            they are and that md adds nothing to them.
+        </p>
+
+        <h3>Then what does md use the network for?</h3>
+        <p>
+            Exactly one thing: fetching an image that <em>your own document</em>
+            references by a remote URL (<code>![…](https://…)</code>). That
+            happens when the image is drawn — in the preview, and also when you
+            print or export to PDF or EPUB. The request goes to whatever host
+            your document names, and that host sees your PC's IP address, just
+            as it would if you opened the same URL in a browser. It carries no
+            identifying data beyond a normal HTTP request, and no data of yours
+            is ever sent anywhere. Documents with no remote images make no
+            network requests at all.
+        </p>
+
+        <h3>What does md store on my PC besides my files?</h3>
+        <p>
+            Only a few small settings and files, all local, none personal, none
+            transmitted: the Edit / Split / Preview layout of your 200 most
+            recent documents (keyed by a hash of the path, not the path); the
+            PDF page size; when a book is open, its folder path plus Windows'
+            grant to reopen it, which article you had open last, the book
+            window's layout and whether articles open in separate windows; the
+            last window sizes; a <code>session.json</code> listing the saved
+            documents to reopen at launch; the WebView2 renderer's own cache;
+            Windows' recent-items list; and, only when something goes wrong, an
+            <code>md.log</code> error log written beside <code>session.json</code>
+            for you to read or delete. Closing the book discards the
+            folder pointer. Full details, including the exact setting names, are
+            in the <a href="privacy.html">Privacy Policy</a>.
+        </p>
+
+        <h2>Reporting a bug</h2>
+        <p>When emailing about a bug, the following details speed things up:</p>
+        <ul>
+            <li>Your Windows version and build (<em>Settings → System → About</em>) and whether the PC is x64 or ARM64.</li>
+            <li>The md app version (<em>Help → About md</em>).</li>
+            <li>What you did, what you expected, and what happened instead.</li>
+            <li>If reproducible, a screenshot or short screen recording — and, for a rendering problem, the Markdown that shows it.</li>
+        </ul>
+        <p>
+            Public bug reports and feature discussion are welcome at the GitHub
+            issue tracker linked above.
+        </p>
+
+        <h2>Feature requests</h2>
+        <p>
+            Suggestions are read and appreciated. Send them by email or open a
+            GitHub issue tagged <code>enhancement</code>. Not every request will
+            be implemented, but every one is considered.
+        </p>
+
+        <h2>Software Bill of Materials</h2>
+        <p>
+            The app is written in C# on <strong>.NET 10</strong> and
+            <strong>WinUI 3</strong> (Windows App SDK 2.4.0), with a hand-written
+            Markdown parser, and its .NET side is dependency-light — nothing
+            beyond Microsoft's own Windows App SDK and Windows SDK build tools.
+            The preview and the printed page are drawn by the
+            <strong>WebView2 Runtime</strong>, Microsoft's Chromium-based
+            component that ships with Windows 11.
+        </p>
+        <p>
+            It does, however, <strong>bundle five open-source JavaScript
+            engines</strong>, which render math, diagrams and code inside the
+            preview's web view, on your PC and offline:
+        </p>
+        <ul>
+            <li><strong>KaTeX</strong> 0.17.0, with the <strong>mhchem</strong> extension — TeX / LaTeX math and chemistry.</li>
+            <li><strong>Mermaid</strong> 11.16.0 — Mermaid diagrams.</li>
+            <li><strong>Viz.js</strong> 3.24.0 / <strong>Graphviz</strong> 14.1.1 — Graphviz (DOT) graphs.</li>
+            <li><strong>PlantUML</strong> 1.2026.4beta4 — PlantUML diagrams.</li>
+            <li><strong>highlight.js</strong> 11.11.1 — syntax highlighting.</li>
+        </ul>
+        <p>
+            They ship inside the package; nothing is downloaded at run time and
+            no rendering is done on anyone's server. The same engines produce
+            the images embedded in exported PDFs and EPUBs. Charts from a
+            <code>```plot</code> block use none of them — md draws those itself.
+        </p>
+        <p>
+            The package declares exactly one capability,
+            <code>runFullTrust</code>: md is a classic desktop app running with
+            your own user's rights, and it reads and writes only the files you
+            open, save, drop on it or pick as a book. It declares no network
+            capability because a full-trust app needs none; the one network
+            request it makes is the remote-image fetch described above.
+        </p>
+        <p>
+            The full source is published at
+            <a href="https://github.com/nettrash/md.win">github.com/nettrash/md.win</a>.
+        </p>
+
+        <footer>
+            <a href="https://nettrash.me/">← nettrash.me</a> &middot;
+            <a href="privacy.html">Privacy</a>
+        </footer>
+    </main>
+</body>
+</html>
