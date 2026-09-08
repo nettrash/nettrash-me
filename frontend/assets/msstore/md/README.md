@@ -24,11 +24,26 @@ metadata checks compare them.
    `assets/appstore` and `assets/play` lines, so `trunk build --release`
    writes this folder to `dist/msstore/md/` and nginx serves it at
    `https://nettrash.me/msstore/md/`. Verified by building: `dist/msstore/md/`
-   holds `privacy.html` and `support.html`. It still has to be **deployed** —
-   the two URLs must answer 200 before the Partner Center submission is sent,
-   or the mandatory privacy-policy URL fails certification.
-2. **Home-page card — nettrash's call, deliberately not done.** No Microsoft
-   Store card has been added to the home page (`frontend/src/…/home.rs`) and no
-   app icon has been copied for one. That is a decision about the site's shape,
-   not a prerequisite for the submission, and it waits until the listing is live
-   and its Store URL is known. Do not add it unasked.
+   holds `privacy.html` and `support.html`. **Deployed and live** — both URLs
+   answered 200 on 2026-09-08, so the mandatory privacy-policy URL is in place.
+2. **Home-page card — done 2026-09-08, at nettrash's request.** The home page
+   (`frontend/src/components/home.rs`) now carries a fifth tab, **Microsoft
+   Store** (`HomeTab::MsStore` / `MsStoreTab`, session key `msstore`), with one
+   md card built on the same Bootstrap skeleton as the App Store and Play cards.
+   Its icon is `frontend/assets/md-windows-icon.png` — md.win's 300 × 300 store
+   tile (`md.win/store/logos/app-tile-icon-300x300.png`), which is *different
+   art* from the Apple `md-icon.png`; root icons are copied per file, so it has
+   its own `copy-file` line in `frontend/index.html`.
+
+   **The store link is a placeholder.** md is not in the public catalog yet — a
+   Display Catalog lookup on the package family name `nttrsh.nettrash.md_hrycnkw7hr1b6`
+   returned `TotalResultCount: 1` with no products on 2026-09-08 — so both the
+   title link and the "Get it from Microsoft Store" button point at
+   `https://apps.microsoft.com/detail/9NXXXXXXXXXX` and do **not** resolve.
+   A `TODO(md.win)` comment above the card says so. Swap in the product ID
+   Partner Center assigns once the listing goes live; nothing else changes.
+
+   The card's copy follows `md.win/store/README.md` ▸ *Wording that must not
+   drift back*: never "no third-party dependencies" (the engines are bundled),
+   never "no network" (the preview fetches an image the document names), and
+   Windows 11 only — never imply Windows 10.

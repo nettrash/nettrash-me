@@ -16,6 +16,7 @@ enum HomeTab {
     AppStore,
     MacAppStore,
     Play,
+    MsStore,
 }
 
 #[wasm_bindgen]
@@ -59,6 +60,7 @@ pub fn home() -> Html {
         Some("appstore") => HomeTab::AppStore,
         Some("mac_appstore") => HomeTab::MacAppStore,
         Some("play") => HomeTab::Play,
+        Some("msstore") => HomeTab::MsStore,
         _ => HomeTab::Info,
     });
 
@@ -80,6 +82,7 @@ pub fn home() -> Html {
                 HomeTab::AppStore => "appstore",
                 HomeTab::MacAppStore => "mac_appstore",
                 HomeTab::Play => "play",
+                HomeTab::MsStore => "msstore",
             };
             storage::set("home_tab", key);
             active_tab.set(tab.clone());
@@ -238,6 +241,10 @@ pub fn home() -> Html {
                     <a class={tab_class(&HomeTab::Play)} href="#"
                        onclick={set_tab(HomeTab::Play)}>{ "Play" }</a>
                 </li>
+                <li class="nav-item">
+                    <a class={tab_class(&HomeTab::MsStore)} href="#"
+                       onclick={set_tab(HomeTab::MsStore)}>{ "Microsoft Store" }</a>
+                </li>
             </ul>
             {
                 match *active_tab {
@@ -290,6 +297,9 @@ pub fn home() -> Html {
                     },
                     HomeTab::Play => html! {
                         <PlayTab />
+                    },
+                    HomeTab::MsStore => html! {
+                        <MsStoreTab />
                     },
                 }
             }
@@ -729,8 +739,6 @@ fn app_store_tab() -> Html {
                 </div>
 
                 // md
-                // TODO(md): replace the idXXXXXXXXXX placeholder below with
-                // md's real App Store ID from App Store Connect.
                 <div class="card mb-3">
                     <div class="card-body d-flex align-items-start">
                         <img src="md-icon.png"
@@ -785,8 +793,6 @@ fn app_store_tab() -> Html {
                 </div>
 
                 // Family Connect
-                // TODO(familyconnect): replace the idXXXXXXXXXX placeholder below
-                // with Family Connect's real App Store ID from App Store Connect.
                 <div class="card mb-3">
                     <div class="card-body d-flex align-items-start">
                         <img src="familyconnect-icon.png"
@@ -955,8 +961,6 @@ fn mac_app_store_tab() -> Html {
                 </div>
 
                 // md
-                // TODO(md): replace the idXXXXXXXXXX placeholder below with
-                // md's real App Store ID (same universal-app ID as iOS).
                 <div class="card mb-3">
                     <div class="card-body d-flex align-items-start">
                         <img src="md-icon.png"
@@ -1011,8 +1015,6 @@ fn mac_app_store_tab() -> Html {
                 </div>
 
                 // Family Connect
-                // TODO(familyconnect): replace the idXXXXXXXXXX placeholder below
-                // with Family Connect's real App Store ID from App Store Connect.
                 <div class="card mb-3">
                     <div class="card-body d-flex align-items-start">
                         <img src="familyconnect-icon.png"
@@ -1431,6 +1433,84 @@ fn play_tab() -> Html {
                                    your browser, install, and Android will keep it up \
                                    to date the next time it sees the same package on \
                                    Play. Same upload key as the Play build." }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Microsoft Store tab — apps published on the Microsoft Store.
+
+#[function_component(MsStoreTab)]
+fn ms_store_tab() -> Html {
+    html! {
+        <div class="tool-container">
+            <div class="content-column" style="max-width:100%;flex:1;">
+
+                // md
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="md-windows-icon.png"
+                             alt="md app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://apps.microsoft.com/detail/9N2CV7L976RL"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "md" }
+                                </a>
+                                <span class="badge bg-primary ms-2" style="font-size:0.7em;">{ "Windows" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "A Markdown editor and live previewer for Windows 11 — a \
+                                   native WinUI 3 app. Write Markdown on one side and watch \
+                                   the finished page take shape on the other, or take it full \
+                                   screen in Zen mode. LaTeX math and mhchem chemistry, \
+                                   Mermaid, Graphviz and PlantUML diagrams, and plot blocks md \
+                                   draws itself — all rendered on your PC. Print through a \
+                                   preview inside the window, or export real pages as PDF, one \
+                                   self-contained HTML file, EPUB 3, LaTeX or a TextBundle. \
+                                   Writer mode turns a folder of chapters into a whole book. \
+                                   The only outside code is the open-source engines that draw \
+                                   the math, diagrams and code, bundled in and run on your PC. \
+                                   No accounts, no analytics, no ads; the only thing md fetches \
+                                   from the network is an image your own document links by URL." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://apps.microsoft.com/detail/9N2CV7L976RL"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-primary">
+                                    { "Get it from Microsoft Store" }
+                                </a>
+                                <a href="https://github.com/nettrash/md.win" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source" }
+                                </a>
+                                <a href="https://nettrash.me/msstore/md/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <a href="https://nettrash.me/msstore/md/support.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Support" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                            <p class="text-muted small mt-2 mb-0" style="font-size:0.78em;">
+                                { "Requires Windows 11 (build 22000) or later, x64 or ARM64. \
+                                   The Microsoft Edge WebView2 Runtime it uses to draw the \
+                                   preview ships with Windows 11 — there is nothing extra to \
+                                   install." }
                             </p>
                         </div>
                     </div>
