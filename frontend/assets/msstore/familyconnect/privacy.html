@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Family Connect for Windows — Privacy Policy</title>
+    <meta name="description" content="Privacy policy for Family Connect for Windows, the family messenger by nettrash on the Microsoft Store." />
+    <meta name="robots" content="index,follow" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous" />
+    <style>
+        body {
+            font-family: "Roboto", system-ui, -apple-system, sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.65;
+        }
+        main {
+            max-width: 820px;
+            margin: 3rem auto;
+            padding: 2.25rem 2.5rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            font-weight: 300;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        h2 {
+            font-weight: 400;
+            margin-top: 2rem;
+            font-size: 1.25rem;
+        }
+        .meta {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        table {
+            width: 100%;
+            margin: 1rem 0;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #e6e6e6;
+            padding: 0.6rem 0.75rem;
+            vertical-align: top;
+            font-size: 0.95rem;
+        }
+        th {
+            background: #f4f4f4;
+            font-weight: 600;
+            text-align: left;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 0.05rem 0.35rem;
+            border-radius: 3px;
+            font-size: 0.92em;
+            color: #0d3a8a;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #888;
+            font-size: 0.85rem;
+        }
+        a { color: #0d47a1; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Privacy Policy</h1>
+        <p class="meta">
+            <strong>Last updated:</strong> 15 September 2026 &middot;
+            <strong>Applies to:</strong> Family Connect for Windows — the family messenger published by nettrash on the Microsoft Store, for Windows 11 (x64 and ARM64). The same service is described for the iPhone, iPad, Mac and Android apps on <a href="https://nettrash.me/appstore/familyconnect/privacy.html">their own page</a>; what happens on the server is identical, and this page adds what is particular to Windows.
+        </p>
+
+        <p>
+            This policy is versioned alongside the app's source code; the most recent commit on
+            <code>master</code> is authoritative.
+        </p>
+
+        <h2>Read this part first: there are two different situations</h2>
+        <p>
+            Family Connect is <strong>self-hosted</strong> software. Your family's messages live on
+            one server, and <em>who runs that server</em> decides who can read them. There are two
+            cases, and they are genuinely different:
+        </p>
+        <table>
+            <tr>
+                <th style="width:34%">If you&hellip;</th>
+                <th>Then&hellip;</th>
+            </tr>
+            <tr>
+                <td><strong>installed from the Microsoft Store and did not change the server
+                address</strong></td>
+                <td>
+                    Your app is connected to <code>https://fc.nettrash.me</code>, which
+                    <strong>I operate</strong>. I hold your messages, photos, videos, voice notes,
+                    files, shared locations, profile picture and account details, and I am
+                    technically able to read all of them. For you, I am the data controller.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>run your own server</strong> (&ldquo;Change server&rdquo; on the sign-in
+                screen, before you sign in)</td>
+                <td>
+                    <strong>I receive nothing at all.</strong> Your data goes only to that machine.
+                    Whoever operates it holds it and can read it. The third parties listed further
+                    down are still contacted by the app itself.
+                </td>
+            </tr>
+        </table>
+
+        <h2>Family Connect is not end-to-end encrypted</h2>
+        <p>
+            This matters enough to say plainly and early. Messages, attachments, board notes and
+            shared locations are stored <strong>in plaintext</strong> in the server's PostgreSQL
+            database and on its disk. The server reads message text in order to build notification
+            text, chat-list previews and reply quotations.
+        </p>
+        <p>
+            Traffic between the app and the server is encrypted in transit by TLS (plain http is
+            accepted only for a server on your own network), and the audio and video of a call are
+            encrypted peer-to-peer (DTLS-SRTP) so that a relay cannot decode them. But <strong>the
+            operator of the server you use can read your messages.</strong> If that operator is me,
+            I can. Please do not treat Family Connect as a secret-keeping tool; treat it as your
+            household's own message board that happens to live on a computer somebody in your family
+            trusts.
+        </p>
+
+        <h2>What the app sends to the server</h2>
+        <table>
+            <tr><th style="width:30%">Data</th><th>Notes</th></tr>
+            <tr>
+                <td>Account details</td>
+                <td>
+                    Username, display name and password. <strong>No e-mail address and no phone
+                    number are collected.</strong> The password is stored on the server only as an
+                    Argon2id hash, never in readable form.
+                </td>
+            </tr>
+            <tr>
+                <td>Birthday <em>(optional)</em></td>
+                <td>
+                    A <strong>day and a month only &mdash; never a year</strong>. Your age cannot be
+                    derived from it. A family owner can set or clear any member's birthday.
+                </td>
+            </tr>
+            <tr>
+                <td>Profile picture <em>(optional)</em></td>
+                <td>
+                    Re-drawn on your PC as a square JPEG of at most 512&nbsp;px before upload, so the
+                    original photo's EXIF metadata (including any GPS tag) is not sent. Visible to
+                    your family and to nobody else.
+                </td>
+            </tr>
+            <tr>
+                <td>Message text</td>
+                <td>Everything you type, including in one-to-one chats.</td>
+            </tr>
+            <tr>
+                <td>Photos</td>
+                <td>
+                    Re-drawn on your PC as a JPEG of at most 2048&nbsp;px before upload, which
+                    <strong>removes EXIF metadata</strong> including any GPS coordinates. The exception
+                    is an animated format &mdash; GIF and WebP &mdash; which a JPEG cannot hold: those
+                    go as files, with their own bytes and whatever metadata they carry.
+                </td>
+            </tr>
+            <tr>
+                <td>Videos and files</td>
+                <td>
+                    Uploaded <strong>byte for byte, unmodified</strong>. Any metadata the file
+                    already contains travels with it &mdash; a phone video typically carries the
+                    location it was recorded at, the device model and the date; a document typically
+                    carries its author and revision history. Family Connect does not strip these.
+                    This includes files you hand to the app through the Windows <em>Share</em> menu,
+                    paste or drag in.
+                </td>
+            </tr>
+            <tr>
+                <td>Voice notes</td>
+                <td>Recorded in the app from your microphone and uploaded as audio files.</td>
+            </tr>
+            <tr>
+                <td>Shared locations</td>
+                <td>
+                    <strong>Full-precision</strong> WGS-84 latitude and longitude plus an accuracy
+                    radius. These are not rounded, blurred or reduced to a neighbourhood. Sharing a
+                    location is always an explicit action, and it is one position, taken once &mdash;
+                    the app runs no location service in the background.
+                </td>
+            </tr>
+            <tr>
+                <td>Board notes, polls and reactions</td>
+                <td>
+                    Text, colour, position and author. <strong>Poll votes are attributed and visible
+                    to everyone in the chat</strong> &mdash; a poll is not a secret ballot.
+                </td>
+            </tr>
+            <tr>
+                <td>Read receipts</td>
+                <td>
+                    Your last-read position in each chat, with a timestamp, shared with the family.
+                    <strong>There is no setting to turn this off.</strong>
+                </td>
+            </tr>
+            <tr>
+                <td>Notification tokens</td>
+                <td>
+                    <strong>None, on Windows.</strong> The Windows app registers no device with any
+                    push service. It raises its notifications itself, from its own connection to
+                    your server, while it is running &mdash; see <em>Notifications</em> below.
+                </td>
+            </tr>
+        </table>
+        <p>
+            <strong>Family statistics</strong> are visible to every member of your family, not only
+            the owner: how many messages each person sent, how many photos, videos, voice notes and
+            locations, the total size, and how many assistant questions they asked.
+        </p>
+
+        <h2>What the app does <em>not</em> do</h2>
+        <ul>
+            <li>No analytics, no advertising SDK, no attribution SDK, no crash-reporting service of
+                ours, no third-party tracker of any kind.</li>
+            <li>No access to your contacts, your photo library or your files beyond the ones you pick,
+                paste, drop or share into a chat.</li>
+            <li>No advertising identifier, no fingerprinting, no cross-app tracking.</li>
+            <li>No camera use inside a chat: the camera is used for video calls only.</li>
+            <li>The server records no IP addresses, user agents or device fingerprints in its
+                database. (A web server in front of it, such as nginx, keeps its own access log by
+                default; that is the operator's to configure.)</li>
+        </ul>
+
+        <h2>Notifications</h2>
+        <p>
+            Windows is told about a new message by the app itself, from its live connection to your
+            server, and only while Family Connect is running &mdash; in its window, or in the
+            notification area if <em>Keep running when the window is closed</em> is on. No push
+            service is involved, so <strong>no message of yours passes through Microsoft to reach
+            this PC</strong>. A notification says <em>who</em> wrote, never <em>what</em> they wrote,
+            and <em>Tell me when a message arrives</em> in Settings turns them off.
+        </p>
+        <p>
+            The other members of your family may use Family Connect on phones and Macs. What you
+            send from Windows reaches <em>their</em> notifications through Apple (APNs) or Google
+            (FCM), and by default that payload includes <strong>the full message text</strong>, your
+            display name and the family's name. A server operator can turn the message text off;
+            the names still travel.
+        </p>
+
+        <h2>Other companies your PC or your server contacts</h2>
+        <p>
+            Even on a server you run yourself, some things necessarily leave your network. Each is
+            named here, and the ones that can be switched off are switched off in the app's
+            Settings.
+        </p>
+        <table>
+            <tr><th style="width:26%">Who</th><th>What they receive, and when</th></tr>
+            <tr>
+                <td><strong>OpenStreetMap</strong> (map tiles)</td>
+                <td>
+                    When a shared location is displayed, your PC asks OpenStreetMap's tile servers
+                    for the squares of map around that place, which tells OpenStreetMap roughly where
+                    the place is and shows it your IP address. Requests carry no cookies and no
+                    referrer; each tile is kept on your PC for a month so it is not asked for again.
+                    <strong>Turn <em>Map Previews</em> off</strong> in Settings and a shared location
+                    shows as a pin and a label, with no tile request. Clicking <em>Open in Maps</em>
+                    opens the place in your web browser on Apple Maps' website, which that site then
+                    receives &mdash; only when you click.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Any website linked in a message</strong></td>
+                <td>
+                    To draw a link preview, your PC fetches the page directly from that site, which
+                    sees a request from your IP address. The request is https only, carries no
+                    cookies, credentials or referrer, and stops reading at the end of the page's
+                    header or after 1&nbsp;MB. <strong>Turn <em>Link Previews</em> off</strong> in
+                    Settings to stop it. When previews are on, the request is made for every message
+                    carrying a link, including messages hidden because you blocked their sender
+                    &mdash; deliberately, so that blocking somebody cannot be detected by the owner of
+                    a linked site.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Google</strong> (public STUN server), or whichever server your operator names</td>
+                <td>
+                    A call asks the addresses your server hands out &mdash; by default
+                    <code>stun.l.google.com</code> &mdash; to discover your public address, which
+                    <strong>reveals your IP address to Google</strong>. An operator can point this at
+                    their own server instead, and can run a relay for networks that block direct
+                    connections. A successful call also necessarily reveals each participant's IP
+                    address <em>to the other participant</em>; that is inherent to peer-to-peer
+                    calling and no setting can remove it while calls still work.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Microsoft</strong> (Azure OpenAI) &mdash; <em>only if the server operator has enabled the assistant</em></td>
+                <td>
+                    The assistant is off unless an operator configures it. Where it is enabled,
+                    mentioning <code>@ai</code> in the family chat sends recent family conversation
+                    &mdash; <strong>up to 200 messages or 30 days</strong>, including other members'
+                    words, their display names and timestamps &mdash; to Azure OpenAI to answer the
+                    question. A family owner can switch that history off, leaving only the message
+                    that mentioned the assistant. Private chats with the assistant send only that
+                    conversation. This is sent by the <em>server</em>, not by your PC.
+                </td>
+            </tr>
+        </table>
+
+        <h2>What Microsoft and Windows handle around the app</h2>
+        <p>
+            Family Connect itself sends nothing to Microsoft. A few Windows components it relies on
+            have their own practices, governed by
+            <a href="https://privacy.microsoft.com/privacystatement">Microsoft's privacy statement</a>
+            rather than by this page:
+        </p>
+        <table>
+            <tr><th style="width:26%">Component</th><th>What it does, and what Family Connect does about it</th></tr>
+            <tr>
+                <td><strong>WebView2 Runtime</strong> (calls)</td>
+                <td>
+                    The audio and video of a call run in Microsoft's Chromium-based WebView2 component,
+                    which ships with Windows 11. It is started only the first time you place or answer
+                    a call, it only ever shows a page bundled inside the app, and the microphone and
+                    camera are granted to that page alone. The runtime collects diagnostic data about
+                    its own health and crashes according to your Windows <em>Settings ▸ Privacy &amp;
+                    security ▸ Diagnostics &amp; feedback</em> setting. It also includes
+                    <strong>Microsoft Defender SmartScreen</strong>, and Microsoft requires this notice:
+                    the software includes Microsoft Defender SmartScreen, which collects and sends
+                    information to Microsoft as described in
+                    <a href="https://learn.microsoft.com/en-us/legal/microsoft-edge/privacy#smartscreen">Microsoft's privacy statement (SmartScreen)</a>.
+                    Family Connect adds nothing to this stream and reads nothing from it.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Windows location</strong></td>
+                <td>
+                    When you choose to share where you are, the app asks Windows for one position.
+                    Windows decides how to find it (satellite, Wi-Fi or network), under your
+                    <em>Settings ▸ Privacy &amp; security ▸ Location</em> choices, which can refuse the
+                    app at any time.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Windows notifications</strong></td>
+                <td>
+                    Shown by Windows on this PC, from the app, with no push service in between.
+                    <em>Settings ▸ System ▸ Notifications</em> can silence them.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Microsoft Store</strong></td>
+                <td>
+                    Because the app is distributed through the Store, Microsoft reports acquisition
+                    counts, ratings and aggregated crash and hang counts &mdash; which Windows itself
+                    collects under the same diagnostic-data setting &mdash; to us as numbers on a
+                    publisher dashboard. Nothing in them identifies anybody, and the app sends nothing
+                    in order to produce them.
+                </td>
+            </tr>
+        </table>
+
+        <h2>What the app keeps on your PC</h2>
+        <p>
+            Everything below stays on the PC, in the app's own local folder (or, for the session
+            token, in Windows' own credential store). None of it is sent anywhere by the app, and
+            removing the app removes its folder.
+        </p>
+        <table>
+            <tr><th style="width:36%">Stored</th><th>Why</th></tr>
+            <tr>
+                <td><code>cache.db</code> &mdash; your chats, messages, the family board, the roster, and
+                    any message you wrote that the server has not received yet</td>
+                <td>So history reads back with no network, and a message typed offline is sent when
+                    the connection returns. Signing out empties it, unsent messages included &mdash; a
+                    queued message belongs to the account that wrote it.</td>
+            </tr>
+            <tr>
+                <td>Downloaded photos, videos, voice notes, files and profile pictures
+                    (<code>blobs</code>)</td>
+                <td>So an attachment is fetched once rather than every time it is shown.</td>
+            </tr>
+            <tr>
+                <td>Files on their way out (<code>outgoing</code>)</td>
+                <td>Copies of what you attached, kept only while the send is under way, so an
+                    interrupted upload can finish.</td>
+            </tr>
+            <tr>
+                <td>Map tiles from OpenStreetMap</td>
+                <td>Kept for a month, so a map already drawn is not asked for again.</td>
+            </tr>
+            <tr>
+                <td>The session token, in the <strong>Windows Credential Locker</strong>, one per
+                    server</td>
+                <td>So you stay signed in. It is the key to your account, so it lives in Windows'
+                    protected credential store and never in a file; signing out removes it. Your
+                    password is not stored.</td>
+            </tr>
+            <tr>
+                <td>Small settings files: the server address, <em>Tell me when a message
+                    arrives</em>, <em>Keep running when the window is closed</em>, <em>Link
+                    Previews</em>, <em>Map Previews</em>, and the window's position</td>
+                <td>So the app opens the way you left it.</td>
+            </tr>
+            <tr>
+                <td><code>awaiting-join.txt</code> &mdash; the server and your account number, only while
+                    a request to join a family is waiting for the owner's approval</td>
+                <td>So the app can tell you if the owner declined.</td>
+            </tr>
+            <tr>
+                <td><code>diagnostics.log</code> &mdash; a line per failure: a crash, an error, a
+                    connection problem</td>
+                <td>So a failure you can see has something behind it. <strong>It never contains the
+                    text of a message or a token</strong> &mdash; it records what happened,
+                    not what was said. It is written for you, on your PC, and there is no crash report
+                    of ours to send it to; you can read or delete it at any time, and attach it to a
+                    bug report if you choose.</td>
+            </tr>
+            <tr>
+                <td>The WebView2 data folder, once you have made a call</td>
+                <td>The call's browser engine needs somewhere to keep its own state.</td>
+            </tr>
+            <tr>
+                <td>Temporary copies in the app's temporary folder</td>
+                <td>A picture you paste, and a file you pass to the Windows <em>Share</em> menu, are
+                    written there first. Windows may clear it at any time.</td>
+            </tr>
+        </table>
+        <p>
+            Anyone who can sign in to your Windows account can open the app and read what it holds,
+            as with any messenger on a shared PC. Signing out of Family Connect clears its history
+            from this PC.
+        </p>
+
+        <h2>Permissions</h2>
+        <p>
+            Windows asks you the first time the app needs the microphone, the camera or your location,
+            and <em>Settings ▸ Privacy &amp; security</em> can take each back at any time. The package
+            declares:
+        </p>
+        <table>
+            <tr><th style="width:28%">Capability</th><th>Why</th></tr>
+            <tr><td><code>microphone</code></td><td>Recording a voice note, and voice and video calls.</td></tr>
+            <tr><td><code>webcam</code></td><td>Video calls. The camera is not used anywhere else.</td></tr>
+            <tr><td><code>location</code></td><td>Only when you choose to share your location in a chat &mdash; one position, then the app stops asking. Family Connect does not track you.</td></tr>
+            <tr>
+                <td><code>runFullTrust</code></td>
+                <td>
+                    Family Connect is a Windows desktop app built on the Windows App SDK: it runs with
+                    your own user's rights, the way a program installed from any other source does,
+                    rather than inside an app container. That is worth saying plainly, because it is
+                    not a sandbox. It reads and writes only its own folder and the files you pick,
+                    paste, drop or share into it &mdash; by how it is written, which anyone can read in
+                    its public source.
+                </td>
+            </tr>
+        </table>
+        <p>
+            The app also receives files through the Windows <em>Share</em> menu (only what you choose
+            to share to it) and shows notifications, both of which Windows controls.
+        </p>
+
+        <h2>How long things are kept</h2>
+        <p>
+            The server deletes messages older than a limit its operator sets &mdash;
+            <strong>100 days by default</strong>. Deleting a message also deletes the photos, videos,
+            voice notes and files it carried. An operator can lengthen this, shorten it, or switch it
+            off entirely, so on a server you do not run yourself you should ask its operator. A copy
+            already downloaded to your PC stays in the app's cache until you sign out or remove the
+            app.
+        </p>
+        <p>The sweep is <strong>not</strong> a general erasure. It does not touch:</p>
+        <ul>
+            <li>board notes,</li>
+            <li>profile pictures,</li>
+            <li>accounts, sign-in sessions or registered devices,</li>
+            <li>blocks,</li>
+            <li>and, most importantly, <strong>moderation reports and their quoted text</strong>
+                &mdash; see the next section.</li>
+        </ul>
+        <p>
+            One further caveat: if two people send the identical file, the server stores one copy and
+            both messages point at it. Deleting or expiring one of those messages does not remove the
+            file while the other still refers to it.
+        </p>
+
+        <h2>Reporting a message, and what it makes permanent</h2>
+        <p>
+            Any member can report a message or a person to the family's owner. When a message is
+            reported, <strong>a complete copy of its text is frozen and stored</strong> for the owner
+            to read. That copy:
+        </p>
+        <ul>
+            <li>survives the author editing the message afterwards,</li>
+            <li>survives the retention sweep deleting the original,</li>
+            <li>survives the report being marked as handled,</li>
+            <li>and survives the author deleting their account.</li>
+        </ul>
+        <p>
+            This includes <strong>messages from one-to-one chats</strong>, and it is the only route by
+            which a private message in Family Connect reaches a third person. It requires the
+            deliberate act of the person who received it, and the app says so before you confirm. A
+            report about the family owner is never shown to that owner; if the problem is the owner,
+            the server operator's published contact is shown on the same screen as an escalation
+            route.
+        </p>
+
+        <h2>Deleting your account</h2>
+        <p>
+            You can delete your account in the app: <em>Settings ▸ Delete Account&hellip;</em>. Be
+            clear about what this does:
+        </p>
+        <ul>
+            <li><strong>It removes your identity.</strong> Username, password, profile picture,
+                birthday, sessions and registered devices are erased, and every device you were signed
+                in on is signed out.</li>
+            <li><strong>It does not remove what you wrote.</strong> Your messages in the family chat,
+                your board notes, your emoji reactions and your poll votes remain, re-labelled as
+                coming from a &ldquo;Deleted account&rdquo;. This is deliberate: the rest of your
+                family did not agree to lose their conversation.</li>
+            <li><strong>It does delete your one-to-one chats in full</strong> &mdash; including the
+                other person's messages in them. That person is not asked.</li>
+        </ul>
+        <p>
+            If you want your messages gone as well, delete them or ask the operator of your server;
+            on the default server, write to me and I will do it.
+        </p>
+
+        <h2>Children</h2>
+        <p>
+            Family Connect is built for households, and children are an expected part of that. It
+            collects no age and no date of birth, so it cannot and does not profile anyone by age.
+            There is no advertising, no tracking and no public directory &mdash; a Family Connect
+            account can only be reached by people who are in the same family, and joining a family
+            needs an invite code and, by default, the owner's approval. A parent or guardian who sets
+            up the family is the person who decides who may join it, and who can remove a member at
+            any time.
+        </p>
+
+        <h2>Your rights</h2>
+        <p>
+            If you use the default server, write to
+            <a href="mailto:nettrash@nettrash.me?subject=Family%20Connect%20privacy">nettrash@nettrash.me</a>
+            and I will tell you what is stored about you, correct it, export it or delete it. There is
+            one honest limit: I cannot remove your messages from other people's conversations without
+            removing part of theirs, so I will discuss what you want before doing anything
+            irreversible.
+        </p>
+        <p>
+            If you use somebody else's server, I hold nothing about you and cannot act on it; your
+            request goes to whoever runs that server. What the app keeps on your own PC is yours to
+            delete: sign out, or remove the app.
+        </p>
+
+        <h2>Where data is held</h2>
+        <p>
+            The default server runs on a machine in the European Union. Notifications to other
+            members' phones and Macs pass through Apple and Google, map tiles come from OpenStreetMap,
+            and the assistant, where enabled, runs through Microsoft &mdash; these organisations
+            operate globally and may process the data described above outside your country. A
+            self-hosted server is wherever you put it.
+        </p>
+
+        <h2>Changes to this policy</h2>
+        <p>
+            If a future version changes any of the above &mdash; new data collected, a new third party
+            contacted, a new permission requested &mdash; this page is updated in the same release and
+            the <strong>Last updated</strong> date above is bumped. The app's source, and the history
+            of what it does, is public in
+            <a href="https://github.com/nettrash/family.connect">github.com/nettrash/family.connect</a>.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+            For anything in this policy, email
+            <a href="mailto:nettrash@nettrash.me?subject=Family%20Connect%20privacy">nettrash@nettrash.me</a>.
+        </p>
+
+        <footer>
+            <a href="https://nettrash.me/">&larr; nettrash.me</a> &middot;
+            <a href="support.html">Support</a>
+        </footer>
+    </main>
+</body>
+</html>
