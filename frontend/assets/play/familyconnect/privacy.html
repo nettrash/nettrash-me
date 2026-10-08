@@ -79,7 +79,7 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Effective date:</strong> 19 September 2026 &middot;
+            <strong>Effective date:</strong> 3 October 2026 &middot;
             <strong>Applies to:</strong> Family Connect for Android &mdash; the app published by
             nettrash on Google Play (<code>me.nettrash.familyconnect</code>), and the Family Connect
             server software. The iOS, iPadOS and macOS apps have
@@ -220,7 +220,8 @@
         <p>
             <strong>Family statistics</strong> are visible to every member of your family, not only
             the owner: how many messages each person sent, how many photos, videos, voice notes and
-            locations, the total size, and how many assistant questions they asked.
+            locations, the total size, how many assistant questions they asked, and how many web
+            searches the assistant made to answer them.
         </p>
 
         <h2>What the apps do <em>not</em> do</h2>
@@ -309,6 +310,43 @@
                     else's question. The assistant's daily greeting, where a family turns it on, is
                     a fixed instruction plus the star signs of stored birthdays: no names, no
                     messages, nothing anybody wrote.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>A web-search service</strong> (Brave Search, or a SearXNG instance),
+                <strong>Open-Meteo</strong> (weather) and <strong>Wikipedia</strong> &mdash;
+                <em>only if the server operator has set them up, the family owner has turned
+                lookups on, and you have agreed</em></td>
+                <td>
+                    The assistant can look something up when a question needs it &mdash; tomorrow's
+                    weather, today's news, a fact worth checking. This is off unless three people
+                    each say yes: the <strong>server operator</strong> chooses which of these
+                    services exist (none, by default), the <strong>family owner</strong> turns
+                    lookups on for the family, and <strong>you</strong> agree to it separately, on a
+                    screen that names the services your server uses. Without your agreement your
+                    questions are answered exactly as before, with nothing looked up. You can
+                    withdraw this agreement on its own at any time, and withdrawing your agreement to
+                    the assistant withdraws this one too.
+                    <br><br>
+                    What leaves is small, and it is sent by the <em>server</em>, not by your device:
+                    <strong>a short search phrase the assistant writes from the question</strong> (200 characters
+                    at most unless the operator sets another limit), goes to the web-search service the operator chose or to
+                    Wikipedia; for the weather, <strong>a place name</strong> taken from the question
+                    goes to Open-Meteo, which is then asked for that place's forecast. A SearXNG
+                    instance is run by the operator and passes the phrase on to the search engines it
+                    is set up to use. The phrase is the assistant's own wording, so it can repeat
+                    something from your question &mdash; and in the family chat, from recent messages,
+                    but only those of members who have agreed to lookups too; a question quoting
+                    somebody who has not agreed is answered without looking anything up.
+                    <strong>Nothing else goes with it</strong>: not the conversation, not anybody's
+                    name or account, no photos, and never your location or coordinates &mdash; a
+                    weather lookup works only from a place named in words. The services see the
+                    server's address and a label naming Family Connect, not your device.
+                    <br><br>
+                    An answer that used a lookup ends with its sources: up to three links, and the
+                    credit each service asks for. It is kept like any other message. The sources are
+                    ordinary links, so with link previews on, your device fetches the first one's page
+                    as it would for any link in a message.
                 </td>
             </tr>
         </table>
@@ -426,8 +464,9 @@
 
         <h2>The protection third parties give</h2>
         <p>
-            Where data leaves the server it leaves for one of the companies named above, and each of
-            them is bound by terms that provide <strong>the same or equal protection of that data as
+            Where data leaves the server it leaves for one of the companies named above. Apart from
+            the assistant's lookup services (see the next paragraph), each of them is bound by terms
+            that provide <strong>the same or equal protection of that data as
             this policy states</strong>. In particular, for the optional assistant, Microsoft's
             Azure OpenAI Service terms provide that prompts and responses are not used to train or
             improve Microsoft's or any third party's models and are not shared with other customers
@@ -435,12 +474,24 @@
             notification says (who wrote, never what they wrote). No data described here is sold,
             rented, or handed to a data broker, and nothing is used for advertising or profiling.
         </p>
+        <p>
+            The assistant's lookup services are a different case, and it is fairer to say so than to
+            stretch the sentence above over them. Brave, Open-Meteo and the Wikimedia Foundation each
+            handle the requests they receive under their own published privacy policies, not under
+            terms written to match this one, and a SearXNG instance is run by the operator, who
+            answers for the search engines it passes a search on to. What
+            they receive is kept small for that reason &mdash; a short phrase or a place name, sent by
+            the server, with no account, name, device identifier or location attached. Brave states
+            that it keeps queries for up to 90 days with no identifier linking a query to a person or
+            a device. Here too, nothing is sold or used for advertising.
+        </p>
 
         <h2>Where data is held</h2>
         <p>
             The default server runs on a machine in the European Union. Notifications pass through
-            Apple and Google, and the assistant, where enabled, through Microsoft &mdash; these
-            companies operate globally and may process the data described above outside your country.
+            Apple and Google, the assistant, where enabled, through Microsoft, and its lookups, where turned on, through
+            the web-search service the operator chose, Open-Meteo and the Wikimedia Foundation
+            &mdash; these organisations operate globally and may process the data described above outside your country.
             A self-hosted server is wherever you put it.
         </p>
 

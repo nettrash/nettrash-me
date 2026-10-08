@@ -330,7 +330,7 @@ const PROJECT_REPOS: &[(&str, &str)] = &[
     ("nettrash", "pgc"),
     ("nettrash", "pg_dbms_job"),
     ("nettrash", "pg_amqp"),
-    ("nettrash", "logpipe"),
+    ("nettrash", "family.connect"),
 ];
 
 /// Pick the live tag from a repo's fetched metadata, or the supplied
@@ -418,11 +418,12 @@ fn github_tab() -> Html {
     let pg_amqp_tag = live_tag(m, "nettrash/pg_amqp", "v0.4.4");
     let pg_amqp_stars = live_count(m, "nettrash/pg_amqp", |d| d.stars, 0);
     let pg_amqp_forks = live_count(m, "nettrash/pg_amqp", |d| d.forks, 0);
-    let logpipe_tag = live_tag(m, "nettrash/logpipe", "v0.3.0");
-    let logpipe_stars = live_count(m, "nettrash/logpipe", |d| d.stars, 0);
-    let logpipe_tag_url = format!(
-        "https://github.com/nettrash/logpipe/releases/tag/{}",
-        logpipe_tag
+    let family_tag = live_tag(m, "nettrash/family.connect", "v1.2");
+    let family_stars = live_count(m, "nettrash/family.connect", |d| d.stars, 0);
+    let family_forks = live_count(m, "nettrash/family.connect", |d| d.forks, 0);
+    let family_tag_url = format!(
+        "https://github.com/nettrash/family.connect/releases/tag/{}",
+        family_tag
     );
 
     html! {
@@ -540,31 +541,33 @@ fn github_tab() -> Html {
                     </div>
                 </div>
 
-                // logpipe
+                // family.connect
                 <div class="card mb-3">
                     <div class="card-body">
                         <h6 class="card-title mb-1">
-                            <a href="https://github.com/nettrash/logpipe" target="_blank"
+                            <a href="https://github.com/nettrash/family.connect" target="_blank"
                                rel="noopener noreferrer" class="text-decoration-none">
-                                { "logpipe" }
+                                { "family.connect" }
                             </a>
                             <span class="badge bg-secondary ms-2" style="font-size:0.7em;">{ "Rust" }</span>
                         </h6>
                         <p class="card-text mb-2">
-                            { "Log-forwarding service for Linux. Exposes a writable named pipe at \
-                               /dev/logpipe; every line written there streams into a configured \
-                               OpenSearch index via the _bulk API. Plain text becomes a structured \
-                               document, single-line JSON objects merge their fields into the \
-                               record — drop-in shipping for any local process via echo, tail or \
-                               structured loggers." }
+                            { "Self-hosted private messenger for families: one Rust server on your \
+                               own hardware and native clients for iOS, iPadOS, macOS, Android, \
+                               Windows and the web. A shared family chat and one-to-one chats, \
+                               threads, polls, a family board, voice and round video messages, a \
+                               family sticker pack and peer-to-peer voice and video calls — with \
+                               no vendor cloud: messages live on your server and your family's \
+                               devices, in nine languages." }
                         </p>
                         <div class="d-flex gap-3 text-muted small">
-                            <span>{ format!("⭐ {}", logpipe_stars) }</span>
+                            <span>{ format!("⭐ {}", family_stars) }</span>
+                            <span>{ format!("🍴 {}", family_forks) }</span>
                             <span>
-                                <a href={logpipe_tag_url.clone()}
+                                <a href={family_tag_url.clone()}
                                    target="_blank" rel="noopener noreferrer"
                                    class="text-muted text-decoration-none">
-                                    { logpipe_tag.clone() }
+                                    { family_tag.clone() }
                                 </a>
                             </span>
                             <span class="badge bg-light text-dark">{ "MIT" }</span>
