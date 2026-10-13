@@ -79,8 +79,8 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Last updated:</strong> 14 July 2026 &middot;
-            <strong>Applies to:</strong> md 1.2 — the Markdown editor published by nettrash on the App Store. The same product runs on iPhone and iPad (iOS / iPadOS) and on Mac (a native macOS app). This policy is versioned alongside the app's source code; the most recent commit on <code>main</code> is authoritative.
+            <strong>Last updated:</strong> 13 October 2026 &middot;
+            <strong>Applies to:</strong> md 1.6 — the Markdown editor published by nettrash on the App Store. The same product runs on iPhone and iPad (iOS / iPadOS) and on Mac (a native macOS app). This policy is versioned alongside the app's source code; the most recent commit on <code>main</code> is authoritative.
         </p>
 
         <h2>TL;DR</h2>
@@ -90,10 +90,11 @@
             trackers, and no servers operated by us — we operate no servers at
             all. The documents you open and edit stay where you put them — on
             your device or Mac, in Files / Finder, or in <em>your own</em>
-            iCloud Drive. The app's only network activity is fetching images
-            that <em>your own documents</em> reference by a remote URL, so they
-            can appear in the preview and in what you print or export. Nothing
-            about you is ever sent anywhere.
+            iCloud Drive. The app's only network activity is fetching what
+            <em>your own documents</em> name by a remote URL: images, so they can
+            appear in the preview and in what you print or export, and the cover
+            image of an EPUB you export, if its front matter names one by an
+            <code>https:</code> URL. Nothing about you is ever sent anywhere.
         </p>
         <p>If that already answers your question, you don't need to read the rest.</p>
 
@@ -101,35 +102,54 @@
         <p>
             <strong>Nothing.</strong> md has no account to create, no email to
             register, and no telemetry pinging home. There are no servers in
-            this picture. The app initiates exactly one kind of network request,
-            and only on your behalf: downloading an image that
-            <em>your document</em> points at by remote URL
-            (<code>![…](https://…)</code>). See <em>Network use</em> below.
+            this picture. The app initiates two kinds of network request, both
+            only on your behalf: downloading an image that <em>your document</em>
+            points at by remote URL (<code>![…](https://…)</code>), and downloading
+            the cover an EPUB export's front matter names by an <code>https:</code>
+            URL. See <em>Network use</em> below.
         </p>
 
         <h2>Network use</h2>
         <p>
-            One and only one thing in md causes a network request: an image your
-            own document references by a remote URL. It is fetched when that
-            document is rendered — in the live preview, and also when you print
-            it or export it to PDF or EPUB, because the printed page has to show
-            the same picture the preview does.
+            Two things in md cause a network request, and both are things your
+            own document asks for. The first is an image your document references
+            by a remote URL. It is fetched when that document is rendered — in the
+            live preview, and also when you print it or export it to PDF or EPUB,
+            because the printed page has to show the same picture the preview
+            does.
+        </p>
+        <p>
+            The second is an EPUB cover. When you export a document as an EPUB
+            and its front matter says <code>cover: https://…</code>, the export
+            downloads that one image to put it on the book: at most 20&nbsp;MB, within
+            15 seconds, and through at most five redirects, each of which must stay
+            on <code>https</code>. A cover that is a file beside the document, or an
+            image written inline as <code>data:</code>, involves no network.
         </p>
         <p>
             The request goes directly to whatever host <em>your document</em>
             names. That host sees your device's IP address and a normal HTTP
             request, exactly as it would if you had opened the same URL in a web
             browser — that is unavoidable for any app that displays a remote
-            image, and it is the only reason md touches the network. We are not
-            party to it: no request is ever made to us, because there is nothing
-            of ours to make it to. If your document references no remote images,
-            md makes no network requests at all. Local images (files next to the
+            image, and these two are the only reasons md touches the network. A
+            cover's redirects, if any, are seen the same way by each host along
+            the way. We are not party to any of it: no request is ever made to us,
+            because there is nothing of ours to make it to. If your document
+            references no remote images and you export no EPUB with an
+            <code>https:</code> cover, md makes no network requests at all. Local images (files next to the
             document, or inside your book folder) are read from disk and involve
             no network.
         </p>
         <p>
             There is no telemetry, no analytics, no crash reporting, no ads, and
             no tracking of any kind.
+        </p>
+        <p>
+            <strong>Quick Look.</strong> md's Quick Look preview — what Space shows
+            in the Finder on a Mac, and the preview of a TextBundle in Files, Mail
+            or another app on iPhone and iPad — makes no network request at all. It
+            blocks every remote load, so a remote image in a previewed document is
+            simply not shown.
         </p>
 
         <h2>Your documents</h2>
@@ -187,7 +207,8 @@
         <h2>Printing, PDF and EPUB</h2>
         <p>
             Print, Share Rendered PDF, Export as PDF and Export as EPUB all run
-            on-device through the system print engine and produce real
+            on-device (apart from fetching the images and the EPUB cover described
+            under <em>Network use</em>) through the system print engine and produce real
             <strong>A4 pages</strong>. Pagination is line-aware, so no line of
             text is sliced in half at a page boundary; a diagram taller than a
             single page can still be split across pages. A line containing only
@@ -210,8 +231,10 @@
         <p>
             To render math and diagrams, the app <strong>bundles a small set of
             open-source JavaScript engines</strong> inside the app itself:
-            <strong>KaTeX</strong> (math), <strong>Mermaid</strong> (diagrams),
-            <strong>Viz.js / Graphviz</strong> and <strong>PlantUML</strong>.
+            <strong>KaTeX</strong> (math, with <strong>mhchem</strong> for
+            chemistry), <strong>Mermaid</strong> (diagrams), <strong>Viz.js /
+            Graphviz</strong>, <strong>PlantUML</strong> and
+            <strong>highlight.js</strong> (code).
             They run <strong>on your device, offline</strong>, inside the web view
             that draws the preview and the printed page. They ship in the app
             bundle: nothing is downloaded at runtime, no CDN is contacted, and
@@ -248,6 +271,14 @@
                     <td>Mac only: whether articles open in separate windows</td>
                     <td>A window-behaviour preference.</td>
                 </tr>
+                <tr>
+                    <td>Your PDF page size</td>
+                    <td>So printing and PDF export use the paper you chose last.</td>
+                </tr>
+                <tr>
+                    <td>The three Typing switches: whether Return continues lists and tables, whether sentences are capitalized, and whether typing <code>*</code>, <code>_</code>, a backtick or <code>$</code> wraps a selection</td>
+                    <td>So typing behaves the way you set it.</td>
+                </tr>
             </tbody>
         </table>
 
@@ -255,7 +286,7 @@
         <p>
             md asks for <strong>no camera, microphone, contacts, location, or
             photo-library access</strong>. It does need the network — but only for
-            the remote images described above. File access is mediated entirely
+            the remote images and the EPUB cover described above. File access is mediated entirely
             by the system:
         </p>
         <table>
@@ -276,7 +307,7 @@
                         The app runs in the macOS <strong>App Sandbox</strong> and holds exactly three entitlements:
                         <code>com.apple.security.files.user-selected.read-write</code> — read and write the documents and book folder you pick, and nothing else;
                         <code>com.apple.security.print</code> — without it the system print panel's Print button stays disabled;
-                        <code>com.apple.security.network.client</code> — required for the preview's web view to launch inside the sandbox at all, and used for the one real network request md makes: fetching a remote image your document references.
+                        <code>com.apple.security.network.client</code> — required for the preview's web view to launch inside the sandbox at all, and used for the two network requests md makes: fetching a remote image your document references, and an <code>https:</code> EPUB cover its front matter names. md's Quick Look extension is sandboxed on its own, with read-only access to the file being previewed and the same network entitlement only so its web view can launch; it blocks every remote load.
                     </td>
                 </tr>
             </tbody>
@@ -296,7 +327,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>Contact info, identifiers, usage data, diagnostics, location, content you create</td><td>No — none of it leaves your device except where <em>you</em> place a file in your own iCloud Drive, or where <em>your</em> document asks for an image from a host you named.</td></tr>
+                <tr><td>Contact info, identifiers, usage data, diagnostics, location, content you create</td><td>No — none of it leaves your device except where <em>you</em> place a file in your own iCloud Drive, or where <em>your</em> document asks for an image, or an EPUB cover, from a host you named.</td></tr>
                 <tr><td>Analytics / advertising / tracking</td><td>None. The app contains no such SDKs and performs no tracking.</td></tr>
             </tbody>
         </table>
