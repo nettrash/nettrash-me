@@ -79,8 +79,8 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Last updated:</strong> 6 September 2026 &middot;
-            <strong>Applies to:</strong> md 1.0 for Windows — the Markdown editor published by nettrash on the Microsoft Store, for Windows 11. This policy is versioned alongside the app's source code; the most recent commit on <code>main</code> is authoritative.
+            <strong>Last updated:</strong> 13 October 2026 &middot;
+            <strong>Applies to:</strong> md 1.6 for Windows — the Markdown editor published by nettrash on the Microsoft Store, for Windows 11. This policy is versioned alongside the app's source code; the most recent commit on <code>main</code> is authoritative.
         </p>
 
         <h2>TL;DR</h2>
@@ -92,8 +92,10 @@
             your PC, in File Explorer, or in <em>your own</em> cloud-synced
             folders. The app's only network activity is fetching images that
             <em>your own documents</em> reference by a remote URL, so they can
-            appear in the preview and in what you print or export. Nothing
-            about you is ever sent anywhere.
+            appear in the preview and in what you print or export — and, when
+            you export an EPUB whose front matter names its cover by an
+            <code>https:</code> URL, that one image. Nothing about you is ever
+            sent anywhere.
         </p>
         <p>If that already answers your question, you don't need to read the rest.</p>
 
@@ -101,10 +103,12 @@
         <p>
             <strong>Nothing.</strong> md has no account to create, no email to
             register, and no telemetry pinging home. There are no servers in
-            this picture. The app initiates exactly one kind of network request,
+            this picture. The app initiates exactly two kinds of network request,
             and only on your behalf: downloading an image that
             <em>your document</em> points at by remote URL
-            (<code>![…](https://…)</code>). See <em>Network use</em> below.
+            (<code>![…](https://…)</code>), and, when you export an EPUB,
+            downloading the cover its front matter names by an
+            <code>https:</code> URL. See <em>Network use</em> below.
         </p>
         <p>
             Two things <em>around</em> the app are Microsoft's, and this page
@@ -117,8 +121,9 @@
 
         <h2>Network use</h2>
         <p>
-            One and only one thing in md causes a network request: an image your
-            own document references by a remote URL. It is fetched when that
+            Two things in md cause a network request, and both come from your
+            own document. The first is an image your document references by a
+            remote URL. It is fetched when that
             document is rendered — in the live preview, and also when you print
             it or export it to PDF or EPUB, because the printed page has to show
             the same picture the preview does.
@@ -128,14 +133,28 @@
             names. That host sees your PC's IP address and a normal HTTP
             request, exactly as it would if you had opened the same URL in a web
             browser — that is unavoidable for any app that displays a remote
-            image, and it is the only reason md touches the network. We are not
-            party to it: no request is ever made to us, because there is nothing
-            of ours to make it to. If your document references no remote images,
-            md makes no network requests at all. A local image beside the
-            document is deliberately not shown in the preview; the one place md
-            reads it is when you export a TextBundle, where it is copied into
-            the bundle's <code>assets</code> folder — from disk, with no network
-            involved.
+            image. We are not party to it: no request is ever made to us,
+            because there is nothing of ours to make it to.
+        </p>
+        <p>
+            The second is an e-book cover. When you export an EPUB and the
+            document's front matter says <code>cover: https://…</code>, md
+            fetches that one image to put on the book, and nothing else. It
+            reads at most 20 MB, gives up after 15 seconds, and follows at most
+            five redirects, each of which must stay <code>https</code>; the host
+            your document names, and each host it redirects to, sees your IP
+            address in the same way. If the image cannot be fetched, the book is
+            written without a cover. A cover named by a relative path is read
+            from the document's own folder instead, with no network involved.
+        </p>
+        <p>
+            If your document references no remote image and you export no EPUB
+            with an <code>https:</code> cover, md makes no network requests at
+            all. A local image beside the document is deliberately not shown in
+            the preview; the places md reads one are when you export a
+            TextBundle, where it is copied into the bundle's
+            <code>assets</code> folder, and the EPUB cover just described —
+            both from disk, with no network involved.
         </p>
         <p>
             There is no telemetry, no analytics, no crash reporting of ours, no
@@ -270,6 +289,10 @@
                     <td>So the book reopens on the article you were writing, the way you were writing it.</td>
                 </tr>
                 <tr>
+                    <td>The three switches under Edit ▸ Typing: Continue Lists and Tables (<code>md.continueLists</code>), Capitalize Sentences (<code>md.capitalizeSentences</code>) and Wrap Selection When Typing * _ ` $ (<code>md.wrapSelection</code>), each on or off</td>
+                    <td>So the typing helpers stay the way you set them. All three start on.</td>
+                </tr>
+                <tr>
                     <td>The last size of a document window and of the book window (<code>md.win.windowSize.document</code>, <code>md.win.windowSize.book</code>)</td>
                     <td>So new windows open at the size you last used.</td>
                 </tr>
@@ -304,7 +327,8 @@
         <p>
             md asks for <strong>no camera, microphone, contacts, location, or
             photo-library access</strong>, and shows no tracking prompt. It does
-            use the network — but only for the remote images described above.
+            use the network — but only for the remote images and the EPUB cover
+            described above.
             Its package declares exactly one capability:
         </p>
         <table>
@@ -324,7 +348,7 @@
                 <tr>
                     <td><em>(no network capability)</em></td>
                     <td>
-                        A full-trust app needs none to reach the network, so none is declared — please do not read that as "no network". The one request md makes is the remote-image fetch described under <em>Network use</em>; the WebView2 Runtime makes it, to the host your own document names.
+                        A full-trust app needs none to reach the network, so none is declared — please do not read that as "no network". The requests md makes are the two described under <em>Network use</em>: the remote-image fetch, which the WebView2 Runtime makes, and the EPUB cover fetch, which md makes itself when you export — both to the host your own document names.
                     </td>
                 </tr>
             </tbody>
