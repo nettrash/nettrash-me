@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>md — Support</title>
-    <meta name="description" content="Support, contact information, and troubleshooting for md 1.0 for Windows, the Markdown editor by nettrash on the Microsoft Store." />
+    <meta name="description" content="Support, contact information, and troubleshooting for md 1.6 for Windows, the Markdown editor by nettrash on the Microsoft Store." />
     <meta name="robots" content="index,follow" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
@@ -89,19 +89,21 @@
     <main>
         <h1>md — Support</h1>
         <p class="meta">
-            <strong>Last updated:</strong> 6 September 2026 &middot;
-            <strong>Applies to:</strong> md <strong>1.0</strong> for Windows — the Markdown editor published by nettrash on the Microsoft Store, running on Windows 11 (x64 and ARM64).
+            <strong>Last updated:</strong> 13 October 2026 &middot;
+            <strong>Applies to:</strong> md <strong>1.6</strong> for Windows — the Markdown editor published by nettrash on the Microsoft Store, running on Windows 11 (x64 and ARM64).
         </p>
 
         <p>
             md is the simplest Markdown editor for Windows 11: write Markdown
             on one side and see it rendered on the other, with a warm
-            typewriter look. Version 1.0 arrives with everything the editor's
-            other editions learned — a writer mode for whole <em>books</em>,
+            typewriter look — a writer mode for whole <em>books</em>,
             real-page PDFs at seven sizes, HTML, EPUB, LaTeX, SVG and
             TextBundle export, math, chemistry, diagrams and charts drawn on
             your PC, a table of contents, private author notes, a live word
             count, and documents that reopen in the layout you left them in.
+            Version 1.6 adds a <em>Format</em> menu with keyboard shortcuts,
+            and EPUBs that carry their author, language, series and cover from
+            the document's front matter.
             This page is the single place to reach the developer for issues,
             general feedback, or feature requests, and to find answers to
             common questions before you do.
@@ -138,8 +140,9 @@
             <li>Renders a live preview covering headings, <strong>bold</strong> / <em>italic</em> / <code>inline code</code> / links / strikethrough, bullet / numbered / task lists (with nesting), fenced code with syntax highlighting, block quotes, GitHub-style tables, CSV / TSV blocks drawn as tables, thematic and page breaks, footnotes, YAML / TOML front matter, and images — including images your document references by remote URL.</li>
             <li>Draws TeX / LaTeX math and mhchem chemistry (<code>$…$</code>, <code>$$…$$</code>, <code>```math</code>), Mermaid, Graphviz and PlantUML diagrams, and charts from a <code>```plot</code> block. These render <strong>on your PC</strong>, offline, from engines bundled inside the app — the plot block needs no engine at all.</li>
             <li>Offers three layouts — Edit, Split (side by side, stacking when the window is narrow) and Preview — with the editor and preview scrolling in sync in Split, plus a full-screen Zen mode. Each document reopens in the layout you last used for it.</li>
-            <li>Shows a table of contents (<em>Go → Contents</em>), a list of your private author notes (<em>Go → Notes</em>), a live word and character count, and a Find bar (Ctrl+F).</li>
-            <li>Prints through the print preview inside the window, exports the rendered document as a <strong>PDF of real pages</strong> (A4, A5, US Letter, US Legal or a paperback trim), as self-contained HTML, EPUB 3, LaTeX or a TextBundle, saves a single diagram as SVG, and shares the PDF or the Markdown source through the Windows Share pane.</li>
+            <li>Shows a table of contents (<em>Go → Contents</em>), a list of your private author notes (<em>Go → Notes</em>), a live word and character count, and a Find and Replace bar (Ctrl+F, or Ctrl+H for Replace).</li>
+            <li>Formats from the <em>Format</em> menu or the keyboard: Bold (Ctrl+B), Italic (Ctrl+I), Code (Ctrl+Shift+C), Strikethrough (Ctrl+Shift+X), Link (Ctrl+K), Heading 1–6 (Ctrl+Alt+1–6), Bullet List (Ctrl+Shift+L), Task List (Ctrl+Shift+T), Quote (Ctrl+Shift+Q), Indent and Outdent (Ctrl+] and Ctrl+[). Bold on bold text takes it off again. While you type, Enter continues a list, a quote or a table, sentences start with a capital, and typing <code>*</code>, <code>_</code>, <code>`</code> or <code>$</code> over a selection wraps it — three switches under <em>Edit → Typing</em>.</li>
+            <li>Prints through the print preview inside the window, exports the rendered document as a <strong>PDF of real pages</strong> (A4, A5, US Letter, US Legal or a paperback trim), as self-contained HTML, EPUB 3 (labelled with the author, language, date, description, series and cover its front matter names), LaTeX or a TextBundle, saves a single diagram as SVG, and shares the PDF or the Markdown source through the Windows Share pane.</li>
             <li><strong>Writer mode:</strong> open a folder as a <em>book</em> — subfolders are chapters, Markdown files are articles — create, rename, reorder and delete them, compile the whole book to one PDF, or export it as EPUB 3 or a LaTeX book.</li>
             <li>Ships built-in example documents and a sample book you can unpack and edit (<em>File → Examples</em>).</li>
         </ul>
@@ -185,10 +188,13 @@
             <em>Open with → Choose another app</em>, pick <strong>md</strong>
             and tick <em>Always</em>; or set it under <em>Settings → Apps →
             Default apps → md</em>. md registers <code>.md</code>,
-            <code>.markdown</code>, <code>.mdown</code>, <code>.markdn</code>
-            and <code>.mdtext</code> as its own, and offers itself for
-            <code>.txt</code>, <code>.puml</code>, <code>.plantuml</code>,
-            <code>.gv</code> and <code>.textpack</code>. md runs as a single
+            <code>.markdown</code>, <code>.mdown</code>, <code>.markdn</code>,
+            <code>.mdtext</code>, <code>.mdtxt</code>, <code>.mkd</code>,
+            <code>.mkdn</code>, <code>.mdwn</code> and <code>.mkdown</code> as
+            its own, and offers itself for <code>.txt</code>,
+            <code>.text</code>, <code>.puml</code>, <code>.plantuml</code>,
+            <code>.iuml</code>, <code>.pu</code>, <code>.gv</code> and
+            <code>.textpack</code>. md runs as a single
             instance, so a double-click lands in the running app, and a file
             that is already open just brings its window forward.
         </p>
@@ -291,7 +297,9 @@
         <p>
             The menu bar is the chrome, and every window carries one:
             <em>File</em> holds documents, Share, Export and Print;
-            <em>Edit</em> the editing commands and Find; <em>View</em> switches
+            <em>Edit</em> the editing commands, Find and Replace and the
+            Typing switches; <em>Format</em> bold, italic, code, links,
+            headings, lists, quotes and indents; <em>View</em> switches
             Edit / Split / Preview (Ctrl+1 / Ctrl+2 / Ctrl+3), Zen Mode
             (Ctrl+Shift+Enter) and full screen (F11); <em>Book</em> the writer
             mode; <em>Go</em> jumps to headings, to your private notes and
@@ -345,6 +353,11 @@
             leaves quotes, dashes and dots exactly as typed — your
             <code>"</code>, <code>--</code> and <code>...</code> stay literal so
             the syntax isn't corrupted — and does not underline spelling either.
+            The one thing it changes as you type is the first letter of a line
+            or a sentence, which it capitalizes — never inside code, a table,
+            math, a link or a path. Delete the capital and type the letter again
+            and it stays lowercase, or turn it off under <em>Edit → Typing →
+            Capitalize Sentences</em>.
         </p>
 
         <h3>Why doesn't the preview show some advanced Markdown feature?</h3>
@@ -372,15 +385,20 @@
 
         <h3>Then what does md use the network for?</h3>
         <p>
-            Exactly one thing: fetching an image that <em>your own document</em>
-            references by a remote URL (<code>![…](https://…)</code>). That
-            happens when the image is drawn — in the preview, and also when you
-            print or export to PDF or EPUB. The request goes to whatever host
-            your document names, and that host sees your PC's IP address, just
-            as it would if you opened the same URL in a browser. It carries no
-            identifying data beyond a normal HTTP request, and no data of yours
-            is ever sent anywhere. Documents with no remote images make no
-            network requests at all.
+            Two things, both named by <em>your own document</em>. First,
+            fetching an image it references by a remote URL
+            (<code>![…](https://…)</code>). That happens when the image is
+            drawn — in the preview, and also when you print or export to PDF or
+            EPUB. Second, when you export an EPUB whose front matter says
+            <code>cover: https://…</code>, fetching that one image for the
+            book's cover (at most 20 MB, within 15 seconds, and following
+            redirects only to <code>https</code> addresses). Either request goes
+            to whatever host your document names, and that host sees your PC's
+            IP address, just as it would if you opened the same URL in a
+            browser. It carries no identifying data beyond a normal HTTP
+            request, and no data of yours is ever sent anywhere. A document
+            with no remote images, exported without an <code>https:</code>
+            cover, makes no network requests at all.
         </p>
 
         <h3>What does md store on my PC besides my files?</h3>
@@ -388,7 +406,7 @@
             Only a few small settings and files, all local, none personal, none
             transmitted: the Edit / Split / Preview layout of your 200 most
             recent documents (keyed by a hash of the path, not the path); the
-            PDF page size; when a book is open, its folder path plus Windows'
+            PDF page size; the three <em>Edit → Typing</em> switches; when a book is open, its folder path plus Windows'
             grant to reopen it, which article you had open last, the book
             window's layout and whether articles open in separate windows; the
             last window sizes; a <code>session.json</code> listing the saved
@@ -453,8 +471,9 @@
             <code>runFullTrust</code>: md is a classic desktop app running with
             your own user's rights, and it reads and writes only the files you
             open, save, drop on it or pick as a book. It declares no network
-            capability because a full-trust app needs none; the one network
-            request it makes is the remote-image fetch described above.
+            capability because a full-trust app needs none; the network
+            requests it makes are the remote-image and EPUB-cover fetches
+            described above.
         </p>
         <p>
             The full source is published at
