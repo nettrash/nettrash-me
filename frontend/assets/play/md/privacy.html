@@ -79,8 +79,8 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Effective date:</strong> 14 July 2026 &middot;
-            <strong>Applies to:</strong> md 1.2 — the Markdown editor published by nettrash on Google Play
+            <strong>Effective date:</strong> 13 October 2026 &middot;
+            <strong>Applies to:</strong> md 1.6 — the Markdown editor published by nettrash on Google Play
             (<code>me.nettrash.md</code>), and the same upload-key-signed APK side-loaded from
             <a href="https://nettrash.me/play/md/md-latest.apk">nettrash.me/play/md/md-latest.apk</a>.
         </p>
@@ -105,18 +105,20 @@
         </p>
         <ul>
             <li>
-                md makes exactly <strong>one</strong> kind of network request:
-                fetching an image that <em>your own document</em> references by
-                a remote URL. It happens in the preview <em>and</em> when
-                printing or exporting to PDF or EPUB. The request goes to
-                whatever host your document names, and that host sees your
-                device's IP address — exactly as it would if you opened the
+                md makes exactly <strong>two</strong> kinds of network request,
+                both for an image that <em>your own document</em> names by a
+                remote URL: an image the document references, fetched in the
+                preview <em>and</em> when printing or exporting to PDF or EPUB;
+                and, when you export an EPUB whose front matter says
+                <code>cover: https://…</code>, that one cover image. Each request
+                goes to whatever host your document names, and that host sees
+                your device's IP address — exactly as it would if you opened the
                 same image in a browser. Nothing else is ever sent anywhere.
             </li>
             <li>
                 md bundles several <strong>open-source JavaScript engines</strong>
-                (KaTeX, Mermaid, Viz.js/Graphviz, PlantUML) to render maths and
-                diagrams. They run <strong>on your device, offline</strong>,
+                (KaTeX with mhchem, Mermaid, Viz.js/Graphviz, PlantUML and
+                highlight.js) to render maths, chemistry, diagrams and code. They run <strong>on your device, offline</strong>,
                 inside the preview's web view; they ship inside the app and
                 nothing about them is downloaded at runtime.
             </li>
@@ -137,8 +139,13 @@
             preview and included when you print or export to PDF or EPUB. Those
             requests go directly to whatever host the document names, carry no
             identifying data beyond an ordinary HTTP request, and happen only
-            for documents that reference such images. A document with no remote
-            images produces no network traffic at all. If the URL matters to
+            for documents that reference such images. The same goes for an EPUB
+            export whose front matter names its cover by an <code>https:</code>
+            URL: md fetches that one image to put it on the book — at most
+            20&nbsp;MB, giving up after 15 seconds, and following at most five
+            redirects, only to <code>https</code> addresses; each host along the
+            way sees your IP address in the same way. A document with no remote
+            images and no remote cover produces no network traffic at all. If the URL matters to
             you, remember that the host you (or the document's author) chose can
             see your IP address; use local image files if you'd rather it
             couldn't.
@@ -192,37 +199,58 @@
 
         <h2>Data stored on your device</h2>
         <p>
-            md stores a small amount of app-private state — all of it local, none
-            of it personal, none of it transmitted:
+            md stores a small amount of app-private state — all of it local and
+            none of it transmitted:
         </p>
         <ul>
             <li>
-                The <strong>view layout</strong> (Edit / Split / Preview), held in
-                the app's saved instance state so the editor survives a rotation
-                or a fold. It is not written to disk, and a cold start opens on
-                the default layout.
+                <strong>Settings</strong>, in the app's <code>SharedPreferences</code>:
+                the PDF page size, the three Typing switches (whether Return
+                continues lists and tables, whether sentences are capitalized, and
+                whether typing <code>*</code>, <code>_</code>, a backtick or
+                <code>$</code> wraps a selection), and the Edit / Split / Preview
+                layout each file was last shown in, remembered under that file's
+                document identifier.
             </li>
             <li>
                 A <strong>pointer to the book folder you picked</strong>, if you
                 use writer mode: the persisted Storage Access Framework tree URI
                 (and, for a book created with <em>New Book…</em>, the name of the
-                subfolder inside it), kept in the app's <code>SharedPreferences</code>.
-                It is a reference to a location you chose, not a copy of your
-                content, and closing the book discards it.
+                subfolder inside it). It is a reference to a location you chose,
+                not a copy of your content, and closing the book discards it.
+            </li>
+            <li>
+                The <strong>recent documents</strong> list behind <em>Open
+                Recent</em>: up to 25 entries, each a document's URI and its file
+                name, newest first. md keeps its access to those files so it can
+                reopen them, and gives that access back when a file drops off the
+                list. The last few also appear when you long-press md's icon, as
+                launcher shortcuts that carry the same names. <em>Clear
+                Recent</em> empties the list and removes the shortcuts.
+            </li>
+            <li>
+                <strong>Rescued text.</strong> If a save fails, md keeps a copy of
+                the document's text at once in its private storage, so your words
+                are not lost; it keeps the 20 most recent such copies. For a book
+                article, whose folder md can reach, a copy named
+                “<em>name</em> (rescued)” is also written beside the original. These
+                copies never leave your device.
             </li>
         </ul>
         <p>
-            There is no account, no analytics store, no usage history, and no
-            cache of your documents' content. Your documents themselves live in
-            the locations <em>you</em> chose through the picker, not inside the
-            app.
+            There is no account, no analytics store and no usage history beyond
+            the recent documents list above, and no copy of your documents'
+            content beyond the rescued text above. Your documents themselves live
+            in the locations <em>you</em> chose through the picker, not inside
+            the app.
         </p>
         <p>
             The app manifest leaves Android's <strong>Auto Backup</strong> at
-            its default (<code>allowBackup="true"</code>). The only app-private
-            data it could capture is the handful of preferences listed above;
-            whatever the system backs up goes to <em>your own</em> Google
-            account, encrypted, and never to us.
+            its default (<code>allowBackup="true"</code>), so the app-private data
+            listed above — the settings, the recent documents list and any
+            rescued text — may be included in your device's backup. Whatever the
+            system backs up goes to <em>your own</em> Google account, encrypted,
+            and never to us.
         </p>
 
         <h2>Permissions md asks for</h2>
@@ -239,7 +267,7 @@
             <tbody>
                 <tr>
                     <td><code>INTERNET</code> / network access</td>
-                    <td>Yes — solely so that images your documents reference by remote URL can be fetched, both for the preview and for printing / PDF / EPUB export. The app calls no services of ours (there are none) and uploads nothing. The page being rendered is local HTML md builds itself from your text; the only thing it may load from the network is those images.</td>
+                    <td>Yes — solely so that images your documents reference by remote URL can be fetched, both for the preview and for printing / PDF / EPUB export, and so that an EPUB export can fetch a cover its front matter names by an <code>https:</code> URL. The app calls no services of ours (there are none) and uploads nothing. The page being rendered is local HTML md builds itself from your text; the only thing it may load from the network is those images, and an EPUB export the one cover.</td>
                 </tr>
                 <tr>
                     <td>Storage (<code>READ_/WRITE_EXTERNAL_STORAGE</code>, <code>READ_MEDIA_*</code>)</td>
@@ -252,7 +280,7 @@
             </tbody>
         </table>
         <p>
-            Documents and books are opened four ways, all of them
+            Documents and books are opened five ways, all of them
             system-mediated: the in-app <em>Open</em> / <em>Save</em> pickers
             (<code>OpenDocument</code> / <code>CreateDocument</code>, with the
             access you grant persisted so md can reopen that file); the folder
@@ -260,9 +288,11 @@
             (<code>OpenDocumentTree</code>, which grants md the folder you chose
             and its contents); a Markdown or text file handed to md from a file
             manager or another app (<code>ACTION_VIEW</code>, "Open with md");
-            and text shared into md to start a new document
-            (<code>ACTION_SEND</code>). In every case md only ever receives the
-            item you chose.
+            a file or text shared into md from another app
+            (<code>ACTION_SEND</code>); and <em>Open Recent</em> or a launcher
+            shortcut, which reopen a file you opened before through the access
+            already granted for it. In every case md only ever receives the item
+            you chose.
         </p>
 
         <h2>Printing, PDF and EPUB</h2>
@@ -301,16 +331,17 @@
             rendered <em>offline</em> inside the preview's web view:
         </p>
         <ul>
-            <li><strong>KaTeX</strong> — mathematical notation.</li>
+            <li><strong>KaTeX</strong> with <strong>mhchem</strong> — mathematical and chemical notation.</li>
             <li><strong>Mermaid</strong> — diagrams.</li>
             <li><strong>Viz.js / Graphviz</strong> — graph diagrams.</li>
             <li><strong>PlantUML</strong> — UML diagrams.</li>
+            <li><strong>highlight.js</strong> — code highlighting.</li>
         </ul>
         <p>
             These are open-source components shipped <em>inside</em> the app.
             They execute locally on your device, send nothing anywhere, and
             nothing about them is downloaded at runtime — the app works with the
-            network switched off, apart from remote images.
+            network switched off, apart from remote images and an EPUB's remote cover.
         </p>
         <p>
             The <strong>Google Advertising ID</strong> is <strong>not</strong>
