@@ -42,6 +42,9 @@
     <!-- Microsoft Store legal pages (md for Windows). The privacy URL is mandatory for a
          full-trust Store app, so this folder must reach dist/ or the submission is rejected. -->
     <link data-trunk rel="copy-dir" href="assets/msstore" />
+    <!-- md for Linux: its privacy and support pages, which the packages and the app's Help menu
+         link to, and the packages themselves (dropped in at deploy, see assets/linux/md/README.md). -->
+    <link data-trunk rel="copy-dir" href="assets/linux" />
     <!-- Universal Links / App Links verification endpoints. Served by
          nginx from /.well-known/ with application/json + no-cache. -->
     <link data-trunk rel="copy-dir" href="assets/.well-known" />

@@ -1,0 +1,6 @@
+# The md for Linux packages are dropped in here at deploy time from the GitHub
+# release and not committed — see README.md.
+*.deb
+*.rpm
+*.tar.gz
+SHA256SUMS

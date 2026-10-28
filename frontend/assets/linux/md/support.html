@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>md — Support</title>
+    <meta name="description" content="Download, installation, support and troubleshooting for md 1.6 for Linux, the Markdown editor by nettrash for Ubuntu, Fedora and other distributions." />
+    <meta name="robots" content="index,follow" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous" />
+    <style>
+        body {
+            font-family: "Roboto", system-ui, -apple-system, sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.65;
+        }
+        main {
+            max-width: 820px;
+            margin: 3rem auto;
+            padding: 2.25rem 2.5rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            font-weight: 300;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        h2 {
+            font-weight: 400;
+            margin-top: 2rem;
+            font-size: 1.25rem;
+        }
+        h3 {
+            font-weight: 500;
+            margin-top: 1.5rem;
+            font-size: 1.05rem;
+        }
+        .meta {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        .contact-card {
+            background: #f4f8ff;
+            border: 1px solid #d6e4ff;
+            border-radius: 6px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0 1.5rem;
+        }
+        .contact-card dl {
+            margin: 0;
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            row-gap: 0.4rem;
+            column-gap: 1rem;
+        }
+        .contact-card dt {
+            font-weight: 600;
+            color: #444;
+        }
+        .contact-card dd {
+            margin: 0;
+        }
+        table {
+            width: 100%;
+            margin: 1rem 0;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #e6e6e6;
+            padding: 0.6rem 0.75rem;
+            vertical-align: top;
+            font-size: 0.95rem;
+        }
+        th {
+            background: #f4f4f4;
+            font-weight: 600;
+            text-align: left;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 0.05rem 0.35rem;
+            border-radius: 3px;
+            font-size: 0.92em;
+            color: #0d3a8a;
+        }
+        pre {
+            background: #f4f4f4;
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            font-size: 0.88rem;
+            overflow-x: auto;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #888;
+            font-size: 0.85rem;
+        }
+        a { color: #0d47a1; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>md — Support</h1>
+        <p class="meta">
+            <strong>Last updated:</strong> 28 October 2026 &middot;
+            <strong>Applies to:</strong> md <strong>1.6</strong> for Linux — the Markdown editor published by nettrash for Ubuntu 26.04 LTS (amd64 and arm64), Fedora 44 and later (x86_64 and aarch64), and other distributions through a portable archive.
+        </p>
+
+        <p>
+            md is the simplest Markdown editor for Linux: write Markdown on one
+            side and see it rendered on the other, with a warm typewriter look —
+            a native GTK 4 and libadwaita app, the Linux edition of md for Mac. It
+            has a writer mode for whole <em>books</em>, real-page PDFs at seven
+            sizes, HTML, EPUB, LaTeX, SVG and TextBundle export, math, chemistry,
+            diagrams and charts drawn on your computer, a table of contents,
+            private author notes, a live word count, and documents that reopen in
+            the layout you left them in. This page is where to download md, how to
+            install it, and the single place to reach the developer for issues,
+            feedback or feature requests.
+        </p>
+
+        <h2 id="download">Download</h2>
+        <p>
+            md 1.6.0 comes in three forms, each for two kinds of processor. Most
+            PCs are <strong>x86-64</strong> (Intel or AMD); ARM machines are
+            <strong>ARM64</strong>. <code>dpkg --print-architecture</code>
+            (Ubuntu) or <code>uname -m</code> tells you which yours is.
+        </p>
+        <table>
+            <thead>
+                <tr><th>For</th><th>x86-64</th><th>ARM64</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Ubuntu 26.04 LTS</strong> (<code>.deb</code>)</td>
+                    <td><a href="md_1.6.0_amd64.deb" download>md_1.6.0_amd64.deb</a></td>
+                    <td><a href="md_1.6.0_arm64.deb" download>md_1.6.0_arm64.deb</a></td>
+                </tr>
+                <tr>
+                    <td><strong>Fedora 44</strong> and later (<code>.rpm</code>)</td>
+                    <td><a href="md-1.6.0-1.fc44.x86_64.rpm" download>md-1.6.0-1.fc44.x86_64.rpm</a></td>
+                    <td><a href="md-1.6.0-1.fc44.aarch64.rpm" download>md-1.6.0-1.fc44.aarch64.rpm</a></td>
+                </tr>
+                <tr>
+                    <td><strong>Other distributions</strong> (<code>.tar.gz</code>)</td>
+                    <td><a href="md-1.6.0-linux-x86_64.tar.gz" download>md-1.6.0-linux-x86_64.tar.gz</a></td>
+                    <td><a href="md-1.6.0-linux-aarch64.tar.gz" download>md-1.6.0-linux-aarch64.tar.gz</a></td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            <a href="SHA256SUMS">SHA256SUMS</a> lists the checksum of every file.
+            To check a download, put it in one folder with <code>SHA256SUMS</code>
+            and run:
+        </p>
+        <pre><code>sha256sum --check --ignore-missing SHA256SUMS</code></pre>
+
+        <h2 id="install">Install</h2>
+
+        <h3>Ubuntu 26.04</h3>
+        <pre><code>sudo apt install ./md_1.6.0_amd64.deb      # or ./md_1.6.0_arm64.deb</code></pre>
+        <p>
+            Run it in the folder you downloaded to; the <code>./</code> tells apt
+            it is a file, not a package name. apt brings GTK 4, libadwaita,
+            WebKitGTK and the two font packages md uses from the Ubuntu archive,
+            and installs md's AppArmor profile (see <em>The preview cannot
+            start</em> below). md then appears in the app grid and under
+            <em>Open With</em> for Markdown files.
+        </p>
+
+        <h3>Fedora 44 and later</h3>
+        <pre><code>sudo dnf install ./md-1.6.0-1.fc44.x86_64.rpm      # or the .aarch64.rpm</code></pre>
+        <p>
+            dnf likewise brings the libraries and fonts from Fedora's
+            repositories.
+        </p>
+
+        <h3>Other distributions: the portable archive</h3>
+        <p>
+            The <code>.tar.gz</code> is a folder that runs wherever you unpack it,
+            on any distribution with GTK 4.22, libadwaita 1.9, WebKitGTK 6.0 2.52,
+            GLib 2.88 and glibc 2.39 or newer, and the fonts Nimbus Mono PS (URW
+            base35) and Liberation Mono:
+        </p>
+        <pre><code>tar -xzf md-1.6.0-linux-x86_64.tar.gz
+md-1.6.0/bin/md</code></pre>
+        <p>
+            To have md in the app grid and offered for Markdown files, copy it
+            into your home folder:
+        </p>
+        <pre><code>cp -r md-1.6.0/bin md-1.6.0/share ~/.local/
+update-desktop-database ~/.local/share/applications
+update-mime-database ~/.local/share/mime</code></pre>
+        <p>
+            and make sure <code>~/.local/bin</code> is on your <code>PATH</code>.
+            The <code>README</code> inside the archive lists the packages to
+            install on Ubuntu and Fedora, how to remove it again, and what Ubuntu
+            needs for the preview (below).
+        </p>
+
+        <h3>Updating</h3>
+        <p>
+            md does not check for updates. When a new version is published here,
+            download it and install it the same way; apt and dnf replace the old
+            version in place, and your settings, session and drafts carry over.
+        </p>
+
+        <h3>Removing md</h3>
+        <ul>
+            <li><code>sudo apt remove md</code> removes the app and keeps the AppArmor profile (a configuration file); <code>sudo apt purge md</code> removes that too.</li>
+            <li><code>sudo dnf remove md</code> removes the app.</li>
+            <li>For the archive, delete what you copied: <code>~/.local/bin/md</code>, the <code>rich</code> and <code>examples</code> folders in <code>~/.local/share/md</code> (not the whole folder: md keeps your unsaved drafts in its <code>drafts</code> folder there), <code>~/.local/share/doc/md</code>, <code>~/.local/share/man/man1/md.1.gz</code>, and the files named <code>me.nettrash.md.*</code> under <code>~/.local/share</code>.</li>
+        </ul>
+        <p>
+            None of these touches your documents, or md's settings, session and
+            drafts in your home folder (<code>~/.config/md</code>,
+            <code>~/.local/state/md</code>, <code>~/.local/share/md/drafts</code>);
+            delete those folders to remove them as well.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+            md is built and maintained by an independent developer. The fastest
+            way to get a reply is by email; please include your distribution and
+            its version, your processor (x86-64 or ARM64), how you installed md
+            (<code>.deb</code>, <code>.rpm</code> or <code>.tar.gz</code>) and the
+            version from <em>Help ▸ About md</em> or <code>md --version</code>.
+        </p>
+        <div class="contact-card">
+            <dl>
+                <dt>Email</dt>
+                <dd><a href="mailto:nettrash@nettrash.me?subject=md%20for%20Linux%20support">nettrash@nettrash.me</a></dd>
+                <dt>Developer</dt>
+                <dd>nettrash (independent developer)</dd>
+                <dt>Response time</dt>
+                <dd>Usually within a few business days. This is a one-person project, not a 24/7 helpdesk.</dd>
+            </dl>
+        </div>
+        <p>
+            For privacy-specific questions, see the
+            <a href="privacy.html">Privacy Policy</a>; the same email address
+            handles those requests.
+        </p>
+
+        <h2>What md does</h2>
+        <ul>
+            <li>Opens, edits and saves <code>.md</code> / <code>.markdown</code> files (and plain text) through GTK's Open and Save dialogs, file associations and drag and drop — on your computer or in your own cloud-synced folders — with autosave a second after you stop typing, written in place so the file keeps its owner, permissions and links. Files in legacy encodings (Windows-1251, or UTF-16 with a byte-order mark) open and save back as they came. <code>.puml</code>, <code>.gv</code> and <code>.textpack</code> files open too, and a <code>.textbundle</code> folder opens from <em>File ▸ Open TextBundle Folder…</em>.</li>
+            <li>Renders a live preview covering headings, <strong>bold</strong> / <em>italic</em> / <code>inline code</code> / links / strikethrough, bullet / numbered / task lists (with nesting), fenced code with syntax highlighting, block quotes, GitHub-style tables, CSV / TSV blocks drawn as tables, thematic and page breaks, footnotes, YAML / TOML front matter, and images your document references by remote URL.</li>
+            <li>Draws TeX / LaTeX math and mhchem chemistry (<code>$…$</code>, <code>$$…$$</code>, <code>```math</code>), Mermaid, Graphviz and PlantUML diagrams, and charts from a <code>```plot</code> block. These render <strong>on your computer</strong>, offline, from engines installed with the app — the plot block needs no engine at all.</li>
+            <li>Offers three layouts — Edit, Split (side by side, scrolling together, and stacking when the window is narrow) and Preview — plus a full-screen Zen mode. Each document reopens in the layout you last used for it.</li>
+            <li>Shows a table of contents (<em>Go ▸ Contents</em>), a list of your private author notes (<em>Go ▸ Notes</em>), a live word and character count, and a Find and Replace bar (Ctrl+F, or Ctrl+H for Replace).</li>
+            <li>Formats from the <em>Format</em> menu or the keyboard: Bold (Ctrl+B), Italic (Ctrl+I), Code (Shift+Ctrl+C), Strikethrough (Shift+Ctrl+X), Link (Ctrl+K), Heading 1–6 (Ctrl+Alt+1–6), Bullet List (Shift+Ctrl+L), Task List (Shift+Ctrl+T), Quote (Shift+Ctrl+Q), Indent and Outdent (Ctrl+] and Ctrl+[). While you type, Enter continues a list, a quote or a table, sentences start with a capital, and typing <code>*</code>, <code>_</code>, <code>`</code> or <code>$</code> over a selection wraps it — three switches under <em>Edit ▸ Typing</em>.</li>
+            <li>Prints through GTK's print dialog, and exports the rendered document as a <strong>PDF of real pages</strong> (A4, A5, US Letter, US Legal or a paperback trim), as self-contained HTML, EPUB 3 (labelled with the author, language, date, description, series and cover its front matter names), LaTeX or a TextBundle, and saves a single diagram as SVG.</li>
+            <li><strong>Writer mode:</strong> open a folder as a <em>book</em> — subfolders are chapters, Markdown files are articles — create, rename, reorder and delete them, compile the whole book to one PDF, print it, or export it as EPUB 3 or a LaTeX book.</li>
+            <li>Ships example documents and a sample book you can unpack and edit (<em>File ▸ Examples</em>).</li>
+        </ul>
+
+        <h2>Frequently asked questions</h2>
+
+        <h3 id="preview-cannot-start">The preview cannot start — what now?</h3>
+        <p>
+            md draws its preview with WebKitGTK, which runs web content inside a
+            sandbox, and that sandbox needs an unprivileged user namespace. If the
+            system refuses one, md says <em>“The Preview Cannot Start”</em> and
+            quits; it never runs the preview without its sandbox.
+        </p>
+        <p>
+            On <strong>Ubuntu</strong>, a program may create a user namespace only
+            when an AppArmor profile allows it, and the <code>.deb</code> installs
+            that profile as <code>/etc/apparmor.d/md</code> (it confines nothing;
+            it is the profile Ubuntu ships for its own WebKitGTK apps). If that
+            file was deleted, a plain reinstall does not bring a deleted
+            configuration file back; this does:
+        </p>
+        <pre><code>sudo apt install --reinstall -o Dpkg::Options::=--force-confmiss ./md_1.6.0_amd64.deb
+sudo apparmor_parser -r /etc/apparmor.d/md</code></pre>
+        <p>
+            Running the <strong>portable archive on Ubuntu</strong>, copy
+            <code>share/doc/md/apparmor-profile</code> from it to
+            <code>/etc/apparmor.d/md</code>, change <code>/usr/bin/md</code> in it
+            to the full path of the archive's <code>bin/md</code>, and load it with
+            <code>sudo apparmor_parser -r /etc/apparmor.d/md</code>.
+            <strong>Fedora</strong> allows the namespace without a profile; on
+            another distribution, check that unprivileged user namespaces have
+            not been turned off.
+        </p>
+
+        <h3>How do I create a new document?</h3>
+        <p>
+            <em>File ▸ New</em> (Ctrl+N) opens an untitled window; save it
+            anywhere with <em>File ▸ Save</em> (Ctrl+S), which asks for a name
+            and a place the first time. From then on every change is written to
+            the file a second after you stop typing. An untitled document is kept
+            as a <em>draft</em> in the meantime, so <em>File ▸ Quit</em> (Ctrl+Q)
+            and logging out ask nothing: the next launch reopens your documents
+            and drafts, each in its layout and window size. Closing a single
+            untitled window by hand still asks whether to save it.
+        </p>
+
+        <h3>Where are my files stored?</h3>
+        <p>
+            Wherever you put them. md never moves your documents to a server —
+            there isn't one. Files live on your computer, or in a folder your own
+            cloud provider syncs if you choose that location. A book is likewise
+            just a folder <em>you</em> chose, and its chapters and articles are
+            ordinary folders and <code>.md</code> files you can open in any other
+            app. See the <a href="privacy.html">Privacy Policy</a> for details.
+        </p>
+
+        <h3>How do I rename, move or duplicate a document?</h3>
+        <p>
+            From the <em>File</em> menu: <em>Rename…</em> changes the name,
+            <em>Move To…</em> picks a new folder, <em>Duplicate</em> opens a copy
+            as a new untitled window, and <em>Revert to Saved</em> puts back the
+            last text you saved. <em>File ▸ Open Recent</em> lists your ten newest
+            documents from the desktop's shared recent list — the one GNOME Files
+            shows — and <em>Clear Menu</em> empties md's menu without touching
+            other applications' history.
+        </p>
+
+        <h3>How do I make md the default app for Markdown files?</h3>
+        <p>
+            In Files, right-click a <code>.md</code> file, choose <em>Open
+            With…</em>, pick <strong>md</strong> and switch on <em>Always use for
+            this file type</em>. Or, from a terminal:
+        </p>
+        <pre><code>xdg-mime default me.nettrash.md.desktop text/markdown</code></pre>
+        <p>
+            md opens <code>.md</code>, <code>.markdown</code>, <code>.mdown</code>,
+            <code>.markdn</code>, <code>.mdtext</code>, <code>.mdtxt</code>,
+            <code>.mkd</code>, <code>.mkdn</code>, <code>.mdwn</code> and
+            <code>.mkdown</code> as Markdown, and offers itself for
+            <code>.txt</code>, <code>.text</code>, <code>.puml</code>,
+            <code>.plantuml</code>, <code>.iuml</code>, <code>.pu</code>,
+            <code>.gv</code> and <code>.textpack</code>. md runs as a single
+            instance, so a double-click lands in the running app, and a file that
+            is already open just brings its window forward.
+        </p>
+
+        <h3>How do I open a TextBundle? And what about .dot files?</h3>
+        <p>
+            A <code>.textpack</code> opens by double-click like any file. A
+            <code>.textbundle</code> is a <em>folder</em>, and a folder cannot be
+            given a file type, so open it with <em>File ▸ Open TextBundle
+            Folder…</em>, drop the folder on an md window, or run
+            <code>md notes.textbundle</code>. Both are imported as their text and
+            never written back — saving asks for a new <code>.md</code> location —
+            so the bundle's own images are never lost. The bundle's images are not
+            shown in the preview, on purpose: md's document is its text.
+        </p>
+        <p>
+            md's own Open dialog never offers <code>.dot</code>, which the md
+            family leaves to Word templates. Ubuntu itself types a
+            <code>.dot</code> as Graphviz too, though, so one that reads as a graph
+            lists md under <em>Open With</em>. A <code>```dot</code> fence inside a
+            document always works.
+        </p>
+
+        <h3>What is writer mode, and how do I start a book?</h3>
+        <p>
+            A <strong>book</strong> is simply a folder you pick: its subfolders
+            are <em>chapters</em>, the Markdown files inside are
+            <em>articles</em>, and they are ordered by file name (a numeric
+            prefix like <code>01-intro.md</code> first, then alphabetically).
+            Nothing is imported or copied into the app.
+        </p>
+        <p>
+            <em>Book ▸ New Book…</em> creates one, <em>Book ▸ Open Book…</em>
+            opens an existing folder, and <em>Book ▸ Show Book</em>
+            (Shift+Ctrl+B) brings the book window back. The book window keeps the
+            structure in a sidebar and the selected article beside it in Edit,
+            Split or Preview; Alt+↑ and Alt+↓ step through the articles in reading
+            order (GNOME keeps Ctrl+Alt+↑ / ↓ for switching workspaces). The
+            sidebar's <em>New Chapter…</em> and <em>New Article…</em> add to the
+            book, and right-clicking a chapter or article renames it, moves it up
+            or down, or deletes it.
+            Reordering is <em>written back to the file names</em> — the group is
+            renumbered with <code>01-</code>, <code>02-</code> prefixes — so the
+            order is real and visible in Files, not a private list kept by the
+            app. md remembers the book across launches and reopens on the article
+            you were writing; <em>Book ▸ Close Book</em> forgets it (the folder is
+            untouched).
+        </p>
+
+        <h3>How do I turn a book into a PDF or an EPUB?</h3>
+        <p>
+            With a book open, <em>Book ▸ Export Book ▸ PDF…</em> compiles the whole
+            book into a single PDF, every chapter and article in reading order;
+            <em>Export Book ▸ EPUB…</em> packages it as a standard <strong>EPUB
+            3</strong> with a proper table of contents, which opens in any
+            e-reader; and <em>Export Book ▸ LaTeX…</em> writes one
+            <code>book</code>-class <code>.tex</code> file. <em>Book ▸ Print
+            Book…</em> prints it all. Math and diagrams are drawn by md's own
+            offline engines and embedded, so they show up in any reader.
+        </p>
+
+        <h3>What do printed and exported PDFs look like?</h3>
+        <p>
+            Real pages, laid out by WebKitGTK. <em>File ▸ Export ▸ PDF Page
+            Size</em> chooses <strong>A4</strong> (the default), A5, US Letter, US
+            Legal, or a paperback trim (6 × 9″, 5 × 8″, 5.5 × 8.5″); the choice is
+            remembered and applies to the book compile too. Pages carry half-inch
+            margins on every side. Put <code>\newpage</code> (or
+            <code>\pagebreak</code>) on a line of its own to start a fresh page
+            exactly where you want one.
+        </p>
+        <p>
+            Printed and exported pages are always <strong>white with dark
+            ink</strong>, whichever theme you write in. The type is <strong>Nimbus
+            Mono PS</strong> (URW's Courier) for prose and <strong>Liberation
+            Mono</strong> for code, both from your distribution's font packages —
+            the Linux stand-ins for the typewriter faces of md on a Mac. A PDF made
+            here and one made from the same document on a Mac have the same pages
+            and content, but not the same bytes.
+        </p>
+
+        <h3>Where are the commands? I don't see a toolbar.</h3>
+        <p>
+            Every window has a menu bar under its title bar: <em>File</em> holds
+            documents, Export and Print; <em>Edit</em> the editing commands, Find
+            and Replace and the Typing switches; <em>Format</em> bold, italic,
+            code, links, headings, lists, quotes and indents; <em>View</em>
+            switches Edit / Split / Preview (Ctrl+1 / Ctrl+2 / Ctrl+3), Zen Mode
+            (Shift+Ctrl+Return) and full screen (F11); <em>Book</em> the writer
+            mode; <em>Go</em> jumps to headings, to your private notes and between
+            a book's articles; <em>Window</em> lists the open windows; and
+            <em>Help</em> has this page (F1), the privacy policy and <em>About
+            md</em>. There is no Share menu: Linux has no system share sheet.
+        </p>
+
+        <h3>What does "The file changed on disk" mean?</h3>
+        <p>
+            Another program (a sync client, an editor, a script) wrote the file
+            while you had unsaved edits in md. Rather than overwrite either
+            version, md offers <em>Reload from Disk</em> (take the other program's
+            version) or <em>Keep My Version</em> (write yours back). If a save
+            fails while a window is closing — a full disk, a read-only folder — md
+            keeps your text beside the document as <code>&lt;name&gt;
+            (rescued)</code> with the original extension (<code>Notes
+            (rescued).md</code>) and tells you so.
+        </p>
+
+        <h3>The preview went blank and came back — what happened?</h3>
+        <p>
+            The preview's web process stopped, and md reloaded it. If the same
+            document stops it twice in a row, md stops trying and says so in one
+            line; the next edit tries again. If a document does this every time,
+            please send it (see Contact).
+        </p>
+
+        <h3>How do math and diagrams work — do they need a network?</h3>
+        <p>
+            No. md installs the rendering engines with the app and runs them in
+            the preview <strong>on your computer</strong>: KaTeX with mhchem for
+            math and chemistry, Mermaid, Viz.js / Graphviz and PlantUML for
+            diagrams, and highlight.js for code. Charts from a
+            <code>```plot</code> block are drawn by md itself, with no engine at
+            all. Nothing is downloaded at run time and nothing is sent to a
+            diagram service — it works with the network off.
+        </p>
+
+        <h3>What are private author notes?</h3>
+        <p>
+            An HTML comment <strong>on a line of its own</strong> whose text
+            begins with <code>note:</code> — for example
+            <code>&lt;!-- note: rewrite this scene --&gt;</code> — is the writer's
+            private note. It is listed under <em>Go ▸ Notes</em>, jumps you to that
+            spot in the editor, and never appears in the preview, the PDF, the
+            EPUB or print.
+        </p>
+
+        <h3>My punctuation isn't being "corrected" — is that a bug?</h3>
+        <p>
+            No, that's intentional. md edits Markdown <em>source</em>, so it
+            leaves quotes, dashes and dots exactly as typed. The one thing it
+            changes as you type is the first letter of a line or a sentence, which
+            it capitalizes — never inside code, a table, math, a link or a path.
+            Delete the capital and type the letter again and it stays lowercase,
+            or turn it off under <em>Edit ▸ Typing ▸ Capitalize Sentences</em>.
+        </p>
+
+        <h3>Why doesn't the preview show some advanced Markdown feature?</h3>
+        <p>
+            md's renderer covers everyday Markdown plus the common GitHub
+            extensions (task lists, tables, strikethrough, fenced code,
+            footnotes). It is the same renderer as md on every other platform,
+            and a few rarely used constructs render as plain text on purpose: raw
+            HTML is shown as the characters you typed, there are no
+            reference-style links, and a four-space indent continues a paragraph
+            rather than starting a code block. If something common renders wrong,
+            please report it (see Contact).
+        </p>
+
+        <h3>Does md collect any data about me?</h3>
+        <p>
+            No. md contains no analytics, no advertising or tracking SDKs, and
+            contacts no servers of ours. The only network requests it makes are
+            for an image your own document links by a remote URL, and, when you
+            export an EPUB, the <code>https:</code> cover its front matter names.
+            What md keeps on your computer — a few settings, the session it
+            reopens and your unsaved drafts — is listed in full in the
+            <a href="privacy.html">Privacy Policy</a>.
+        </p>
+
+        <h2>Reporting a bug</h2>
+        <p>When emailing about a bug, the following details speed things up:</p>
+        <ul>
+            <li>Your distribution and version (<code>cat /etc/os-release</code>), your processor (<code>uname -m</code>), and your desktop and session type (<code>echo $XDG_SESSION_TYPE</code>: Wayland or X11).</li>
+            <li>The md version (<code>md --version</code>) and how you installed it.</li>
+            <li>What you did, what you expected, and what happened instead — and anything md prints when you start it from a terminal with <code>md</code>.</li>
+            <li>If it is reproducible, a screenshot — and, for a rendering problem, the Markdown that shows it.</li>
+        </ul>
+
+        <h2>Feature requests</h2>
+        <p>
+            Suggestions are read and appreciated; send them by email. Not every
+            request will be implemented, but every one is considered.
+        </p>
+
+        <h2>Software Bill of Materials</h2>
+        <p>
+            md for Linux is written in <strong>Rust</strong> on <strong>GTK
+            4</strong>, <strong>libadwaita</strong> and <strong>WebKitGTK
+            6.0</strong>, through the gtk-rs bindings (<code>gtk4</code> 0.11,
+            <code>libadwaita</code> 0.9, <code>webkit6</code> 0.6,
+            <code>glib</code> and <code>gio</code> 0.22), with a hand-written
+            Markdown parser and a handful of small crates. GTK, libadwaita and
+            WebKitGTK are your distribution's own libraries, installed by its
+            package manager, and so are the text fonts: md bundles none.
+        </p>
+        <p>
+            It does <strong>bundle five open-source JavaScript engines</strong>,
+            which render math, diagrams and code inside the preview, on your
+            computer and offline:
+        </p>
+        <ul>
+            <li><strong>KaTeX</strong> 0.17.0, with the <strong>mhchem</strong> extension and its math fonts — TeX / LaTeX math and chemistry.</li>
+            <li><strong>Mermaid</strong> 11.16.0 — Mermaid diagrams.</li>
+            <li><strong>Viz.js</strong> 3.24.0 / <strong>Graphviz</strong> 14.1.1 — Graphviz (DOT) graphs.</li>
+            <li><strong>PlantUML</strong> 1.2026.4beta4 — PlantUML diagrams.</li>
+            <li><strong>highlight.js</strong> 11.11.1 — syntax highlighting.</li>
+        </ul>
+        <p>
+            They are installed under <code>/usr/share/md</code> (in the archive,
+            <code>share/md</code>); nothing is downloaded at run time and no
+            rendering is done on anyone's server. md itself is MIT-licensed, and
+            each engine keeps its own licence; the <code>copyright</code> file
+            names every one — <code>/usr/share/doc/md/copyright</code> on Ubuntu,
+            <code>/usr/share/licenses/md/copyright</code> on Fedora, and
+            <code>share/doc/md/copyright</code> in the archive.
+        </p>
+
+        <footer>
+            <a href="https://nettrash.me/">← nettrash.me</a> &middot;
+            <a href="privacy.html">Privacy</a>
+        </footer>
+    </main>
+</body>
+</html>

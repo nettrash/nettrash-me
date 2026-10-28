@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>md — Privacy Policy</title>
+    <meta name="description" content="Privacy policy for md for Linux, the Markdown editor by nettrash for Ubuntu, Fedora and other distributions." />
+    <meta name="robots" content="index,follow" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous" />
+    <style>
+        body {
+            font-family: "Roboto", system-ui, -apple-system, sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.65;
+        }
+        main {
+            max-width: 820px;
+            margin: 3rem auto;
+            padding: 2.25rem 2.5rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            font-weight: 300;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        h2 {
+            font-weight: 400;
+            margin-top: 2rem;
+            font-size: 1.25rem;
+        }
+        .meta {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        table {
+            width: 100%;
+            margin: 1rem 0;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #e6e6e6;
+            padding: 0.6rem 0.75rem;
+            vertical-align: top;
+            font-size: 0.95rem;
+        }
+        th {
+            background: #f4f4f4;
+            font-weight: 600;
+            text-align: left;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 0.05rem 0.35rem;
+            border-radius: 3px;
+            font-size: 0.92em;
+            color: #0d3a8a;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #888;
+            font-size: 0.85rem;
+        }
+        a { color: #0d47a1; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Privacy Policy</h1>
+        <p class="meta">
+            <strong>Last updated:</strong> 28 October 2026 &middot;
+            <strong>Applies to:</strong> md 1.6 for Linux — the Markdown editor published by nettrash as a <code>.deb</code> for Ubuntu 26.04, an <code>.rpm</code> for Fedora 44 and later, and a portable <code>.tar.gz</code>. This policy is versioned alongside the app's source code (<code>PRIVACY.md</code>); the most recent commit on <code>master</code> is authoritative.
+        </p>
+
+        <h2>TL;DR</h2>
+        <p>
+            md <strong>does not collect, transmit, sell, or share any
+            data</strong>. It contains no analytics, no advertising SDKs, no
+            trackers, and no servers operated by us — we operate none for the
+            app. The documents you open and edit stay where you put them — on
+            your computer, or in folders <em>your own</em> cloud provider
+            syncs. The app's only network activity is fetching images that
+            <em>your own documents</em> reference by a remote URL, so they can
+            appear in the preview and in what you print or export — and, when
+            you export an EPUB whose front matter names its cover by an
+            <code>https:</code> URL, that one image. Nothing about you is ever
+            sent anywhere.
+        </p>
+        <p>If that already answers your question, you don't need to read the rest.</p>
+
+        <h2>What we collect</h2>
+        <p>
+            <strong>Nothing.</strong> md has no account to create, no email to
+            register, and no telemetry. It contacts no servers of ours, and it
+            does not check for updates: a new version arrives as a new package
+            that you download and install yourself. The app initiates exactly
+            two kinds of network request, and only on your behalf: downloading
+            an image that <em>your document</em> points at by remote URL
+            (<code>![…](https://…)</code>), and, when you export an EPUB,
+            downloading the cover its front matter names by an
+            <code>https:</code> URL. See <em>Network use</em> below.
+        </p>
+
+        <h2>Network use</h2>
+        <p>
+            An image your document references by a remote URL is fetched when
+            that document is rendered — in the live preview, and also when you
+            print it or export it to PDF or EPUB, because the printed page has
+            to show the same picture the preview does. It happens only for
+            documents that contain such a link.
+        </p>
+        <p>
+            The request goes directly to whatever host <em>your document</em>
+            names. That host sees your computer's IP address and a normal HTTP
+            request, exactly as it would if you had opened the same URL in a web
+            browser. We are not party to it: no request is ever made to us.
+        </p>
+        <p>
+            The same goes for an EPUB export whose front matter says
+            <code>cover: https://…</code>: the export fetches that one image to
+            put it on the book, and nothing else — at most 20 MB, within 15
+            seconds. If the host redirects the request, md follows at most five
+            redirects, and only to <code>https</code> addresses; each host along
+            the way sees your IP address in the same way.
+        </p>
+        <p>
+            A local image beside the document is deliberately <em>not</em>
+            shown in the preview: md's document is its text. The one time md
+            reads a file beside your document is <em>File ▸ Export ▸
+            TextBundle…</em>, which copies the local images the document links
+            into the new bundle's <code>assets/</code> folder — from disk, at
+            your request — and, likewise, <em>File ▸ Export ▸ EPUB…</em> reads
+            the one image a <code>cover:</code> in the front matter names, from
+            the document's own folder only.
+        </p>
+        <p>
+            A link you click in the preview, <em>Help ▸ md Help</em> and
+            <em>Help ▸ Privacy Policy</em> open in your web browser; md itself
+            fetches nothing for them.
+        </p>
+        <p>
+            Everything else is built on your computer: the Markdown renderer,
+            and the math and diagram engines (KaTeX with mhchem, Mermaid,
+            Graphviz, PlantUML, highlight.js) are installed with the app and run
+            offline. No code is downloaded or updated at run time.
+        </p>
+
+        <h2>Your documents</h2>
+        <p>
+            md is a document editor. The files you open, create and save are
+            handled through GTK's file dialogs (on GNOME, the desktop's own file
+            chooser), file associations and drag and drop, and are stored
+            wherever you choose — locally or in a folder your own cloud provider
+            syncs. We never see them. If you keep a document in a synced folder,
+            it syncs through <em>your</em> account under <em>that</em>
+            provider's privacy terms, not ours.
+        </p>
+        <p>
+            One file may be written beside <em>your</em> document rather than in
+            md's folders: if a save fails while a window is closing — a full
+            disk, a read-only folder — md keeps your text next to the original
+            as <code>&lt;name&gt; (rescued)</code> with the original extension
+            (then <code>(rescued 2)</code>, and so on), and tells you so. It is
+            your document, in your folder, and md never touches it again.
+        </p>
+
+        <h2>What md stores on your computer</h2>
+        <p>
+            A few small settings, in <code>~/.config/md/settings.conf</code> (or
+            under <code>$XDG_CONFIG_HOME</code>). They are, in full:
+        </p>
+        <table>
+            <thead>
+                <tr><th>Setting</th><th>What it holds</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>md.viewModeMemory</code></td><td>Which layout (Edit / Split / Preview) you last had each of your 200 most recently opened documents in. Each entry is a short hash of the file's path, not the path itself, and a mode.</td></tr>
+                <tr><td><code>md.pdfPageSize</code></td><td>The page size chosen for PDF export (A4 unless you pick another).</td></tr>
+                <tr><td><code>md.bookBookmark</code></td><td>The path of the book folder you have open in writer mode, if any. <em>Book ▸ Close Book</em> removes it.</td></tr>
+                <tr><td><code>md.bookLastArticle</code></td><td>Which article in that book you had open last, as a path relative to the book, so the book reopens where you left it.</td></tr>
+                <tr><td><code>md.bookOpensInSeparateWindows</code></td><td>Whether a book opens its articles in separate windows.</td></tr>
+                <tr><td><code>md.bookViewMode</code></td><td>The book window's one layout.</td></tr>
+                <tr><td><code>md.linux.windowSize.document</code>, <code>md.linux.windowSize.book</code></td><td>The last size of a document window and of the book window, so new windows open at it.</td></tr>
+                <tr><td><code>md.continueLists</code>, <code>md.capitalizeSentences</code>, <code>md.wrapSelection</code></td><td>The three switches under <em>Edit ▸ Typing</em>, on or off. All three start on.</td></tr>
+                <tr><td><code>md.linux.recentClearedAt</code></td><td>When you last chose <em>File ▸ Open Recent ▸ Clear Menu</em>, so md's menu shows only what you opened after it.</td></tr>
+            </tbody>
+        </table>
+        <p>Beside those settings the app keeps exactly the following:</p>
+        <table>
+            <thead>
+                <tr><th>File</th><th>What it holds</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>~/.local/state/md/session.json</code><br />(or under <code>$XDG_STATE_HOME</code>)</td><td>The documents and drafts you had open when md last closed, with each one's layout, Zen state, window size and whether it was maximized, and whether the book window was open and its size, so the next launch reopens them. File paths and window sizes, nothing else.</td></tr>
+                <tr><td><code>~/.local/share/md/drafts/</code><br />(or under <code>$XDG_DATA_HOME</code>)</td><td>The text of untitled documents you have not saved yet, one file each, readable only by you. A draft is deleted when you save the document or close its window with <em>Don't Save</em>.</td></tr>
+                <tr><td>Temporary PDF files in <code>$XDG_RUNTIME_DIR/md/</code></td><td>The pages an export or a book compile renders before they are copied to the file you named; each is deleted as soon as it has been copied. The folder is in memory and emptied when you log out (without a runtime folder, the system's temporary folder is used instead).</td></tr>
+            </tbody>
+        </table>
+        <p>
+            The preview keeps <strong>no web data</strong>: it runs with an
+            in-memory session, so no cookies, cache or browsing state is written
+            anywhere. The per-document encoding, line endings and scroll
+            position live in memory only.
+        </p>
+        <p>
+            Two things are held for md by the desktop itself. The <strong>recent
+            documents list</strong> in <code>~/.local/share/recently-used.xbel</code>,
+            which md adds a document to when you open or save it, and which
+            GNOME Files and other applications share; <em>Clear Menu</em> empties
+            md's menu without deleting anybody else's entries, and md removes an
+            entry whose file no longer exists. And the <strong>file chooser's own
+            preferences</strong>: whenever md shows GTK's Open or Save dialog,
+            GTK itself records how you left that dialog — its size, the sort
+            order, whether hidden files are shown, the sidebar's width, and the
+            like; never a file or folder name — in the desktop's settings
+            database, <code>~/.config/dconf/user</code>, which every GTK and GNOME
+            application shares. md's own code writes nothing there.
+        </p>
+        <p>
+            None of these settings and files leave your computer, and none of
+            them contain personal information beyond the file paths named above.
+            Removing the package — <code>apt remove</code> or <code>apt
+            purge</code>, <code>dnf remove</code>, or deleting the folder you
+            unpacked the <code>.tar.gz</code> into — leaves them in place, as
+            packages always leave the files in your home folder; delete the
+            folders above to remove them. If a future version remembers anything
+            else, it is added to this list in the same commit that adds the
+            setting.
+        </p>
+
+        <h2>Permissions</h2>
+        <p>
+            md asks for no permissions and none are needed: like any program you
+            install on Linux, it runs with your own user's rights. That is worth
+            stating plainly, because it is not a sandbox. md reads and writes only
+            the files you open, save, drop on it or pick as a book — by how it is
+            written, not by a fence the operating system draws around it.
+        </p>
+        <p>
+            The preview is different: WebKitGTK runs its web content in processes
+            of their own, inside a sandbox (bubblewrap) that needs an unprivileged
+            user namespace. Ubuntu 26.04 grants one only to programs an AppArmor
+            profile names, so the <code>.deb</code> installs
+            <code>/etc/apparmor.d/md</code>. That profile confines nothing and
+            grants nothing else; it is the same profile Ubuntu ships for its own
+            WebKitGTK applications, and it exists only so that the preview's
+            sandbox can start. Fedora needs no such profile, so the
+            <code>.rpm</code> installs none; the <code>.tar.gz</code> carries the
+            profile as a template, for you to install if you run it on Ubuntu.
+        </p>
+
+        <h2>Around the app</h2>
+        <p>
+            Two things happen around md rather than inside it. Downloading a
+            package from nettrash.me is an ordinary web request to this site.
+            And when you install the <code>.deb</code> or <code>.rpm</code>, your
+            package manager downloads the libraries md needs (GTK 4, libadwaita,
+            WebKitGTK and two font packages) from your distribution's own
+            mirrors, under your distribution's terms. Once md is installed, it
+            sends nothing back to either.
+        </p>
+
+        <h2>Children's privacy</h2>
+        <p>
+            Because md collects no data at all, it collects no data from
+            children.
+        </p>
+
+        <h2>Changes to this policy</h2>
+        <p>
+            Any change is committed to <code>PRIVACY.md</code> in the app's source
+            repository and published on this page in the same sitting, with a new
+            <em>Last updated</em> date.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+            Questions: <a href="mailto:nettrash@nettrash.me?subject=md%20for%20Linux%20privacy">nettrash@nettrash.me</a>.
+        </p>
+
+        <footer>
+            <a href="https://nettrash.me/">← nettrash.me</a> &middot;
+            <a href="support.html">Support</a>
+        </footer>
+    </main>
+</body>
+</html>
