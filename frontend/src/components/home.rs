@@ -1663,6 +1663,129 @@ fn linux_tab() -> Html {
                     </div>
                 </div>
 
+                // Family Connect
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="familyconnect-icon.png"
+                             alt="Family Connect app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://nettrash.me/linux/familyconnect/support.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "Family Connect" }
+                                </a>
+                                <span class="badge bg-warning text-dark ms-2" style="font-size:0.7em;">{ "Linux" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "A private messenger for one family and nobody else — a \
+                                   native GTK 4 and libadwaita app for the Linux desktop. A \
+                                   shared family chat, groups for part of it and one-to-one \
+                                   chats; photos, videos, voice and video messages, files, \
+                                   stickers, polls and a family board; one-to-one voice and \
+                                   video calls; formulas, diagrams and graphs drawn right in \
+                                   the message. One account can belong to several families. \
+                                   It talks to one Family Connect server — ours, or one you run \
+                                   yourself: the server is free and open source. No email \
+                                   address or phone number, no ads, no analytics. Not \
+                                   end-to-end encrypted: whoever runs the server can read what \
+                                   it stores." }
+                            </p>
+                            <div class="d-flex gap-2 small flex-wrap align-items-center mb-2">
+                                <div class="btn-group btn-group-sm" role="group"
+                                     aria-label="Family Connect for Ubuntu 26.04, .deb">
+                                    <span class="btn btn-dark" style="pointer-events:none;">
+                                        { "Ubuntu .deb" }
+                                    </span>
+                                    <a href="/linux/familyconnect/family-connect_1.3.0_amd64.deb"
+                                       class="btn btn-outline-dark"
+                                       download="family-connect_1.3.0_amd64.deb">
+                                        { "x86-64" }
+                                    </a>
+                                    <a href="/linux/familyconnect/family-connect_1.3.0_arm64.deb"
+                                       class="btn btn-outline-dark"
+                                       download="family-connect_1.3.0_arm64.deb">
+                                        { "ARM64" }
+                                    </a>
+                                </div>
+                                <div class="btn-group btn-group-sm" role="group"
+                                     aria-label="Family Connect for Fedora 44 and later, .rpm">
+                                    <span class="btn btn-dark" style="pointer-events:none;">
+                                        { "Fedora .rpm" }
+                                    </span>
+                                    <a href="/linux/familyconnect/family-connect-1.3.0-1.fc44.x86_64.rpm"
+                                       class="btn btn-outline-dark"
+                                       download="family-connect-1.3.0-1.fc44.x86_64.rpm">
+                                        { "x86-64" }
+                                    </a>
+                                    <a href="/linux/familyconnect/family-connect-1.3.0-1.fc44.aarch64.rpm"
+                                       class="btn btn-outline-dark"
+                                       download="family-connect-1.3.0-1.fc44.aarch64.rpm">
+                                        { "ARM64" }
+                                    </a>
+                                </div>
+                                <div class="btn-group btn-group-sm" role="group"
+                                     aria-label="Family Connect for other distributions, .tar.gz">
+                                    <span class="btn btn-dark" style="pointer-events:none;">
+                                        { "Other .tar.gz" }
+                                    </span>
+                                    <a href="/linux/familyconnect/family-connect-1.3.0-linux-x86_64.tar.gz"
+                                       class="btn btn-outline-dark"
+                                       download="family-connect-1.3.0-linux-x86_64.tar.gz">
+                                        { "x86-64" }
+                                    </a>
+                                    <a href="/linux/familyconnect/family-connect-1.3.0-linux-aarch64.tar.gz"
+                                       class="btn btn-outline-dark"
+                                       download="family-connect-1.3.0-linux-aarch64.tar.gz">
+                                        { "ARM64" }
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://nettrash.me/linux/familyconnect/support.html#install"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "How to install" }
+                                </a>
+                                <a href="/linux/familyconnect/SHA256SUMS"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "SHA256SUMS" }
+                                </a>
+                                <a href="https://github.com/nettrash/family.connect"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source and server" }
+                                </a>
+                                <a href="https://nettrash.me/linux/familyconnect/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <a href="https://nettrash.me/linux/familyconnect/support.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Support" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                                <span class="badge bg-light text-dark">{ "Version 1.3" }</span>
+                            </div>
+                            <p class="text-muted small mt-2 mb-0" style="font-size:0.78em;">
+                                { "Ubuntu 26.04 LTS or Fedora 44 and later, on x86-64 or ARM64. \
+                                   Install with sudo apt install ./family-connect_1.3.0_amd64.deb \
+                                   or sudo dnf install ./family-connect-1.3.0-1.fc44.x86_64.rpm, \
+                                   and the package manager brings GTK 4, libadwaita, WebKitGTK \
+                                   and GStreamer. At first launch enter https://fc.nettrash.me, \
+                                   or your own server's address. On our server a new family is \
+                                   started in the iPhone, iPad or Mac app; joining one with an \
+                                   invite code is free." }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     }

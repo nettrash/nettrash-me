@@ -79,9 +79,12 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Effective date:</strong> 3 October 2026 &middot;
-            <strong>Applies to:</strong> Family Connect &mdash; the iOS, iPadOS, macOS and Android
-            apps published by nettrash, and the Family Connect server software.
+            <strong>Effective date:</strong> 5 November 2026 &middot;
+            <strong>Applies to:</strong> Family Connect <strong>1.3</strong> &mdash; the iOS, iPadOS,
+            macOS and Android apps published by nettrash, and the Family Connect server software. The
+            <a href="https://nettrash.me/msstore/familyconnect/privacy.html">Windows</a> and
+            <a href="https://nettrash.me/linux/familyconnect/privacy.html">Linux</a> apps have pages of
+            their own; what happens on the server is the same everywhere.
         </p>
 
         <p>
@@ -105,8 +108,8 @@
                 server address</strong></td>
                 <td>
                     Your app is connected to <code>https://fc.nettrash.me</code>, which
-                    <strong>I operate</strong>. I hold your messages, photos, videos, voice notes,
-                    files, shared locations, profile picture and account details, and I am
+                    <strong>I operate</strong>. I hold your messages, photos, videos, voice and video
+                    messages, files, shared locations, profile picture and account details, and I am
                     technically able to read all of them. For you, I am the data controller.
                 </td>
             </tr>
@@ -123,10 +126,15 @@
 
         <h2>Family Connect is not end-to-end encrypted</h2>
         <p>
-            This matters enough to say plainly and early. Messages, attachments, board notes and
-            shared locations are stored <strong>in plaintext</strong> in the server's PostgreSQL
-            database and on its disk. The server reads message text in order to build notification
-            text, chat-list previews and reply quotations.
+            This matters enough to say plainly and early. Since version 1.3 the server
+            <strong>stores what people write, say and show encrypted</strong> &mdash; messages,
+            attachments, board notes, shared locations, names, birthdays, profile pictures, transcripts
+            and more &mdash; under keys of its own that are never in its database, so a database dump,
+            a backup or a copy of its disk opens nothing without the server's key file. But <strong>the
+            server holds those keys</strong>: it decrypts in memory to answer, and it reads message
+            text in order to build notification text, chat-list previews and reply quotations. What
+            stays readable in the database is what the server routes, orders and counts by: ids,
+            memberships, times, kinds and sizes.
         </p>
         <p>
             Traffic between the app and the server is encrypted in transit by TLS, and the audio and
@@ -165,27 +173,31 @@
             </tr>
             <tr>
                 <td>Message text</td>
-                <td>Everything you type, including in one-to-one chats.</td>
+                <td>Everything you type, including in one-to-one chats and groups.</td>
             </tr>
             <tr>
                 <td>Photos</td>
                 <td>
                     Re-encoded on your device to at most 2048&nbsp;px before upload, which
-                    <strong>removes EXIF metadata</strong> including any GPS coordinates.
+                    <strong>removes EXIF metadata</strong> including any GPS coordinates. An animated
+                    GIF or WebP is made into a short silent looping video instead.
                 </td>
             </tr>
             <tr>
                 <td>Videos and files</td>
                 <td>
-                    Uploaded <strong>byte for byte, unmodified</strong>. Any metadata the file
-                    already contains travels with it &mdash; a phone video typically carries the
+                    A video larger than 720p at 30 frames a second is made smaller on your device
+                    before upload, and some sound files are too. A video already that small, and any
+                    other file, is uploaded <strong>byte for byte, unmodified</strong>. Any metadata
+                    a file carries can travel with it &mdash; a phone video typically carries the
                     location it was recorded at, the device model and the date; a document typically
-                    carries its author and revision history. Family Connect does not strip these.
+                    carries its author and revision history. Family Connect does not promise to strip
+                    these.
                 </td>
             </tr>
             <tr>
-                <td>Voice notes</td>
-                <td>Recorded in the app and uploaded as audio files.</td>
+                <td>Voice and video messages</td>
+                <td>Recorded in the app from your microphone and camera, and uploaded as files.</td>
             </tr>
             <tr>
                 <td>Shared locations</td>
@@ -213,7 +225,30 @@
                 <td>Notification tokens</td>
                 <td>The Apple (APNs) or Google (FCM) token for each device you sign in on.</td>
             </tr>
+            <tr>
+                <td>Family Hosting subscription <em>(iPhone, iPad and Mac, only if you buy one)</em></td>
+                <td>
+                    Apple takes the payment; Family Connect never sees a card, your name or your Apple
+                    ID. The app hands the server what Apple signed for the purchase, and Apple's own
+                    server notifications tell it about renewals, failed payments, refunds and the end
+                    of the subscription. The server keeps the subscription's Apple transaction
+                    identifiers, the product, its end date and whether it renews &mdash; enough to know
+                    which families are paid for. The purchase carries a random identifier the server
+                    keeps for your account, so that it can tell the purchase is yours while Apple
+                    learns nothing about who you are in Family Connect.
+                </td>
+            </tr>
         </table>
+        <p>
+            <strong>Groups</strong> are seen only by their members. Nobody else can see, list or count
+            a group &mdash; not the other members of the family, and not the family's owner.
+        </p>
+        <p>
+            <strong>Several families.</strong> One account can belong to more than one family. Each
+            family you are in sees your name, picture and birthday, and its own chats; nothing of one
+            family reaches another, and a family's members are never told which other families anybody
+            is in.
+        </p>
         <p>
             <strong>Family statistics</strong> are visible to every member of your family, not only
             the owner: how many messages each person sent, how many photos, videos, voice notes and
@@ -284,15 +319,28 @@
                 </td>
             </tr>
             <tr>
+                <td><strong>Apple</strong> (App Store) &mdash; <em>only if you buy Family Hosting</em></td>
+                <td>
+                    The purchase is made with Apple, under
+                    <a href="https://www.apple.com/legal/privacy/">Apple's privacy policy</a>. Apple
+                    receives the random account identifier described above with it, and sends the
+                    server signed notifications about that subscription. You manage or cancel it in
+                    your Apple account, not in Family Connect.
+                </td>
+            </tr>
+            <tr>
                 <td><strong>Microsoft</strong> (Azure OpenAI) &mdash; <em>only if the server operator has enabled the assistant</em></td>
                 <td>
                     The assistant is off unless an operator configures it. Where it is enabled,
-                    mentioning <code>@ai</code> in the family chat sends recent family conversation
-                    &mdash; <strong>up to 200 messages or 30 days</strong>, including other members'
-                    words, their display names and timestamps &mdash; to Azure OpenAI to answer the
-                    question. A family owner can switch that history off, leaving only the message
-                    that mentioned the assistant. Private chats with the assistant send only that
-                    conversation.
+                    mentioning <code>@ai</code> in the family chat or a group sends recent
+                    conversation there &mdash; <strong>up to 200 messages or 30 days</strong>,
+                    including other members' words, their display names and timestamps &mdash; to
+                    Azure OpenAI to answer the question. A family owner can switch that history off,
+                    leaving only the message that mentioned the assistant. Private chats with the
+                    assistant send only that conversation. Where the operator allows it, <em>Show
+                    text</em> under a voice message or a video sends that one recording's sound to the
+                    same service, to write it out &mdash; and a recording somebody else sent only with
+                    their agreement as well as yours.
                     <br><br>
                     <strong>Nothing is sent until you have agreed to it.</strong> Before your first
                     message can reach the assistant, the app shows you a screen naming the service
@@ -374,6 +422,21 @@
             both messages point at it. Deleting or expiring one of those messages does not remove the
             file while the other still refers to it.
         </p>
+        <p>
+            <strong>Deleting reaches the backups.</strong> Every family, every conversation and every
+            account is stored under a key of its own. When one is deleted, its key is destroyed, and a
+            week later no backup can open it any more. A single message or file deleted on its own
+            &mdash; by its author, or by the retention sweep &mdash; is not covered: its conversation's
+            key lives on, and older backups hold it until they expire.
+        </p>
+        <p>
+            <strong>A paid family that is no longer paid for is deleted.</strong> On a server that
+            charges for families, when the owner's subscription ends the family is deleted
+            <strong>14 days</strong> later by default, with its chats, groups, board, sticker pack
+            and files. Every member is told in the app and by a notification, and again the day
+            before. Renewing in time keeps it, and families started before subscriptions existed are
+            free and never deleted this way.
+        </p>
 
         <h2>Reporting a message, and what it makes permanent</h2>
         <p>
@@ -405,22 +468,29 @@
             <li><strong>It removes your identity.</strong> Username, password, profile picture,
                 birthday, sessions, registered devices and notification tokens are erased, and every
                 device you were signed in on is signed out.</li>
-            <li><strong>It does not remove what you wrote.</strong> Your messages in the family chat,
-                your board notes, your emoji reactions and your poll votes remain, re-labelled as
+            <li><strong>It does not remove what you wrote.</strong> Your messages in the family chat
+                and in groups, your board notes, your emoji reactions and your poll votes remain, re-labelled as
                 coming from a &ldquo;Deleted account&rdquo;. This is deliberate: the rest of your
                 family did not agree to lose their conversation.</li>
             <li><strong>It does delete your one-to-one chats in full</strong> &mdash; including the
                 other person's messages in them. That person is not asked.</li>
+            <li><strong>It leaves every family you are in.</strong> A family you own passes to
+                another member, and a family you were the last member of is deleted with you.</li>
+            <li><strong>It does not cancel a subscription.</strong> The server forgets the
+                subscriptions your account presented, but Apple keeps charging until you cancel in your
+                Apple account; the app tells you so, and offers to manage it, before it asks for your
+                password.</li>
         </ul>
         <p>
-            If you want your messages gone as well, delete them or ask the operator of your server;
-            on the default server, write to me and I will do it.
+            A week later, what the deletion removed is gone from the server's backups too. If you want
+            your messages gone as well, delete them or ask the operator of your server; on the default
+            server, write to me and I will do it.
         </p>
 
         <h2>Permissions the apps ask for</h2>
         <table>
             <tr><th style="width:28%">Permission</th><th>Why</th></tr>
-            <tr><td>Camera</td><td>Video calls, and taking a photo to send.</td></tr>
+            <tr><td>Camera</td><td>Video calls, recording a video message, and taking a photo to send.</td></tr>
             <tr><td>Microphone</td><td>Voice and video calls, and recording a voice note.</td></tr>
             <tr><td>Photo library</td><td>Choosing a photo or video to send, and saving one you received.</td></tr>
             <tr><td>Location <em>(when in use)</em></td><td>Only when you choose to share your location in a chat. Family Connect does not track you in the background.</td></tr>
@@ -468,8 +538,9 @@
             this policy states</strong>. In particular, for the optional assistant, Microsoft's
             Azure OpenAI Service terms provide that prompts and responses are not used to train or
             improve Microsoft's or any third party's models and are not shared with other customers
-            or with OpenAI. Apple's and Google's notification services carry only what the
-            notification says (who wrote, never what they wrote). No data described here is sold,
+            or with OpenAI. Apple's and Google's notification services carry a notification only to
+            deliver it, and a Family Hosting purchase is handled by Apple under its own privacy
+            policy. No data described here is sold,
             rented, or handed to a data broker, and nothing is used for advertising or profiling.
         </p>
         <p>
@@ -487,7 +558,7 @@
         <h2>Where data is held</h2>
         <p>
             The default server runs on a machine in the European Union. Notifications pass through
-            Apple and Google, the assistant, where enabled, through Microsoft, and its lookups, where turned on, through
+            Apple and Google, a Family Hosting purchase through Apple, the assistant, where enabled, through Microsoft, and its lookups, where turned on, through
             the web-search service the operator chose, Open-Meteo and the Wikimedia Foundation
             &mdash; these organisations operate globally and may process the data described above outside your country.
             A self-hosted server is wherever you put it.
