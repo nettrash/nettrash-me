@@ -1529,6 +1529,71 @@ fn ms_store_tab() -> Html {
                     </div>
                 </div>
 
+                // Family Connect
+                <div class="card mb-3">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="familyconnect-windows-icon.png"
+                             alt="Family Connect for Windows app icon"
+                             class="rounded me-3"
+                             style="width:96px;height:96px;flex-shrink:0;" />
+                        <div style="flex:1;">
+                            <h5 class="card-title mb-1">
+                                <a href="https://apps.microsoft.com/detail/9NMZMBHB8DXF"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none">
+                                    { "Family Connect" }
+                                </a>
+                                <span class="badge bg-primary ms-2" style="font-size:0.7em;">{ "Windows" }</span>
+                            </h5>
+                            <p class="card-text mb-2">
+                                { "A private messenger for one family and nobody else — a \
+                                   native WinUI 3 app for Windows 11. A shared family chat, \
+                                   groups for part of it and one-to-one chats; photos, videos, \
+                                   voice and video messages, files, stickers, polls and a \
+                                   family board; one-to-one voice and video calls; formulas, \
+                                   diagrams and graphs drawn right in the message. One account \
+                                   can belong to several families. Close the window and it \
+                                   keeps running in the notification area, so a message or a \
+                                   call still reaches you. It talks to one Family Connect \
+                                   server — ours, or one you run yourself: the server is free \
+                                   and open source. No email address or phone number, no ads, \
+                                   no analytics. Not end-to-end encrypted: whoever runs the \
+                                   server can read what it stores." }
+                            </p>
+                            <div class="d-flex gap-3 text-muted small flex-wrap align-items-center">
+                                <a href="https://apps.microsoft.com/detail/9NMZMBHB8DXF"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-sm btn-primary">
+                                    { "Get it from Microsoft Store" }
+                                </a>
+                                <a href="https://github.com/nettrash/family.connect" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Source and server" }
+                                </a>
+                                <a href="https://nettrash.me/msstore/familyconnect/privacy.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Privacy" }
+                                </a>
+                                <a href="https://nettrash.me/msstore/familyconnect/support.html"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-muted text-decoration-none">
+                                    { "Support" }
+                                </a>
+                                <span class="badge bg-light text-dark">{ "Free" }</span>
+                            </div>
+                            <p class="text-muted small mt-2 mb-0" style="font-size:0.78em;">
+                                { "Requires Windows 11 (build 22000) or later, x64 or ARM64. \
+                                   It opens on our server, fc.nettrash.me; Change server on the \
+                                   sign-in screen points it at your own. On our server a new \
+                                   family is started in the iPhone, iPad or Mac app; joining one \
+                                   with an invite code is free." }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     }
