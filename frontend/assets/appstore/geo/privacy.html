@@ -29,7 +29,7 @@
     <main>
         <h1>Privacy Policy</h1>
         <p class="meta">
-            <strong>Effective date:</strong> 1 August 2026 &middot;
+            <strong>Effective date:</strong> 21 November 2026 &middot;
             <strong>Applies to:</strong> Geo — the iOS app (with Apple Watch companion) published by nettrash on the App Store.
         </p>
 
@@ -81,7 +81,7 @@
         </p>
 
         <p>
-            <strong>OpenStreetMap Overpass API</strong> (<code>https://overpass-api.de/api/interpreter</code>). When you open the Nature tab, the app sends an HTTPS request containing your <em>quantised</em> latitude/longitude (rounded to three decimal places, ~110&nbsp;m) and a 5&nbsp;km search radius to fetch the list of nodes tagged <code>natural=peak</code> near you. The request body contains <em>only</em> those coordinates and the radius — no device identifiers, no IDFA, no account information — and is sent with a descriptive <code>User-Agent</code> and a client-side timeout. Downloading an <em>offline expedition pack</em> (Info tab → "Manage offline areas", or the Map tab "Download a region" mode) issues the same kind of query once for the area you frame, at the radius you choose (5&nbsp;/&nbsp;10&nbsp;/&nbsp;50&nbsp;/&nbsp;100&nbsp;km), so the peaks can be cached on-device for no-signal use. The Overpass API is a free, public service hosted by OpenStreetMap volunteers and governed by the <a href="https://osmfoundation.org/wiki/Privacy_Policy">OpenStreetMap Foundation Privacy Policy</a>.
+            <strong>OpenStreetMap Overpass API</strong> (three public servers: <code>https://overpass-api.de</code>, <code>https://overpass.private.coffee</code> and <code>https://overpass.openstreetmap.fr</code>). When you open the Nature tab, the app sends an HTTPS request containing your <em>quantised</em> latitude/longitude (rounded to three decimal places, ~110&nbsp;m) and a 5&nbsp;km search radius to fetch the list of nodes tagged <code>natural=peak</code> near you. The request body contains <em>only</em> those coordinates and the radius — no device identifiers, no IDFA, no account information — and is sent with a descriptive <code>User-Agent</code> and a client-side timeout. Downloading an <em>offline expedition pack</em> (Info tab → "Manage offline areas", or the Map tab "Download a region" mode) issues the same kind of query once for the area you frame, at the radius you choose (5&nbsp;/&nbsp;10&nbsp;/&nbsp;50&nbsp;/&nbsp;100&nbsp;km), so the peaks can be cached on-device for no-signal use. Each search asks <em>one</em> of the three servers, starting from a rotating position, and asks the next only if that one doesn't answer usably (for example a network error, an overloaded server, a timeout or a server-side runtime error) — so a single search can reach all three, and every server asked receives exactly the same request. Each is a free, public service run by an association, under its own terms: <code>overpass-api.de</code> by FOSSGIS e.V. in Germany (<a href="https://www.fossgis.de/arbeitsgruppen/osm-server/nutzungsbedingungen/">terms of use</a>, <a href="https://www.fossgis.de/datenschutzerkl%C3%A4rung/">privacy policy</a>); <code>overpass.private.coffee</code> by Private.coffee, a non-profit association registered in Austria (<a href="https://private.coffee/privacy.html">privacy policy</a>, which says its web-server IP logs are kept for up to 48 hours); and <code>overpass.openstreetmap.fr</code> by OpenStreetMap France (<a href="https://www.openstreetmap.fr/mentions-legales/">legal notice</a>).
         </p>
 
         <p>
@@ -98,7 +98,7 @@
         </p>
 
         <p>
-            That's the entire list: MapKit, Overpass, Open-Meteo and NOAA SWPC, plus your own iCloud. No other servers are contacted. There is no telemetry, no crash reporter, no advertising network, no attribution provider, no remote analytics. The Sun panel's solar times are computed on-device with the published NOAA solar algorithm and need no network — that is a formula, unrelated to the space-weather request above.
+            That's the entire list: MapKit, the three Overpass servers, Open-Meteo and NOAA SWPC, plus your own iCloud. No other servers are contacted. There is no telemetry, no crash reporter, no advertising network, no attribution provider, no remote analytics. The Sun panel's solar times are computed on-device with the published NOAA solar algorithm and need no network — that is a formula, unrelated to the space-weather request above.
         </p>
 
         <h2>Data stored on your device</h2>
@@ -115,6 +115,9 @@
         <p>
             <strong>Space-weather cache</strong> — the last planetary K-index product fetched from NOAA is kept in a small JSON file (<code>SpaceWeatherCache.json</code>) in the app's Caches directory so the Magnetic Conditions card still resolves with no signal. It is the same global, public index every user receives: it holds no location and nothing about you, and it is not synced through CloudKit.
         </p>
+        <p>
+            <strong>Nearby-peaks cache</strong> — after each successful peak search, the peaks it found (name, coordinate and elevation — public peak data) are kept in a small JSON file (<code>NearbyPeaksCache.json</code>) in the app's Caches directory, together with the point the search was made from (your position at the time, rounded to two decimal places, about 1&nbsp;km), so the Nature (AR) view can still show them after a restart, even while the Overpass servers can't be reached; they are then labelled "possibly outdated" unless an offline expedition pack you downloaded covers where you are. The next successful search replaces it, and it is ignored once it is more than 7 days old or you are more than 50&nbsp;km from that point. It is not synced through CloudKit, and like everything in Caches it is not included in iCloud or device backups; iOS may clear it when storage runs low, and uninstalling the app removes it.
+        </p>
         <p>The Apple Watch companion stores its own pressure-history snapshot locally on the Watch and shares it with the iPhone via WatchConnectivity when the two are paired and reachable.</p>
 
         <h2>App Tracking Transparency</h2>
@@ -129,7 +132,7 @@
             </thead>
             <tbody>
                 <tr><td>Apple MapKit</td><td>Coarse position + viewport requests for tile rendering</td><td>Apple's</td></tr>
-                <tr><td>OpenStreetMap Overpass API</td><td>~110&nbsp;m-quantised coordinates + search radius (5&nbsp;km live, up to 100&nbsp;km for an offline pack)</td><td>OpenStreetMap Foundation's</td></tr>
+                <tr><td>OpenStreetMap Overpass API (three public servers)</td><td>~110&nbsp;m-quantised coordinates + search radius (5&nbsp;km live, up to 100&nbsp;km for an offline pack) — the same request at each server asked</td><td>FOSSGIS e.V.'s (<code>overpass-api.de</code>), Private.coffee's (<code>overpass.private.coffee</code>) and OpenStreetMap France's (<code>overpass.openstreetmap.fr</code>), each for its own server</td></tr>
                 <tr><td>Open-Meteo Elevation API</td><td>~110&nbsp;m-quantised coordinates to look up peak / vantage-point ground elevation</td><td>Open-Meteo's</td></tr>
                 <tr><td>NOAA Space Weather Prediction Center</td><td><strong>Nothing</strong> — a fixed URL with no query string, byte-identical for every user, returning the global planetary K index</td><td>Public domain (U.S. Government work); NOAA's</td></tr>
                 <tr><td>Apple ARKit</td><td>Camera frames + IMU data, <strong>on-device only</strong></td><td>Apple's</td></tr>
@@ -148,7 +151,7 @@
 
         <h2>International data transfers</h2>
         <p>
-            The Overpass, Open-Meteo and NOAA endpoints are global services; requests may transit servers in any country. The data sent (quantised coordinates + radius for Overpass and Open-Meteo, and nothing at all for NOAA) does not contain personal data under GDPR Article 4(1) when used in this app — it's not combined with any identifier we hold. MapKit and CloudKit requests are routed through Apple's infrastructure under Apple's standard privacy controls.
+            The Overpass, Open-Meteo and NOAA endpoints are global services; requests may transit servers in any country. The three Overpass servers' operators are associations based in Germany (FOSSGIS e.V.), Austria (Private.coffee) and France (OpenStreetMap France). The data sent (quantised coordinates + radius for Overpass and Open-Meteo, and nothing at all for NOAA) does not contain personal data under GDPR Article 4(1) when used in this app — it's not combined with any identifier we hold. MapKit and CloudKit requests are routed through Apple's infrastructure under Apple's standard privacy controls.
         </p>
 
         <h2>Your rights</h2>
